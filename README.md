@@ -4,7 +4,7 @@
 After leaving college and moving farther from friends and family, I found it challenging to keep track of everyone's plans and find time to meet up. This app aims to simplify scheduling among friends and family by having everyone's schedules in one place, making it easier to plan get-togethers and stay connected.
 
 ## Tech Stack
-- **Frontend**: React for building the user interface, Redux for state management.
+- **Frontend**: React for building the user interface
 - **Backend**: Node.js with Express for the server-side logic
 - **Database**: PostgreSQL for storing user data, events, and calendar information.
 - **Authentication**: JWT (JSON Web Tokens) for secure user authentication.
