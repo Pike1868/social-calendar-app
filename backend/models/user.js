@@ -84,6 +84,26 @@ class User {
     return user;
   }
 
+  /**Create new user with Google profile data
+   *
+   * Returns {id, email, firstName, LastName}
+   *
+   * Throws BadRequestError on duplicates.
+   *
+   */
+
+  static async create({ id, email, firstName, lastName, googleId }) {
+    const result = await db.query(
+      `INSERT INTO users
+          (id, email, first_name, last_name, google_id)
+          VALUES ($1, $2, $3, $4, $5)
+          RETURNING id, email, first_name AS "firstName", last_name AS "lastName"`,
+      [id, email, firstName, lastName, googleId]
+    );
+    const user = result.rows[0];
+    return user;
+  }
+
   /** Given an email, return data about user.
    *
    * Returns { email, first_name, last_name}
@@ -93,9 +113,8 @@ class User {
 
   static async get(email) {
     const userRes = await db.query(
-      `SELECT email,
-                  first_name AS "firstName",
-                  last_name AS "lastName"
+      `SELECT id,
+              email
            FROM users
            WHERE email = $1`,
       [email]
@@ -104,6 +123,30 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${email}`);
+    return user;
+  }
+
+  /** Given a user ID, return data about the user.
+   *
+   * Returns { id, email, first_name, last_name }
+   *
+   * Throws NotFoundError if user not found.
+   **/
+
+  static async findById(id) {
+    const userRes = await db.query(
+      `SELECT id,
+                email,
+                first_name AS "firstName",
+                last_name AS "lastName"
+         FROM users
+         WHERE id = $1`,
+      [id]
+    );
+
+    const user = userRes.rows[0];
+
+    if (!user) throw new NotFoundError(`No user with id: ${id}`);
     return user;
   }
 }
