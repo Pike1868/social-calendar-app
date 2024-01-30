@@ -1,22 +1,22 @@
 "use strict";
 const express = require("express");
 const cors = require("cors");
-const passport = require("passport");
 const { NotFoundError } = require("./expressError");
 const { authenticateJWT } = require("./middleware/auth");
-const authRoutes = require("./routes/auth");
-
+const authRoutes = require("./routes/localAuth");
+const googleAuthRoutes = require("./routes/googleAuth");
 const morgan = require("morgan");
-
 const app = express();
+const passport = require("passport");
 
+// Initialize Passport
+app.use(passport.initialize());
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
-
 app.use("/auth", authRoutes);
-
+app.use("/auth", googleAuthRoutes);
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 
 app.get("/", async (req, res, next) => {

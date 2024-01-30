@@ -1,6 +1,6 @@
 "use strict";
 
-/** Routes for authentication. */
+/** Routes for local authentication. */
 const jsonschema = require("jsonschema");
 const User = require("../models/user");
 const express = require("express");
@@ -72,7 +72,7 @@ router.post("/register", async function (req, res, next) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
-
+    //Generate an id for the new user
     const newUserId = uuidv4();
     const newUser = await User.register({ id: newUserId, ...req.body });
     const token = createToken(newUser);
