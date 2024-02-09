@@ -30,17 +30,33 @@ The primary users will be individuals looking to streamline their social plannin
 
 ## Core Features:
 
-### User Account Creation and Management
+### Database Design for Event and User Data
 - **Priority**: High
-- **Description**: Enables user registration, login, and profile management.
+- **Description**: Establishing a backend database to store and manage user and event data.
+
+### User Account Creation
+- **Priority**: High
+- **Description**: Enables user registration, login.
+
+### Calendar Viewing
+- **Priority**: High
+- **Description**: Users can view their own calendar.
+
+### User Account Management
+- **Priority**: High
+- **Description**: Enables user profile management.
 
 ### Event Creation, Editing, and Deletion
 - **Priority**: High
 - **Description**: Allows users to manage events on their calendars.
 
-### Calendar Viewing and Sharing
+### Calendar Sharing
 - **Priority**: High
-- **Description**: Users can view their own calendars and share them with others.
+- **Description**: Users can view share calendars with others.
+
+### Google Calendar API Integration
+- **Priority**: Medium
+- **Description**: Synchronizing events with users' Google Calendars.
 
 ### Security and Authentication
 - **Priority**: High
@@ -50,21 +66,9 @@ The primary users will be individuals looking to streamline their social plannin
 - **Priority**: High
 - **Description**: Designing a user-friendly and responsive user interface.
 
-### Database Design for Event and User Data
-- **Priority**: High
-- **Description**: Establishing a backend database to store and manage user and event data.
-
-### Public Holidays API Integration
-- **Priority**: Low
-- **Description**: Including important dates and public holidays in calendars.
-
 ### Public/Private Event Settings
 - **Priority**: Medium
 - **Description**: Option for users to set events as public or private.
-
-### Google Calendar API Integration
-- **Priority**: Medium
-- **Description**: Synchronizing events with users' Google Calendars.
 
 ### Invitations and Notifications
 - **Priority**: Medium
