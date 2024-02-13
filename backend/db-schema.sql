@@ -33,10 +33,7 @@ CREATE TABLE calendars (
 CREATE TABLE events (
     id VARCHAR(100) PRIMARY KEY,
     calendar_id VARCHAR(100) NOT NULL,
-<<<<<<< HEAD
-=======
     owner_id VARCHAR(36),
->>>>>>> add-calendars-model
     title TEXT NOT NULL,
     description TEXT,
     location TEXT,
@@ -66,11 +63,7 @@ CREATE TABLE calendar_acl (
     user_id VARCHAR(36) NOT NULL,
     access_role TEXT NOT NULL,
     FOREIGN KEY (calendar_id) REFERENCES calendars(id),
-<<<<<<< HEAD
-    FOREIGN KEY (user_id) REFERENCES users(id)
-=======
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
->>>>>>> add-calendars-model
 );
 -- Function to update 'updated_at' columns
 CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now();
