@@ -28,11 +28,15 @@ CREATE TABLE calendars (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     google_id TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 CREATE TABLE events (
     id VARCHAR(100) PRIMARY KEY,
     calendar_id VARCHAR(100) NOT NULL,
+<<<<<<< HEAD
+=======
+    owner_id VARCHAR(36),
+>>>>>>> add-calendars-model
     title TEXT NOT NULL,
     description TEXT,
     location TEXT,
@@ -45,13 +49,15 @@ CREATE TABLE events (
     color_id TEXT,
     time_zone TEXT,
     google_id TEXT,
-    FOREIGN KEY (calendar_id) REFERENCES calendars(id)
+    FOREIGN KEY (calendar_id) REFERENCES calendars(id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE
+    SET NULL
 );
 CREATE TABLE users_calendars (
     user_id VARCHAR(36) NOT NULL,
     calendar_id VARCHAR(100) NOT NULL,
     PRIMARY KEY (user_id, calendar_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (calendar_id) REFERENCES calendars(id)
 );
 CREATE TABLE calendar_acl (
@@ -60,7 +66,11 @@ CREATE TABLE calendar_acl (
     user_id VARCHAR(36) NOT NULL,
     access_role TEXT NOT NULL,
     FOREIGN KEY (calendar_id) REFERENCES calendars(id),
+<<<<<<< HEAD
     FOREIGN KEY (user_id) REFERENCES users(id)
+=======
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+>>>>>>> add-calendars-model
 );
 -- Function to update 'updated_at' columns
 CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now();
