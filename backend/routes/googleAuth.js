@@ -19,7 +19,7 @@ passport.use(
     async function (accessToken, refreshToken, profile, done) {
       try {
         let existingUser = await User.get(profile._json.email);
-        console.log("Existing user, should be returned with id", existingUser);
+        //console.log("Existing user, should be returned with id", existingUser);
         //if existing user return
         if (existingUser.id) {
           done(null, existingUser);
