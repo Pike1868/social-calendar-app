@@ -1,6 +1,6 @@
 -- Drop existing tables and triggers if they exist
-DROP TRIGGER IF EXISTS update_calendars_modtime ON calendars CASCADE;
-DROP TRIGGER IF EXISTS update_events_modtime ON events CASCADE;
+DROP TRIGGER IF EXISTS update_calendars_update_time ON calendars CASCADE;
+DROP TRIGGER IF EXISTS update_events_update_time ON events CASCADE;
 DROP TABLE IF EXISTS calendar_acl CASCADE;
 DROP TABLE IF EXISTS users_calendars CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
@@ -22,7 +22,7 @@ CREATE TABLE users (
 CREATE TABLE calendars (
     id VARCHAR(100) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
-    summary TEXT,
+    title TEXT,
     location TEXT,
     time_zone TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -33,7 +33,7 @@ CREATE TABLE calendars (
 CREATE TABLE events (
     id VARCHAR(100) PRIMARY KEY,
     calendar_id VARCHAR(100) NOT NULL,
-    summary TEXT,
+    title TEXT NOT NULL,
     description TEXT,
     location TEXT,
     start_time TIMESTAMP NOT NULL,
