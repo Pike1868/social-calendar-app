@@ -18,6 +18,7 @@ class Event {
     const result = await db.query(
       `
             INSERT INTO events (
+                id,
                 calendar_id, 
                 title, 
                 location,
@@ -28,9 +29,10 @@ class Event {
                 color_id,
                 time_zone,
                 google_id)
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-            RETURNING calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id`,
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+            RETURNING id,calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id`,
       [
+        data.id,
         data.calendar_id,
         data.title,
         data.location,
@@ -50,22 +52,25 @@ class Event {
 
   /** Find all events on that calendar
    *
-   * Returns [{ calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id }, ...]
+   * Returns [{ id,calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id }, ...]
    **/
 
   static async findAll(calendar_id) {
     const result = await db.query(
       `
-        SELECT calendar_id, 
-               title, 
-               location, 
-               description, 
-               start_time, 
-               end_time, 
-               status, 
-               color_id, 
-               time_zone, 
-               google_id 
+        SELECT 
+              id,
+              calendar_id,
+              owner_id,
+              title, 
+              location, 
+              description, 
+              start_time, 
+              end_time, 
+              status, 
+              color_id, 
+              time_zone, 
+              google_id 
         FROM events
         WHERE calendar_id = $1`,
       [calendar_id]
@@ -83,19 +88,21 @@ class Event {
   static async getEvent(id) {
     let result = await db.query(
       `
-        SELECT id,
-         calendar_id,
-          title,
-          location,
-          description,
-          start_time,
-          end_time,
-          status,
-          created_at,
-          updated_at,
-          color_id,
-          time_zone,
-          google_id 
+        SELECT 
+              id,
+              owner_id,
+              calendar_id,
+              title,
+              location,
+              description,
+              start_time,
+              end_time,
+              status,
+              created_at,
+              updated_at,
+              color_id,
+              time_zone,
+              google_id 
         FROM events
         WHERE id = $1`,
       [id]
@@ -130,14 +137,19 @@ class Event {
                       WHERE id = ${idVarIdx} 
                       RETURNING 
                         id,  
-                        calendar_id, 
+                        calendar_id,
+                        owner_id, 
                         title, 
                         location, 
                         description, 
                         start_time, 
                         end_time, 
                         status, 
-                        color_id,`;
+                        color_id, 
+                        created_at, 
+                        updated_at,
+                        time_zone,
+                        google_id`;
     const result = await db.query(querySql, [...values, id]);
     const event = result.rows[0];
 
@@ -164,3 +176,5 @@ class Event {
     if (!event) throw new NotFoundError(`No event found with ID: ${id}`);
   }
 }
+
+module.exports = Event;
