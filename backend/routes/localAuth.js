@@ -10,6 +10,9 @@ const userLocalRegistrationSchema = require("../schemas/userLocalRegistration.js
 const userLocalAuth = require("../schemas/userLocalAuth.json");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { v4: uuidv4 } = require("uuid");
+const {
+  createDefaultCalendarForUser,
+} = require("../helpers/createDefaultCalendar");
 
 /** POST /auth/token:  { email, password } => { token }
  *
@@ -75,6 +78,10 @@ router.post("/register", async function (req, res, next) {
     //Generate an id for the new user
     const newUserId = uuidv4();
     const newUser = await User.register({ id: newUserId, ...req.body });
+
+    // Create a default calendar for the new user
+    await createDefaultCalendarForUser(newUserId, req.body.firstName);
+
     const token = createToken(newUser);
     return res.status(201).json({ token });
   } catch (err) {

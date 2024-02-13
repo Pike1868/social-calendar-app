@@ -8,6 +8,9 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const { createToken } = require("../helpers/token");
 const { v4: uuidv4 } = require("uuid");
 const { NotFoundError } = require("../expressError");
+const {
+  createDefaultCalendarForUser,
+} = require("../helpers/createDefaultCalendar");
 
 passport.use(
   new GoogleStrategy(
@@ -37,6 +40,7 @@ passport.use(
           });
 
           if (newUser.id) {
+            await createDefaultCalendarForUser(newUserId, newUser.firstName);
             done(null, newUser);
           }
         } else {
