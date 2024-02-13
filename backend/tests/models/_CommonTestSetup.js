@@ -28,9 +28,9 @@ async function commonBeforeAll() {
   // Insert test events and save their IDs
   const eventResults = await db.query(
     `
-  INSERT INTO events (id, calendar_id, title, start_time, end_time)
-  VALUES ('e1', 'c1', 'Event 1', $1, $2),
-         ('e2', 'c1', 'Event 2', $3, $4)
+  INSERT INTO events (id,owner_id, calendar_id, title, start_time, end_time)
+  VALUES ('e1','testUser1','c1', 'Event 1', $1, $2),
+         ('e2', 'testUser1','c1', 'Event 2', $3, $4)
   RETURNING id`,
     [
       dayjs().add(1, "day").toDate(),
