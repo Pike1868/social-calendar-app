@@ -164,3 +164,4 @@ class Event {
     if (!event) throw new NotFoundError(`No event found with ID: ${id}`);
   }
 }
+
