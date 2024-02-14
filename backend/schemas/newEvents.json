@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/event.json",
+    "type": "object",
+    "properties": {
+      "calendar_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "owner_id": {
+        "type": ["string", "null"],
+        "minLength": 1
+      },
+      "title": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": ["string", "null"]
+      },
+      "location": {
+        "type": ["string", "null"]
+      },
+      "start_time": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "end_time": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "visibility": {
+        "type": ["string", "null"]
+      },
+      "status": {
+        "type": ["string", "null"]
+      },
+      "color_id": {
+        "type": ["string", "null"]
+      },
+      "time_zone": {
+        "type": ["string", "null"]
+      },
+      "google_id": {
+        "type": ["string", "null"]
+      }
+    },
+    "required": [
+      "calendar_id",
+      "title",
+      "start_time",
+      "end_time"
+    ],
+    "additionalProperties": false
+  }
+  

@@ -62,15 +62,14 @@ router.post("/register", async function (req, res, next) {
     }
 
     if (userExists) {
-      return res
-        .status(400)
-        .json({ error: { message: "Please choose another email" } });
+      throw new BadRequestError("Please choose another email");
     }
 
     const validator = jsonschema.validate(
       req.body,
       userLocalRegistrationSchema
     );
+
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
