@@ -35,6 +35,7 @@ describe("create", () => {
     const event = await Event.create(eventData);
     expect(event).toEqual({
       id: expect.any(String),
+
       calendar_id: "c1",
       title: "Test Event",
       location: "Test Location",

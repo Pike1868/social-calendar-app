@@ -36,6 +36,7 @@ class Event {
             RETURNING id,calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id`,
       [
         newEventId,
+
         data.calendar_id,
         data.title,
         data.location,
