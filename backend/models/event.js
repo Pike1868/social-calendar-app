@@ -3,6 +3,7 @@
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sqlPartialUpdate");
+const { v4: uuidv4 } = require("uuid");
 
 /**Related functions for Events */
 
@@ -15,6 +16,8 @@ class Event {
    **/
 
   static async create(data) {
+    //Generate an id for the new event
+    const newEventId = uuidv4();
     const result = await db.query(
       `
             INSERT INTO events (
@@ -32,7 +35,8 @@ class Event {
             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
             RETURNING id,calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id`,
       [
-        data.id,
+        newEventId,
+
         data.calendar_id,
         data.title,
         data.location,

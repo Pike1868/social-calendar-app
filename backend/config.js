@@ -20,11 +20,11 @@ function getDatabaseUri() {
 
 // Speed up bcrypt during tests, since the algorithm safety isn't being tested
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
-
+console.log("------------------");
 console.log("App Config:".green);
 console.log("PORT:".yellow, PORT.toString());
 console.log("Database:".yellow, getDatabaseUri());
-console.log("---");
+console.log("------------------");
 
 module.exports = {
   SECRET_KEY,
