@@ -17,7 +17,7 @@ import { useUserContext } from "../context/UserContext";
 import NavBar from "../components/NavBar";
 
 const SignIn = () => {
-  const { setUser } = useUserContext();
+  const { user, setUser } = useUserContext();
   const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
@@ -37,6 +37,8 @@ const SignIn = () => {
     } catch (err) {
       setError(err || "An error occurred during sign in, please try again.");
     }
+
+    console.log(user);
   };
 
   return (

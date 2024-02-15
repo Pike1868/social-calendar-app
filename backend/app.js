@@ -8,6 +8,7 @@ const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/localAuth");
 const googleAuthRoutes = require("./routes/googleAuth");
 const EventRoutes = require("./routes/event");
+const UserRoutes = require("./routes/user");
 const app = express();
 
 // Initialize Passport
@@ -20,6 +21,7 @@ app.use(authenticateJWT);
 //Route Prefixes
 app.use("/auth", authRoutes);
 app.use("/auth", googleAuthRoutes);
+app.use("/user", UserRoutes);
 app.use("/event", EventRoutes);
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));

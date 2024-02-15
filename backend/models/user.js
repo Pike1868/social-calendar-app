@@ -15,7 +15,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 class User {
   /** authenticate user with username, password.
    *
-   * Returns { username, first_name, last_name, email }
+   * Returns { id, username, first_name, last_name, email }
    *
    * Throws UnauthorizedError is user not found or wrong password.
    **/
@@ -23,10 +23,11 @@ class User {
   static async authenticate(email, password) {
     // try to find the user first
     const result = await db.query(
-      `SELECT email,
-                  password,
-                  first_name AS "firstName",
-                  last_name AS "lastName"
+      `SELECT id,
+              email,
+              password,
+              first_name AS "firstName",
+              last_name AS "lastName"
            FROM users
            WHERE email = $1`,
       [email]
@@ -134,11 +135,13 @@ class User {
    **/
 
   static async findById(id) {
+    console.log(id);
     const userRes = await db.query(
       `SELECT id,
-                email,
-                first_name AS "firstName",
-                last_name AS "lastName"
+              first_name,
+              last_name,
+              email,
+              time_zone
          FROM users
          WHERE id = $1`,
       [id]

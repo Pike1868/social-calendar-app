@@ -3,10 +3,13 @@ import { Box, Container, Grid } from "@mui/material";
 import Calendar from "../components/calendar/Calendar";
 import Sidebar from "../components/Sidebar";
 import HomeNavBar from "../components/HomeNavBar";
+import { useUserContext } from "../context/UserContext";
 
 const drawerWidth = 340;
 
 export default function Homepage() {
+  const { userDetails } = useUserContext();
+  console.log(userDetails);
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
