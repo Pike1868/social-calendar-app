@@ -15,7 +15,8 @@ class ServerApi {
   static token;
 
   static async request(endpoint, data = {}, method = "get") {
-    // console.debug("API Call:", endpoint, data, method);
+    console.debug("API Call:", endpoint, data, method);
+    
 
     //there are multiple ways to pass an authorization token, this is how you pass it in the header.
     //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
@@ -68,9 +69,30 @@ class ServerApi {
       //Save token to api class
       ServerApi.token = response.token;
       localStorage.setItem("socialCalToken", response.token);
+      console.log(response.token);
       return response.token;
     } catch (err) {
       throw err;
+    }
+  }
+
+  /** GET /user/:id => {user}
+   *
+   * Fetches user details by id.
+   *
+   * Requires token
+   *
+   */
+
+  static async fetchUserDetails(userId) {
+    const endpoint = `user/${userId}`;
+    const method = "get";
+    try {
+      const response = await this.request(endpoint, {}, method);
+      console.log(response.body);
+      return response;
+    } catch (err) {
+      console.error("fetchUserDetails Error", err);
     }
   }
 }
