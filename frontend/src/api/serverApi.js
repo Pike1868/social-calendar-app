@@ -16,7 +16,14 @@ class ServerApi {
 
   static async request(endpoint, data = {}, method = "get") {
     console.debug("API Call:", endpoint, data, method);
-    
+
+    // If no token is set, check localStorage and set token
+    if (!ServerApi.token) {
+      const token = localStorage.getItem("socialCalToken");
+      if (token) {
+        ServerApi.token = token;
+      }
+    }
 
     //there are multiple ways to pass an authorization token, this is how you pass it in the header.
     //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
@@ -36,7 +43,7 @@ class ServerApi {
 
   /** POST "/auth/register" - { user } => { token }
    * user must include { email , password, firstName, lastName}
-   * Returns JWT token
+   * Returns token
    */
 
   static async register({ email, password, firstName, lastName }) {
@@ -58,7 +65,7 @@ class ServerApi {
 
   /** POST "/auth/token" - { email, password } => { token }
    * Authenticates email and password
-   * Returns JWT token
+   * Returns token
    **/
   static async login(email, password) {
     const endpoint = "auth/token";
@@ -69,7 +76,6 @@ class ServerApi {
       //Save token to api class
       ServerApi.token = response.token;
       localStorage.setItem("socialCalToken", response.token);
-      console.log(response.token);
       return response.token;
     } catch (err) {
       throw err;
@@ -89,7 +95,6 @@ class ServerApi {
     const method = "get";
     try {
       const response = await this.request(endpoint, {}, method);
-      console.log(response.body);
       return response;
     } catch (err) {
       console.error("fetchUserDetails Error", err);

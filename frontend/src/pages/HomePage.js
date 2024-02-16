@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Container, Grid } from "@mui/material";
 import Calendar from "../components/calendar/Calendar";
 import Sidebar from "../components/Sidebar";
 import HomeNavBar from "../components/HomeNavBar";
-import { useUserContext } from "../context/UserContext";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUserDetails, selectUser } from "../redux/userSlice";
 
 const drawerWidth = 340;
 
 export default function Homepage() {
-  const { userDetails } = useUserContext();
-  console.log(userDetails);
+  const dispatch = useDispatch();
+  const { user, userDetails } = useSelector(selectUser); // Assuming selectUser correctly selects both user and userDetails
   const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    // Check if user is set but userDetails are not
+    if (user && !userDetails) {
+      dispatch(fetchUserDetails(user.id));
+    }
+  }, [dispatch, user, userDetails]);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -26,11 +35,7 @@ export default function Homepage() {
 
       <Box
         component="main"
-        sx={{
-          flexGrow: 1,
-          height: "100vh",
-          overflow: "auto",
-        }}
+        sx={{ flexGrow: 1, height: "100vh", overflow: "auto" }}
       >
         <Container maxWidth="xl" sx={{ pt: 2 }}>
           <Grid container spacing={1}>

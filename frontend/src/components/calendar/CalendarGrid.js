@@ -10,8 +10,6 @@ function CalendarGrid({ currentDate }) {
     const grid = getMonthGrid(currentDate);
     setMonthGrid(grid);
   }, [currentDate]);
-
-  console.log(monthGrid[0]);
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
       {monthGrid.map((week, i) =>

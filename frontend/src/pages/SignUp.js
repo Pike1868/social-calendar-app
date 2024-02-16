@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Box,
@@ -9,15 +9,15 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import serverApi from "../api/serverApi";
-import { jwtDecode } from "jwt-decode";
-import { useUserContext } from "../context/UserContext";
 import NavBar from "../components/NavBar";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../redux/userSlice";
 
 const SignUp = () => {
-  const { setUser } = useUserContext();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const formFieldNames = {
@@ -58,26 +58,13 @@ const SignUp = () => {
     }
 
     try {
-      const token = await serverApi.register(newUser);
-      const decoded = jwtDecode(token);
-      if (decoded) {
-        setUser({ id: decoded.id });
-      }
+      await dispatch(registerUser(newUser));
+      navigate("/home");
     } catch (err) {
       let msg = err[0];
       setError(msg);
     }
   };
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-    if (token) {
-      localStorage.setItem("socialCalToken", token);
-      const decoded = jwtDecode(token);
-      setUser({ id: decoded.id, email: decoded.email });
-    }
-  }, [setUser]);
 
   return (
     <>

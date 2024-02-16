@@ -2,8 +2,8 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
-import { useUserContext } from "../context/UserContext";
 import HomePage from "../pages/HomePage";
+import { useSelector } from "react-redux";
 
 /**
  * RouteList Component:
@@ -20,11 +20,11 @@ import HomePage from "../pages/HomePage";
 
 // RouteList Component
 const RouteList = () => {
-  const { user } = useUserContext();
-  console.log(user);
+  const userState = useSelector((state) => state.user);
+  const user = userState.user;
   return (
     <Routes>
-      {user ? (
+      {user && user.id ? (
         <>
           <Route path="/home" element={<HomePage />} />
           <Route path="/*" element={<Navigate to="/home" />} />

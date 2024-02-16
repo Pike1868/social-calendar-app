@@ -16,7 +16,7 @@ const {
 
 /** POST /auth/token:  { email, password } => { token }
  *
- * Returns JWT token which can be used to authenticate further requests.
+ * Returns JWT token to authenticate further requests.
  *
  */
 
@@ -41,7 +41,7 @@ router.post("/token", async function (req, res, next) {
  *
  * user must include {  email, password, firstName, lastName }
  *
- * Returns JWT token which can be used to authenticate further requests.
+ * Returns JWT token to authenticate further requests.
  *
  */
 
@@ -57,7 +57,7 @@ router.post("/register", async function (req, res, next) {
       if (!(err instanceof NotFoundError)) {
         return next(err);
       }
-      // If NotFoundError, user does not exist, and it's safe to proceed with registration
+      // If NotFound proceed with registering the user
       userExists = false;
     }
 
