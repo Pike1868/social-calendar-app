@@ -12,7 +12,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link as RouterLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/UserContext";
+import { logoutUser } from "../redux/userSlice";
 
 const drawerWidth = 340; // Needs to match drawerWidth of Sidebar
 
@@ -34,11 +34,10 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const HomeNavBar = ({ open, toggleDrawer }) => {
-  const { setUser } = useUserContext();
   const navigate = useNavigate();
   const logout = () => {
     localStorage.removeItem("socialCalToken");
-    setUser(null);
+    logoutUser();
     navigate("/");
   };
   return (

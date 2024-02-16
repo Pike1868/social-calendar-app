@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./assets/App.css";
 import RouteList from "./routes/RouteList";
-import { UserProvider } from "./context/UserContext";
+import { useDispatch } from "react-redux";
+import { rehydrateUserFromToken } from "./redux/userSlice";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(rehydrateUserFromToken());
+  }, [dispatch]);
   return (
-    <UserProvider>
-      <main className="App">
-        <RouteList />
-      </main>
-    </UserProvider>
+    <main className="App">
+      <RouteList />
+    </main>
   );
 }
 

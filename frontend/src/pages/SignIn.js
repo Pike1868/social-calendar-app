@@ -11,13 +11,13 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import ServerApi from "../api/serverApi";
-import { jwtDecode } from "jwt-decode";
-import { useUserContext } from "../context/UserContext";
 import NavBar from "../components/NavBar";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../redux/userSlice";
 
 const SignIn = () => {
-  const { user, setUser } = useUserContext();
+  const dispatch = useDispatch();
+
   const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
@@ -28,17 +28,10 @@ const SignIn = () => {
     const password = data.get("password");
 
     try {
-      const token = await ServerApi.login(email, password);
-      const decoded = jwtDecode(token);
-      if (decoded) {
-        setUser({ id: decoded.id });
-        console.log("Save user to state or context here", decoded);
-      }
+      await dispatch(loginUser(email, password));
     } catch (err) {
       setError(err || "An error occurred during sign in, please try again.");
     }
-
-    console.log(user);
   };
 
   return (
