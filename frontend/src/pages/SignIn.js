@@ -28,7 +28,7 @@ const SignIn = () => {
     const password = data.get("password");
 
     try {
-      await dispatch(loginUser(email, password));
+      await dispatch(loginUser({ email, password }));
     } catch (err) {
       setError(err || "An error occurred during sign in, please try again.");
     }

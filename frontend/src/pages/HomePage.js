@@ -10,8 +10,10 @@ const drawerWidth = 340;
 
 export default function Homepage() {
   const dispatch = useDispatch();
-  const { user, userDetails } = useSelector(selectUser); // Assuming selectUser correctly selects both user and userDetails
+  const { user, userDetails } = useSelector(selectUser);
   const [open, setOpen] = useState(true);
+
+  console.log(userDetails);
 
   useEffect(() => {
     // Check if user is set but userDetails are not

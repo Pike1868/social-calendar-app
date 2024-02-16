@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 export const decodeToken = (token) => {
   try {
@@ -8,10 +8,9 @@ export const decodeToken = (token) => {
     if (!isTokenExpired) {
       return { id: decoded.id };
     } else {
-        throw new Error("Invalid or expired token.");
+      throw new Error("Invalid or expired token.");
     }
   } catch (err) {
     console.error("Error decoding token:", err);
-    
   }
-}
+};

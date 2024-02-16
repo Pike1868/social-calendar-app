@@ -9,9 +9,18 @@ import { decodeToken } from "./decodeTokenHelper";
 
 const setUserIdFromLocalStorage = () => {
   const token = localStorage.getItem("socialCalToken");
+  if (!token) {
+    return null;
+  }
   try {
     const decoded = decodeToken(token);
-    return { id: decoded.id };
+    if (decoded && decoded.id) {
+      return { id: decoded.id };
+    } else {
+      console.error("Token is valid but does not contain an ID.");
+      localStorage.removeItem("socialCalToken");
+      return null;
+    }
   } catch (err) {
     console.error("Token is invalid or expired: ", err);
     localStorage.removeItem("socialCalToken");
@@ -79,8 +88,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, setUserDetails } = userSlice.actions;
-
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (newUser, { rejectWithValue }) => {
@@ -121,6 +128,6 @@ export const fetchUserDetails = createAsyncThunk(
     }
   }
 );
-
+export const { setUser, setUserDetails, logoutUser } = userSlice.actions;
 export const selectUser = (state) => state.user;
 export default userSlice.reducer;
