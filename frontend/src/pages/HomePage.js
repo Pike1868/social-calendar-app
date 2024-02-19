@@ -4,16 +4,20 @@ import Calendar from "../components/calendar/Calendar";
 import Sidebar from "../components/Sidebar";
 import HomeNavBar from "../components/HomeNavBar";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUserDetails, selectUser } from "../redux/userSlice";
+import {
+  fetchUserDetails,
+  selectUser,
+  fetchUserCalendars,
+} from "../redux/userSlice";
 
 const drawerWidth = 340;
 
 export default function Homepage() {
   const dispatch = useDispatch();
-  const { user, userDetails } = useSelector(selectUser);
+  const { user, userDetails, userCalendar } = useSelector(selectUser);
   const [open, setOpen] = useState(true);
 
-  console.log(userDetails);
+  console.log(userDetails, userCalendar);
 
   useEffect(() => {
     // Check if user is set but userDetails are not
@@ -21,6 +25,12 @@ export default function Homepage() {
       dispatch(fetchUserDetails(user.id));
     }
   }, [dispatch, user, userDetails]);
+
+  useEffect(() => {
+    if (user && userDetails && !userCalendar) {
+      dispatch(fetchUserCalendars(user.id));
+    }
+  }, [dispatch, user, userDetails, userCalendar]);
 
   const toggleDrawer = () => {
     setOpen(!open);

@@ -31,6 +31,7 @@ const setUserIdFromLocalStorage = () => {
 const initialState = {
   user: setUserIdFromLocalStorage(),
   userDetails: null,
+  userCalendar: null,
   loading: false,
   error: null,
 };
@@ -49,6 +50,9 @@ const userSlice = createSlice({
       state.user = null;
       state.userDetails = null;
       localStorage.removeItem("socialCalToken");
+    },
+    setUserDefaultCalendar: (state, action) => {
+      state.userCalendar = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -80,10 +84,23 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserDetails.fulfilled, (state, action) => {
         state.userDetails = action.payload;
+        state.loading = false;
       })
 
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.error = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchUserCalendars.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserCalendars.fulfilled, (state, action) => {
+        state.userCalendar = action.payload.calendars[0];
+        state.loading = false;
+      })
+      .addCase(fetchUserCalendars.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
       });
   },
 });
@@ -128,6 +145,20 @@ export const fetchUserDetails = createAsyncThunk(
     }
   }
 );
+
+export const fetchUserCalendars = createAsyncThunk(
+  "user/fetchUserCalendars",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await ServerApi.fetchUserCalendars(userId);
+      return response;
+    } catch (err) {
+      console.error("Error fetching user calendars:", err);
+      return rejectWithValue(err);
+    }
+  }
+);
+
 export const { setUser, setUserDetails, logoutUser } = userSlice.actions;
 export const selectUser = (state) => state.user;
 export default userSlice.reducer;

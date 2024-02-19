@@ -74,6 +74,7 @@ class ServerApi {
     try {
       const response = await this.request(endpoint, data, method);
       //Save token to api class
+      console.log(response);
       ServerApi.token = response.token;
       localStorage.setItem("socialCalToken", response.token);
       return response.token;
@@ -92,12 +93,28 @@ class ServerApi {
 
   static async fetchUserDetails(userId) {
     const endpoint = `user/${userId}`;
-    const method = "get";
     try {
-      const response = await this.request(endpoint, {}, method);
+      const response = await this.request(endpoint, {});
       return response;
     } catch (err) {
       console.error("fetchUserDetails Error", err);
+    }
+  }
+
+  /** GET /user/:id/calendars => [{calendar1}]
+   * Fetches users calendars
+   *
+   * Requires token
+   */
+
+  static async fetchUserCalendars(userId) {
+    const endpoint = `user/${userId}/calendars`;
+    try {
+      const response = await this.request(endpoint, {});
+      return response;
+    } catch (err) {
+      console.error("fetchUserCalendars Error", err);
+      throw err;
     }
   }
 }

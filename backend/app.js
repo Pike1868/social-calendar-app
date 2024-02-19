@@ -9,6 +9,7 @@ const authRoutes = require("./routes/localAuth");
 const googleAuthRoutes = require("./routes/googleAuth");
 const EventRoutes = require("./routes/event");
 const UserRoutes = require("./routes/user");
+const CalendarRoutes = require("./routes/calendar");
 const app = express();
 
 // Initialize Passport
@@ -23,6 +24,7 @@ app.use("/auth", authRoutes);
 app.use("/auth", googleAuthRoutes);
 app.use("/user", UserRoutes);
 app.use("/event", EventRoutes);
+app.use("/calendar", CalendarRoutes);
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 
