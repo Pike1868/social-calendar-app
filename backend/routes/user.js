@@ -5,7 +5,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const Calendar = require("../models/calendar");
-const { ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
 
 /** GET "/users/:id"
  *
@@ -26,14 +26,19 @@ router.get("/:id", ensureLoggedIn, async (req, res, next) => {
  * Returns all calendars for a user
  */
 
-router.get("/:id/calendars", async (req, res, next) => {
-  try {
-    console.log("Route '/user/:id/calendars':", req.params.id);
-    const calendars = await Calendar.findAll(req.params.id);
-    res.status(200).json({ calendars });
-  } catch (err) {
-    next(err);
+router.get(
+  "/:id/calendars",
+  ensureLoggedIn,
+  ensureCorrectUser,
+  async (req, res, next) => {
+    try {
+      console.log("Route '/user/:id/calendars':", req.params.id);
+      const calendars = await Calendar.findAll(req.params.id);
+      res.status(200).json({ calendars });
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 module.exports = router;

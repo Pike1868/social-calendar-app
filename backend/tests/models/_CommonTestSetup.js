@@ -1,6 +1,6 @@
 const db = require("../../db");
 const dayjs = require("dayjs");
-
+const User = require("../../models/user");
 const testEventIds = [];
 const testCalendarIds = [];
 
@@ -10,11 +10,22 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM calendars");
   await db.query("DELETE FROM users");
 
-  //Insert test users
-  await db.query(`
-        INSERT INTO users (id, email, password)
-        VALUES ('testUser1', 'testuser1@test.com', 'testpassword1'),
-               ('testUser2', 'testuser2@test.com', 'testpassword2')`);
+  //Register test users
+  await User.register({
+    id: "testUser1",
+    email: "testuser1@test.com",
+    password: "testpassword1",
+    first_name: "Test",
+    last_name: "User1",
+  });
+
+  await User.register({
+    id: "testUser2",
+    email: "testuser2@test.com",
+    password: "password2",
+    first_name: "Test",
+    last_name: "User2",
+  });
 
   // Insert test calendars and save their IDs
   const calendarResults = await db.query(`

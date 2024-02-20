@@ -22,6 +22,7 @@ class Event {
       `
             INSERT INTO events (
                 id,
+                owner_id,
                 calendar_id, 
                 title, 
                 location,
@@ -32,11 +33,11 @@ class Event {
                 color_id,
                 time_zone,
                 google_id)
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-            RETURNING id,calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id`,
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+            RETURNING id,owner_id,calendar_id, title, location, description, start_time, end_time, status, color_id, time_zone, google_id`,
       [
         newEventId,
-
+        data.owner_id,
         data.calendar_id,
         data.title,
         data.location,
