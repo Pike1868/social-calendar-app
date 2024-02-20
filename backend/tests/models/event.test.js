@@ -22,6 +22,7 @@ describe("create", () => {
   test("works: creates a new event and returns event data", async () => {
     const eventData = {
       calendar_id: "c1",
+      owner_id: "testUser1",
       title: "Test Event",
       location: "Test Location",
       description: "Test Description",
@@ -35,7 +36,7 @@ describe("create", () => {
     const event = await Event.create(eventData);
     expect(event).toEqual({
       id: expect.any(String),
-
+      owner_id: "testUser1",
       calendar_id: "c1",
       title: "Test Event",
       location: "Test Location",

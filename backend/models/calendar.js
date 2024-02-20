@@ -48,6 +48,9 @@ class Calendar {
        WHERE user_id = $1`,
       [user_id]
     );
+    
+    if (result.rows.length === 0)
+      throw new NotFoundError(`No user: ${user_id}`);
     return result.rows;
   }
 

@@ -3,6 +3,7 @@
 const db = require("../../db.js");
 const User = require("../../models/user.js");
 const { createToken } = require("../../helpers/token.js");
+const Calendar = require("../../models/calendar.js");
 
 const testEventIds = [];
 const testCalendarIds = [];
@@ -19,12 +20,21 @@ async function commonBeforeAll() {
       id: "testUser1_ID",
       password: "testUser1Password",
       email: "testUser1@test.com",
-      firstName: "Test",
-      LastName: "User1",
+      first_name: "Test",
+      last_name: "User1",
     },
   ];
 
-  await Promise.all(testUsers.map((u) => User.register(u)));
+  //Register test users and create default calendar
+  for (let testUser of testUsers) {
+    await User.register(testUser);
+    const newCalendar = await Calendar.create({
+      id: `${testUser.first_name}_default_calendar`,
+      user_id: testUser.id,
+      title: `${testUser.first_name}'s Calendar`,
+    });
+    testCalendarIds.push(newCalendar.id);
+  }
 }
 
 async function commonBeforeEach() {
