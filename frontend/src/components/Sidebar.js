@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import SmallCalendar from "./SmallCalendar";
-import EventModal from "./NewEventModal";
+import EventModal from "./EventCreatorModal";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
   return (

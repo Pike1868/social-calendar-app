@@ -14,15 +14,17 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import NavBar from "../components/NavBar";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../redux/userSlice";
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const SignUp = () => {
+  console.log(userTimeZone);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const formFieldNames = {
-    firstName: "First Name",
-    lastName: "Last Name",
+    first_name: "First Name",
+    last_name: "Last Name",
     email: "Email Address",
     password: "Password",
   };
@@ -31,11 +33,13 @@ const SignUp = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let newUser = {
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
+      first_name: data.get("first_name"),
+      last_name: data.get("last_name"),
       email: data.get("email"),
       password: data.get("password"),
+      time_zone: userTimeZone,
     };
+    console.log(newUser);
 
     //Check for empty fields
     for (let key in newUser) {
@@ -98,10 +102,10 @@ const SignUp = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="first_name"
                   required
                   fullWidth
-                  id="firstName"
+                  id="first_name"
                   label="First Name"
                   autoFocus
                 />
@@ -110,9 +114,9 @@ const SignUp = () => {
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
+                  id="last_name"
                   label="Last Name"
-                  name="lastName"
+                  name="last_name"
                   autoComplete="family-name"
                 />
               </Grid>

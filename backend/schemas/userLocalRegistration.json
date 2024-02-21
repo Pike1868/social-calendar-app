@@ -13,19 +13,22 @@
       "type": "string",
       "minLength": 5
     },
-    "firstName": {
+    "first_name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 30
     },
-    "lastName": {
+    "last_name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 30
+    },
+    "time_zone":{
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["password", "firstName", "lastName", "email"]
+  "required": ["password", "first_name", "last_name", "email", "time_zone"]
 }
 
   

@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import getMonthGrid from "./helper";
 import Day from "./Day";
 
-function CalendarGrid({ currentDate }) {
+function CalendarGrid({ currentDate, toggleModal }) {
   const [monthGrid, setMonthGrid] = useState([]);
 
   useEffect(() => {
@@ -13,7 +13,9 @@ function CalendarGrid({ currentDate }) {
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
       {monthGrid.map((week, i) =>
-        week.map((day, j) => <Day key={`${i}-${j}`} day={day} />)
+        week.map((day, j) => (
+          <Day key={`${i}-${j}`} day={day} toggleModal={toggleModal} />
+        ))
       )}
     </Box>
   );

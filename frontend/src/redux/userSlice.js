@@ -16,7 +16,6 @@ const setUserIdFromLocalStorage = () => {
     if (decoded && decoded.id) {
       return { id: decoded.id };
     } else {
-      console.error("Token is valid but does not contain an ID.");
       localStorage.removeItem("socialCalToken");
       return null;
     }
@@ -163,4 +162,6 @@ export const fetchUserCalendars = createAsyncThunk(
 
 export const { setUser, setUserDetails, logoutUser } = userSlice.actions;
 export const selectUser = (state) => state.user;
+export const selectUserDetails = (state) => state.user.userDetails;
+export const selectUserCalendar = (state) => state.user.userCalendar;
 export default userSlice.reducer;

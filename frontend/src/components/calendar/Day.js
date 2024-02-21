@@ -1,16 +1,24 @@
 import React from "react";
-import { Box, Grid } from "@mui/material";
-import { useSelector } from "react-redux";
-import { selectEvents } from "../../redux/eventSlice";
+import { Box, Grid, List, ListItem, ListItemText } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { selectEvents, setCurrentEventId } from "../../redux/eventSlice";
+
 import dayjs from "dayjs";
 
-export default function Day({ day }) {
-  const events = useSelector(selectEvents);
-  const eventsForDay = events.filter((event) => {
+export default function Day({ day, toggleModal }) {
+  const dispatch = useDispatch();
+  const eventList = useSelector(selectEvents);
+  const eventsForDay = eventList.filter((event) => {
     const startTime = dayjs(event.start_time);
     const endTime = dayjs(event.end_time);
     return day.isSame(startTime, "day") || day.isSame(endTime, "day");
   });
+  const handleEventClick = (eventId) => {
+    console.log("event clicked");
+    dispatch(setCurrentEventId(eventId));
+    toggleModal();
+  };
+
   return (
     <Grid
       item
@@ -27,11 +35,13 @@ export default function Day({ day }) {
       }}
     >
       <Box>{day && day.format("DD")}</Box>
-      <ul>
+      <List>
         {eventsForDay.map((e) => (
-          <li key={e.id}>{e.title}</li>
+          <ListItem button key={e.id} onClick={() => handleEventClick(e.id)}>
+            <ListItemText primary={e.title} />
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </Grid>
   );
 }

@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Typography, Modal, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createEvent } from "../redux/eventSlice";
-import dayjs from "dayjs";
+import { formatISO } from "date-fns";
 import { selectUser } from "../redux/userSlice";
 
 const style = {
@@ -23,9 +17,10 @@ const style = {
   p: 4,
 };
 
-export default function EventCreationModal() {
+export default function EventCreatorModal() {
   const dispatch = useDispatch();
   const { user, userCalendar } = useSelector(selectUser);
+
   const [open, setOpen] = useState(false);
   const [eventData, setEventData] = useState({
     title: "",
@@ -56,8 +51,8 @@ export default function EventCreationModal() {
       ...eventData,
       calendar_id: userCalendar.id,
       title: eventData.title,
-      start_time: dayjs(eventData.start_time).toISOString(),
-      end_time: dayjs(eventData.end_time).toISOString(),
+      start_time: formatISO(new Date(eventData.start_time)),
+      end_time: formatISO(new Date(eventData.end_time)),
       owner_id: user.id,
     };
 
@@ -133,15 +128,6 @@ export default function EventCreationModal() {
             multiline
             rows={4}
             value={eventData.description}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="time_zone"
-            label="Time Zone"
-            name="time_zone"
-            value={eventData.time_zone}
             onChange={handleChange}
           />
           <TextField

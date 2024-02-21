@@ -39,14 +39,15 @@ class ServerApi {
   // Individual API routes
 
   /** POST "/auth/register" - { user } => { token }
-   * user must include { email , password, firstName, lastName}
+   * user must include { email , password, first_name, last_name, time_zone = ""}
    * Returns token
    */
 
-  static async register({ email, password, firstName, lastName }) {
+  static async register({ email, password, first_name, last_name, time_zone }) {
+    console.log(time_zone);
     const endpoint = "auth/register";
     const method = "post";
-    const data = { email, password, firstName, lastName };
+    const data = { email, password, first_name, last_name, time_zone };
 
     try {
       const response = await this.request(endpoint, data, method);
@@ -134,6 +135,10 @@ class ServerApi {
     }
   }
 
+  /** GET /event/findAll/:calendar_id => [{evt1}, {evt2}, {evt3}]
+   * Fetches events from a calendar
+   * Requires token
+   */
   static async fetchEventsByCalendar(calendar_id) {
     const endpoint = `event/findAll/${calendar_id}`;
     try {
@@ -141,7 +146,41 @@ class ServerApi {
       console.log("Find all events success:", response);
       return response.events;
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching events", err);
+    }
+  }
+
+  /** PATCH /event/update/:id => {updatedEvt}
+   * Updates an existing event
+   * Requires token
+   */
+
+  static async updateEvent(id, eventData) {
+    const endpoint = `event/update/${id}`;
+    const method = "patch";
+    try {
+      const response = await this.request(endpoint, eventData, method);
+      console.log("Event update success:", response);
+      return response.event;
+    } catch (err) {
+      console.error("Error updating event", err);
+    }
+  }
+
+  /** DELETE /event/:id => {message}
+   * Removes/deletes an event
+   * Requires token
+   */
+
+  static async removeEvent(id) {
+    const endpoint = `event/${id}`;
+    const method = "delete";
+    try {
+      const response = await this.request(endpoint, {}, method);
+      console.log("Event delete success:", response);
+      return response.event;
+    } catch (err) {
+      console.error("Error deleting event", err);
     }
   }
 }

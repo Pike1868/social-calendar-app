@@ -54,7 +54,14 @@ class User {
    * Throws BadRequestError on duplicates.
    **/
 
-  static async register({ id, password, first_name, last_name, email }) {
+  static async register({
+    id,
+    password,
+    first_name,
+    last_name,
+    email,
+    time_zone,
+  }) {
     const duplicateCheck = await db.query(
       `SELECT email
            FROM users
@@ -74,10 +81,11 @@ class User {
             email,
             password,
             first_name,
-            last_name)
-           VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, email, first_name, last_name`,
-      [id, email, hashedPassword, first_name, last_name]
+            last_name, 
+            time_zone)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING id, email, first_name, last_name, time_zone`,
+      [id, email, hashedPassword, first_name, last_name, time_zone]
     );
 
     const user = result.rows[0];

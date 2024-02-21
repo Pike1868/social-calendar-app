@@ -46,6 +46,7 @@ router.post("/token", async function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   try {
+    console.log("In localAuth routes:", req.body);
     const { email } = req.body;
 
     // Check for duplicate email
@@ -75,7 +76,11 @@ router.post("/register", async function (req, res, next) {
     }
     //Generate an id for the new user
     const newUserId = uuidv4();
-    const newUser = await User.register({ id: newUserId, ...req.body });
+
+    const newUser = await User.register({
+      id: newUserId,
+      ...req.body,
+    });
 
     // Create a default calendar for the new user
     await createDefaultCalendarForUser(newUserId, req.body.firstName);
