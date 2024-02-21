@@ -1,5 +1,4 @@
 "use strict";
-
 /** Routes for local authentication. */
 const jsonschema = require("jsonschema");
 const User = require("../models/user");
