@@ -36,13 +36,13 @@ const style = {
 export default function EventManagerModal({ isModalOpen, toggleModal }) {
   const userCal = useSelector(selectUserCalendar);
   const userDetails = useSelector(selectUserDetails);
-  console.log(userDetails, "in event manager");
   const dispatch = useDispatch();
   const currentEventData = useSelector(selectCurrentEvent);
   const [eventData, setEventData] = useState(currentEventData);
 
   //Display event times in users time_zone
-  const userTimezone = userDetails.time_zone;
+  const userTimezone =
+    userDetails.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone;
   const displayStartTime = eventData.start_time
     ? format(
         utcToZonedTime(parseISO(eventData.start_time), userTimezone),
