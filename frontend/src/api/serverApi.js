@@ -5,8 +5,6 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 /** API Class.
  *
  * Static class tying together methods used to get/send to to the API.
- * There shouldn't be any frontend-specific stuff here, and there shouldn't
- * be any API-aware stuff elsewhere in the frontend.
  *
  */
 
@@ -25,8 +23,7 @@ class ServerApi {
       }
     }
 
-    //there are multiple ways to pass an authorization token, this is how you pass it in the header.
-    //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
+    //passing authorization token in the header.
     const url = `${BASE_URL}/${endpoint}`;
     const headers = { Authorization: `Bearer ${ServerApi.token}` };
     const params = method === "get" ? data : {};
@@ -53,7 +50,6 @@ class ServerApi {
 
     try {
       const response = await this.request(endpoint, data, method);
-      console.log(response);
       ServerApi.token = response.token;
       localStorage.setItem("socialCalToken", response.token);
       return response.token;
@@ -74,7 +70,6 @@ class ServerApi {
     try {
       const response = await this.request(endpoint, data, method);
       //Save token to api class
-      console.log(response);
       ServerApi.token = response.token;
       localStorage.setItem("socialCalToken", response.token);
       return response.token;
@@ -115,6 +110,38 @@ class ServerApi {
     } catch (err) {
       console.error("fetchUserCalendars Error", err);
       throw err;
+    }
+  }
+
+  /** POST /event/create => {new event}
+   *
+   * need: {calendar_id, title, start_time, end_time}
+   * optional: {location, description, status, color_id, time_zone, google_id}
+   *
+   * Requires token
+   */
+
+  static async createEvent(data) {
+    const endpoint = "event/create";
+    const method = "post";
+    try {
+      const response = await this.request(endpoint, data, method);
+      console.log("Event creation success:", response);
+      return response.event;
+    } catch (err) {
+      console.error("Error creating event:", err);
+      throw err;
+    }
+  }
+
+  static async fetchEventsByCalendar(calendar_id) {
+    const endpoint = `event/findAll/${calendar_id}`;
+    try {
+      const response = await this.request(endpoint);
+      console.log("Find all events success:", response);
+      return response.events;
+    } catch (err) {
+      console.error(err);
     }
   }
 }

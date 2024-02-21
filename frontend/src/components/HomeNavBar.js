@@ -14,6 +14,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
+import { resetEvents } from "../redux/eventSlice";
 
 const drawerWidth = 340; // Needs to match drawerWidth of Sidebar
 
@@ -39,6 +40,7 @@ const HomeNavBar = ({ open, toggleDrawer }) => {
   const navigate = useNavigate();
   const logout = () => {
     dispatch(logoutUser());
+    dispatch(resetEvents());
     navigate("/");
   };
   return (

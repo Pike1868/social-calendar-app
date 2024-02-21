@@ -17,7 +17,7 @@ export default function Homepage() {
   const { user, userDetails, userCalendar } = useSelector(selectUser);
   const [open, setOpen] = useState(true);
 
-  console.log(userDetails, userCalendar);
+  // console.log(userDetails, userCalendar);
 
   useEffect(() => {
     // Check if user is set but userDetails are not

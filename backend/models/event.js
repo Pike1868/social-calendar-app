@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 /**Related functions for Events */
 
 class Event {
-  /** Create an event (from data), update db, return new event data.
+  /** Create an event from data, update db, return new event data.
    *
    * data should be { calendar_id, title, start_time, end_time } minimum
    *

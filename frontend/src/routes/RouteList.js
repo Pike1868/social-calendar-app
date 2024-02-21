@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
  *
  * Defines all routes for app
  *  ---Available when logged in:
- * "/": Displays basic homepage for now
+ * "/basic": Displays basic homepage for now
  *
  * "/signin": Displays form for existing users to sign in
  * "/signup": Displays form for new users to sign up

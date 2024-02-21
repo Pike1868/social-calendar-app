@@ -3,8 +3,7 @@ import ServerApi from "../api/serverApi";
 import { decodeToken } from "./decodeTokenHelper";
 
 /**
- * TODO:
- * Check proper error handling of expired tokens
+ * TODO:Check proper error handling of expired tokens
  */
 
 const setUserIdFromLocalStorage = () => {
@@ -49,6 +48,9 @@ const userSlice = createSlice({
     logoutUser(state) {
       state.user = null;
       state.userDetails = null;
+      state.userCalendar = null;
+      state.loading = false;
+      state.error = null;
       localStorage.removeItem("socialCalToken");
     },
     setUserDefaultCalendar: (state, action) => {

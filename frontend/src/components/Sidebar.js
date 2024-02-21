@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import SmallCalendar from "./SmallCalendar";
+import EventModal from "./NewEventModal";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
   return (
@@ -44,6 +45,7 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
             <Typography variant="h6" sx={{ p: 2 }}>
               SIDEBAR
             </Typography>
+            <EventModal />
             <SmallCalendar />
             {/* Calendars list can go below */}
           </Box>
