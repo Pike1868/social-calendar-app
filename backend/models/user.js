@@ -149,7 +149,8 @@ class User {
               first_name,
               last_name,
               email,
-              time_zone
+              time_zone, 
+              google_id
          FROM users
          WHERE id = $1`,
       [id]

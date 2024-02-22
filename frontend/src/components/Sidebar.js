@@ -48,6 +48,9 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
             <EventModal />
             <SmallCalendar />
             {/* Calendars list can go below */}
+            <Box>
+              
+            </Box>
           </Box>
         </Drawer>
       )}

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import GoogleIcon from "@mui/icons-material/Google";
 import NavBar from "../components/NavBar";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../redux/userSlice";
@@ -142,26 +143,43 @@ const SignUp = () => {
                 />
               </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
               Sign Up
             </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{
+                mt: 3,
+                mb: 3,
+                backgroundColor: "green",
+                "&:hover": {
+                  backgroundColor: "darkgreen",
+                },
+              }}
+            >
+              <a
+                href="http://localhost:3001/auth/google"
+                style={{
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  color: "inherit",
+                }}
+              >
+                <GoogleIcon sx={{ mr: 1 }} />
+                <Typography
+                  variant="button"
+                  sx={{ textTransform: "uppercase" }}
+                >
+                  Sign up with Google
+                </Typography>
+              </a>
+            </Button>
             <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Button fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                  <Link
-                    href="http://localhost:3001/auth/google"
-                    underline="none"
-                    color="inherit"
-                  >
-                    Sign up with Google
-                  </Link>
-                </Button>
-              </Grid>
+              <Grid item></Grid>
               <Grid item>
                 <RouterLink to="/signin" variant="body2">
                   Already have an account? Sign in

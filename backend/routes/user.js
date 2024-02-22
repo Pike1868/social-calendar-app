@@ -8,7 +8,7 @@ const { ensureLoggedIn, ensureCorrectUser } = require("../middleware/auth");
 
 /** GET "/users/:id"
  *
- * Returns { id, email, first_name, last_name }
+ * Returns { id, email, first_name, last_name, google_id}
  */
 
 router.get("/:id", ensureLoggedIn, async (req, res, next) => {
