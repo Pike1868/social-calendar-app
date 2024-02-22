@@ -1,14 +1,14 @@
 "use strict";
-
 const db = require("../db");
+const { sqlForPartialUpdate } = require("../helpers/sqlPartialUpdate");
 const bcrypt = require("bcrypt");
 const {
   NotFoundError,
   BadRequestError,
   UnauthorizedError,
 } = require("../expressError");
-
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
+const { decrypt } = require("../helpers/cryptoHelper.js");
 
 /** Related functions for users. */
 
@@ -95,19 +95,27 @@ class User {
 
   /**Create new user with Google profile data
    *
-   * Returns {id, email, firstName, LastName}
+   * Returns {id, email, first_name ,last_name, refresh_token, access_token}
    *
    * Throws BadRequestError on duplicates.
    *
    */
 
-  static async create({ id, email, firstName, lastName, googleId }) {
+  static async create({
+    id,
+    email,
+    first_name,
+    last_name,
+    google_id,
+    access_token,
+    refresh_token,
+  }) {
     const result = await db.query(
       `INSERT INTO users
-          (id, email, first_name, last_name, google_id)
-          VALUES ($1, $2, $3, $4, $5)
-          RETURNING id, email, first_name AS "firstName", last_name AS "lastName"`,
-      [id, email, firstName, lastName, googleId]
+          (id, email, first_name, last_name, google_id, access_token, refresh_token)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING id, email, first_name ,last_name, refresh_token, access_token`,
+      [id, email, first_name, last_name, google_id, access_token, refresh_token]
     );
     const user = result.rows[0];
     return user;
@@ -137,7 +145,7 @@ class User {
 
   /** Given a user ID, return data about the user.
    *
-   * Returns { id, email, first_name, last_name }
+   * Returns { id, email, first_name, last_name, google_id, access_token }
    *
    * Throws NotFoundError if user not found.
    **/
@@ -150,7 +158,8 @@ class User {
               last_name,
               email,
               time_zone, 
-              google_id
+              google_id,
+              access_token
          FROM users
          WHERE id = $1`,
       [id]
@@ -159,6 +168,43 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user with id: ${id}`);
+
+    // Decrypt access_token and refresh_token if they exist
+    if (user.access_token) user.access_token = decrypt(user.access_token);
+    if (user.refresh_token) user.refresh_token = decrypt(user.refresh_token);
+
+    console.log(user);
+    return user;
+  }
+
+  /** Update user data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain
+   * all the fields; this only changes provided ones.
+   *
+   * Data can include:
+   *   { first_name, last_name, email,birthday, time_zone, access_token, refresh_token  }
+   *
+   * Returns {id, first_name, last_name, email,birthday, time_zone, access_token, refresh_token }
+   *
+   * Throws NotFoundError if not found.
+   *
+   */
+
+  static async update(id, data) {
+    const { setCols, values } = sqlForPartialUpdate(data, {});
+    const idVarIdx = "$" + (values.length + 1);
+
+    const querySql = `UPDATE users 
+                        SET ${setCols} 
+                        WHERE id = ${idVarIdx} 
+                        RETURNING id,first_name, last_name, email,birthday, time_zone, access_token, refresh_token`;
+    const result = await db.query(querySql, [...values, id]);
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No user: ${id}`);
+
+    console.log(user);
     return user;
   }
 }

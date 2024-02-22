@@ -3,6 +3,7 @@ import React from "react";
 import {
   Drawer,
   Box,
+  Button,
   Typography,
   IconButton,
   Toolbar,
@@ -11,6 +12,7 @@ import {
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import SmallCalendar from "./SmallCalendar";
 import EventModal from "./EventCreatorModal";
+import ServerApi from "../api/serverApi";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
   return (
@@ -49,7 +51,13 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
             <SmallCalendar />
             {/* Calendars list can go below */}
             <Box>
-              
+              <Button
+                variant="contained"
+                sx={{ mt: 3 }}
+                onClick={ServerApi.fetchGoogleEvents}
+              >
+                Fetch Google Events
+              </Button>
             </Box>
           </Box>
         </Drawer>

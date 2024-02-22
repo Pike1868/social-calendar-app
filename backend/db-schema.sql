@@ -17,7 +17,9 @@ CREATE TABLE users (
     birthday DATE,
     time_zone TEXT,
     account_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP
+    last_login TIMESTAMP,
+    access_token TEXT,
+    refresh_token TEXT
 );
 CREATE TABLE calendars (
     id VARCHAR(100) PRIMARY KEY,

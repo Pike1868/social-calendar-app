@@ -9,7 +9,7 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
  */
 
 class ServerApi {
-  // the token for interactive with the API will be stored here.
+  // token for API stored here.
   static token;
 
   static async request(endpoint, data = {}, method = "get") {
@@ -30,13 +30,13 @@ class ServerApi {
     try {
       return (await axios({ url, method, data, params, headers })).data;
     } catch (err) {
-      console.error("API Error:", err.response);
+      console.error("API Error:", err.response || err);
       let message = err.response.data.error.message;
       throw Array.isArray(message) ? message : [message];
     }
   }
 
-  // Individual API routes
+  //*************Authentication Routes */
 
   /** POST "/auth/register" - { user } => { token }
    * user must include { email , password, first_name, last_name, time_zone = ""}
@@ -79,6 +79,8 @@ class ServerApi {
     }
   }
 
+  //*************User Routes */
+
   /** GET /user/:id => {user}
    *
    * Fetches user details by id.
@@ -113,6 +115,8 @@ class ServerApi {
       throw err;
     }
   }
+
+  //*************Event Routes */
 
   /** POST /event/create => {new event}
    *
@@ -181,6 +185,23 @@ class ServerApi {
       return response.event;
     } catch (err) {
       console.error("Error deleting event", err);
+    }
+  }
+
+  //*************Google Event Routes */
+
+  /** GET https://www.googleapis.com/calendar/v3/calendars/primary/events => [{evt1}, {evt2}, {evt3}]
+   * Fetches events from users "primary" google calendar
+   *
+   */
+  static async fetchGoogleEvents() {
+    const endpoint = `https://www.googleapis.com/calendar/v3/calendars/primary/events`;
+    try {
+      const response = await this.request(endpoint);
+      console.log("Fetching google events success:", response);
+      // return response.events;
+    } catch (err) {
+      console.error("Error fetching google events", err);
     }
   }
 }

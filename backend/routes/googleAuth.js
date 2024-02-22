@@ -11,6 +11,7 @@ const { NotFoundError } = require("../expressError");
 const {
   createDefaultCalendarForUser,
 } = require("../helpers/createDefaultCalendar");
+const { encrypt } = require("../helpers/cryptoHelper");
 
 passport.use(
   new GoogleStrategy(
@@ -20,23 +21,42 @@ passport.use(
       callbackURL: "http://localhost:3001/auth/google/callback",
     },
     async function (accessToken, refreshToken, profile, done) {
+      console.log(accessToken, " and ", refreshToken);
+      let encryptedAccessToken;
+      let encryptedRefreshToken;
       try {
         let existingUser = await User.get(profile._json.email);
-        //console.log("Existing user, should be returned with id", existingUser);
-        //if existing user return
+
+        // Encrypt tokens before saving them
+        encryptedAccessToken = encrypt(accessToken);
+        encryptedRefreshToken = encrypt(refreshToken);
+
         if (existingUser.id) {
+          // Update existing user's access and refresh tokens
+          User.update(existingUser.id, {
+            access_token: encryptedAccessToken,
+            refresh_token: encryptedRefreshToken,
+          });
           done(null, existingUser);
         }
       } catch (err) {
         if (err instanceof NotFoundError) {
           // Create a new user if existing user is not found
+
           const newUserId = uuidv4();
+
+          // Encrypt tokens before saving them
+          encryptedAccessToken = encrypt(accessToken);
+          encryptedRefreshToken = encrypt(refreshToken);
+
           const newUser = await User.create({
             id: newUserId,
             email: profile._json.email,
-            firstName: profile._json.given_name,
-            lastName: profile._json.family_name,
+            first_name: profile._json.given_name,
+            last_name: profile._json.family_name,
             googleId: profile.id,
+            access_token: encryptedAccessToken,
+            refresh_token: encryptedRefreshToken,
           });
 
           if (newUser.id) {
@@ -55,7 +75,9 @@ passport.use(
 router.get(
   "/google",
   passport.authenticate("google", {
-    scope: ["profile", "email"],
+    scope: ["profile", "email", "https://www.googleapis.com/auth/calendar"],
+    accessType: "offline",
+    prompt: "select_account",
     session: false,
   })
 );
