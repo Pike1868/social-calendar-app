@@ -151,7 +151,6 @@ class User {
    **/
 
   static async findById(id) {
-    console.log(id);
     const userRes = await db.query(
       `SELECT id,
               first_name,
@@ -172,8 +171,6 @@ class User {
     // Decrypt access_token and refresh_token if they exist
     if (user.access_token) user.access_token = decrypt(user.access_token);
     if (user.refresh_token) user.refresh_token = decrypt(user.refresh_token);
-
-    console.log(user);
     return user;
   }
 
@@ -203,8 +200,6 @@ class User {
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${id}`);
-
-    console.log(user);
     return user;
   }
 }

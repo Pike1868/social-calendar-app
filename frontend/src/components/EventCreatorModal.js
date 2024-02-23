@@ -46,7 +46,6 @@ export default function EventCreatorModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(eventData);
     const formattedEventData = {
       ...eventData,
       calendar_id: userCalendar.id,
@@ -57,7 +56,6 @@ export default function EventCreatorModal() {
     };
 
     dispatch(createEvent(formattedEventData));
-    console.log(formattedEventData);
     handleClose();
   };
 

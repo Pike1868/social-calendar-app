@@ -3,7 +3,7 @@ import ServerApi from "../api/serverApi";
 
 const initialState = {
   eventList: [],
-  currentEventId: null,
+  currentEvent: null,
   loading: false,
   error: null,
 };
@@ -15,11 +15,14 @@ const eventSlice = createSlice({
     resetEvents(state) {
       Object.assign(state, initialState);
     },
-    setCurrentEventId(state, action) {
-      state.currentEventId = action.payload;
+    setCurrentEvent(state, action) {
+      state.currentEvent = {
+        id: action.payload.id,
+        source: action.payload.source,
+      };
     },
-    resetCurrentEventId(state) {
-      state.currentEventId = null;
+    resetCurrentEvent(state) {
+      state.currentEvent = null;
     },
   },
   extraReducers: (builder) => {
@@ -100,7 +103,6 @@ export const removeEvent = createAsyncThunk(
   "events/removeEvent",
   async (id, { rejectWithValue }) => {
     try {
-      console.log("serveApi.removeEvent:id", id);
       const response = await ServerApi.removeEvent(id);
       return response;
     } catch (err) {
@@ -110,16 +112,14 @@ export const removeEvent = createAsyncThunk(
 );
 
 export const selectCurrentEvent = (state) => {
-  if (state.events.currentEventId) {
+  if (state.events.currentEvent) {
     return state.events.eventList.find(
-      (event) => event.id === state.events.currentEventId
+      (event) => event.id === state.events.currentEvent.id
     );
-  } else {
-    console.log("No currentEventId in store");
   }
 };
 
-export const { resetEvents, setCurrentEventId, resetCurrentEventId } =
+export const { resetEvents, setCurrentEvent, resetCurrentEvent } =
   eventSlice.actions;
 export const selectEvents = (state) => state.events.eventList;
 export default eventSlice.reducer;

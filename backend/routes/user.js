@@ -31,7 +31,6 @@ router.get(
   ensureCorrectUser,
   async (req, res, next) => {
     try {
-      console.log("Route '/user/:id/calendars':", req.params.id);
       const calendars = await Calendar.findAll(req.params.id);
       res.status(200).json({ calendars });
     } catch (err) {

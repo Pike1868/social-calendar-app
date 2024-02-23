@@ -1,5 +1,4 @@
 import axios from "axios";
-
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
 /** API Class.
@@ -11,7 +10,6 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 class ServerApi {
   // token for API stored here.
   static token;
-
   static async request(endpoint, data = {}, method = "get") {
     console.debug("API Call:", endpoint, data, method);
 
@@ -44,7 +42,6 @@ class ServerApi {
    */
 
   static async register({ email, password, first_name, last_name, time_zone }) {
-    console.log(time_zone);
     const endpoint = "auth/register";
     const method = "post";
     const data = { email, password, first_name, last_name, time_zone };
@@ -55,7 +52,6 @@ class ServerApi {
       localStorage.setItem("socialCalToken", response.token);
       return response.token;
     } catch (err) {
-      console.log(err);
       throw err;
     }
   }
@@ -131,7 +127,6 @@ class ServerApi {
     const method = "post";
     try {
       const response = await this.request(endpoint, data, method);
-      console.log("Event creation success:", response);
       return response.event;
     } catch (err) {
       console.error("Error creating event:", err);
@@ -147,7 +142,6 @@ class ServerApi {
     const endpoint = `event/findAll/${calendar_id}`;
     try {
       const response = await this.request(endpoint);
-      console.log("Find all events success:", response);
       return response.events;
     } catch (err) {
       console.error("Error fetching events", err);
@@ -164,7 +158,6 @@ class ServerApi {
     const method = "patch";
     try {
       const response = await this.request(endpoint, eventData, method);
-      console.log("Event update success:", response);
       return response.event;
     } catch (err) {
       console.error("Error updating event", err);
@@ -181,7 +174,6 @@ class ServerApi {
     const method = "delete";
     try {
       const response = await this.request(endpoint, {}, method);
-      console.log("Event delete success:", response);
       return response.event;
     } catch (err) {
       console.error("Error deleting event", err);
@@ -194,14 +186,19 @@ class ServerApi {
    * Fetches events from users "primary" google calendar
    *
    */
-  static async fetchGoogleEvents() {
+  // ServerApi.js
+  static async fetchGoogleEvents(accessToken) {
     const endpoint = `https://www.googleapis.com/calendar/v3/calendars/primary/events`;
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    };
     try {
-      const response = await this.request(endpoint);
-      console.log("Fetching google events success:", response);
-      // return response.events;
+      const response = await axios.get(endpoint, { headers });
+      return response.data.items;
     } catch (err) {
-      console.error("Error fetching google events", err);
+      console.error("Error fetching Google events", err);
+      throw err;
     }
   }
 }

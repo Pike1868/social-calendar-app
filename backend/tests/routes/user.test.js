@@ -16,7 +16,6 @@ afterAll(commonAfterAll);
 describe("GET /user/:id", () => {
   test("works: successfully fetches user details", async function () {
     //Using id from test user added in test setup file
-    console.log(testUser1Token);
     const response = await request(app)
       .get("/user/testUser1_ID")
       .set("authorization", `Bearer ${testUser1Token}`);

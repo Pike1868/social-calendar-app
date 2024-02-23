@@ -12,9 +12,20 @@ import {
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import SmallCalendar from "./SmallCalendar";
 import EventModal from "./EventCreatorModal";
-import ServerApi from "../api/serverApi";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUserDetails } from "../redux/userSlice";
+import { fetchGoogleEvents } from "../redux/googleEventSlice";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
+  const userDetails = useSelector(selectUserDetails);
+  const dispatch = useDispatch();
+
+  const handleFetchGoogleEvents = async () => {
+    if (userDetails.access_token) {
+      dispatch(fetchGoogleEvents(userDetails.access_token));
+    }
+  };
+
   return (
     <>
       {open && (
@@ -54,7 +65,7 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
               <Button
                 variant="contained"
                 sx={{ mt: 3 }}
-                onClick={ServerApi.fetchGoogleEvents}
+                onClick={handleFetchGoogleEvents}
               >
                 Fetch Google Events
               </Button>

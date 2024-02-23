@@ -18,7 +18,6 @@ import { registerUser } from "../redux/userSlice";
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const SignUp = () => {
-  console.log(userTimeZone);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -40,7 +39,6 @@ const SignUp = () => {
       password: data.get("password"),
       time_zone: userTimeZone,
     };
-    console.log(newUser);
 
     //Check for empty fields
     for (let key in newUser) {

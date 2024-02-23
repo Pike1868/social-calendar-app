@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ServerApi from "../api/serverApi";
-import { decodeToken } from "./decodeTokenHelper";
+import { decodeToken } from "./helpers/decodeTokenHelper";
 
 /**
  * TODO:Check proper error handling of expired tokens

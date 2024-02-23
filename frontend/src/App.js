@@ -3,7 +3,7 @@ import "./assets/App.css";
 import RouteList from "./routes/RouteList";
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlice"; // Import the setUser action
-import { decodeToken } from "./redux/decodeTokenHelper";
+import { decodeToken } from "./redux/helpers/decodeTokenHelper";
 import { useNavigate } from "react-router-dom";
 
 function App() {

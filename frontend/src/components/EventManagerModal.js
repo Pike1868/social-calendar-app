@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 import { format, formatISO, parseISO } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +18,12 @@ import {
   selectCurrentEvent,
   fetchEventsByCalendar,
   removeEvent,
+  resetCurrentEvent,
 } from "../redux/eventSlice";
+import {
+  resetCurrentGoogleEvent,
+  selectCurrentGoogleEvent,
+} from "../redux/googleEventSlice";
 
 const style = {
   position: "absolute",
@@ -37,8 +41,27 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
   const userCal = useSelector(selectUserCalendar);
   const userDetails = useSelector(selectUserDetails);
   const dispatch = useDispatch();
-  const currentEventData = useSelector(selectCurrentEvent);
-  const [eventData, setEventData] = useState(currentEventData);
+  const currentGoogleEvent = useSelector(selectCurrentGoogleEvent);
+  const currentEvent = useSelector(selectCurrentEvent);
+  const [eventData, setEventData] = useState({
+    title: "",
+    start_time: "",
+    end_time: "",
+    location: "",
+    description: "",
+    status: "",
+    time_zone: "",
+    color_id: "",
+  });
+
+  useEffect(() => {
+    // Decide which event data to use based on the source
+    if (currentEvent && !currentGoogleEvent) {
+      setEventData(currentEvent);
+    } else if (currentGoogleEvent && !currentEvent) {
+      setEventData(currentGoogleEvent);
+    }
+  }, [currentEvent, currentGoogleEvent]);
 
   //Display event times in users time_zone
   const userTimezone =
@@ -74,20 +97,20 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
       start_time: formatISO(new Date(eventData.start_time)),
       end_time: formatISO(new Date(eventData.end_time)),
     };
-    console.log(formattedUpdateData);
     await dispatch(updateEvent({ id, eventData: formattedUpdateData }));
     closeModal();
   };
 
   // Function to handle event deletion
   const handleDeleteEvent = async () => {
-    console.log(currentEventData);
-    await dispatch(removeEvent(currentEventData.id));
+    await dispatch(removeEvent(currentEvent.id));
     closeModal();
   };
 
   const closeModal = () => {
     dispatch(fetchEventsByCalendar(userCal.id));
+    dispatch(resetCurrentEvent());
+    dispatch(resetCurrentGoogleEvent());
     toggleModal();
   };
 

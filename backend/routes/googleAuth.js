@@ -21,7 +21,6 @@ passport.use(
       callbackURL: "http://localhost:3001/auth/google/callback",
     },
     async function (accessToken, refreshToken, profile, done) {
-      console.log(accessToken, " and ", refreshToken);
       let encryptedAccessToken;
       let encryptedRefreshToken;
       try {

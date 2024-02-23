@@ -46,7 +46,6 @@ router.post("/token", async function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   try {
-    console.log("In localAuth routes:", req.body);
     const { email } = req.body;
 
     // Check for duplicate email
