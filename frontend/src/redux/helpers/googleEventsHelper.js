@@ -1,3 +1,11 @@
+import { parseISO } from "date-fns";
+import { format } from "date-fns-tz";
+
+// set local timezone from browser, or default
+const userTimeZone =
+  Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
+
+// Convert ISO strings to Date objects
 export const filterEventsByTimeRange = (events) => {
   const now = new Date();
   const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
@@ -9,7 +17,7 @@ export const filterEventsByTimeRange = (events) => {
   });
 };
 
-export const normalizeGoogleEvent = (googleEvent) => {
+export const normalizeGoogleEventStructure = (googleEvent) => {
   return {
     id: googleEvent.id, // Google Event ID
     calendar_id: "primary",
@@ -21,5 +29,30 @@ export const normalizeGoogleEvent = (googleEvent) => {
     end_time: googleEvent.end.dateTime || googleEvent.end.date,
     status: googleEvent.status || "",
     color_id: "",
+  };
+};
+
+export const revertGoogleEventStructure = (localEvent) => {
+  const startDateTime = parseISO(localEvent.start_time);
+  const endDateTime = parseISO(localEvent.end_time);
+  // Format dates with timezone offset
+  const formattedStartDateTime = format(
+    startDateTime,
+    "yyyy-MM-dd'T'HH:mm:ssXXX",
+    { userTimeZone }
+  );
+  const formattedEndDateTime = format(endDateTime, "yyyy-MM-dd'T'HH:mm:ssXXX", {
+    userTimeZone,
+  });
+  return {
+    summary: localEvent.title,
+    start: {
+      dateTime: formattedStartDateTime,
+      timeZone: userTimeZone,
+    },
+    end: {
+      dateTime: formattedEndDateTime,
+      timeZone: userTimeZone,
+    },
   };
 };

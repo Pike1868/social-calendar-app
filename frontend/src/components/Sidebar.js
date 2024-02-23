@@ -15,13 +15,14 @@ import EventModal from "./EventCreatorModal";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserDetails } from "../redux/userSlice";
 import { fetchGoogleEvents } from "../redux/googleEventSlice";
+import googleCalendarAPI from "../api/googleCalendarAPI";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
   const userDetails = useSelector(selectUserDetails);
   const dispatch = useDispatch();
 
   const handleFetchGoogleEvents = async () => {
-    if (userDetails.access_token) {
+    if (userDetails.access_token && googleCalendarAPI.accessToken) {
       dispatch(fetchGoogleEvents(userDetails.access_token));
     }
   };

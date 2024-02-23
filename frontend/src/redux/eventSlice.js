@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ServerApi from "../api/serverApi";
+import serverAPI from "../api/serverAPI";
 
 const initialState = {
   eventList: [],
@@ -67,7 +67,7 @@ export const fetchEventsByCalendar = createAsyncThunk(
   "events/fetchEventsByCalendar",
   async (calendar_id, { rejectWithValue }) => {
     try {
-      const response = await ServerApi.fetchEventsByCalendar(calendar_id);
+      const response = await serverAPI.fetchEventsByCalendar(calendar_id);
       return response;
     } catch (err) {
       return rejectWithValue(err.toString());
@@ -79,7 +79,7 @@ export const createEvent = createAsyncThunk(
   "events/createEvent",
   async (eventData, { rejectWithValue, dispatch }) => {
     try {
-      await ServerApi.createEvent(eventData);
+      await serverAPI.createEvent(eventData);
       dispatch(fetchEventsByCalendar(eventData.calendar_id));
     } catch (err) {
       return rejectWithValue(err.toString());
@@ -91,7 +91,7 @@ export const updateEvent = createAsyncThunk(
   "events/updateEvent",
   async ({ id, eventData }, { rejectWithValue }) => {
     try {
-      const response = await ServerApi.updateEvent(id, eventData);
+      const response = await serverAPI.updateEvent(id, eventData);
       return response;
     } catch (err) {
       return rejectWithValue(err.toString());
@@ -103,7 +103,7 @@ export const removeEvent = createAsyncThunk(
   "events/removeEvent",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await ServerApi.removeEvent(id);
+      const response = await serverAPI.removeEvent(id);
       return response;
     } catch (err) {
       return rejectWithValue(err.toString());

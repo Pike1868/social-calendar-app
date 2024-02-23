@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ServerApi from "../api/serverApi";
+import serverAPI from "../api/serverAPI";
 import { decodeToken } from "./helpers/decodeTokenHelper";
+import googleCalendarAPI from "../api/googleCalendarAPI";
 
 /**
  * TODO:Check proper error handling of expired tokens
@@ -110,7 +111,7 @@ export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (newUser, { rejectWithValue }) => {
     try {
-      const token = await ServerApi.register(newUser);
+      const token = await serverAPI.register(newUser);
       const decoded = decodeToken(token);
       return { id: decoded.id }; //payload for fulfilled action
     } catch (err) {
@@ -124,7 +125,7 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const token = await ServerApi.login(email, password);
+      const token = await serverAPI.login(email, password);
       const decoded = decodeToken(token);
       return { id: decoded.id };
     } catch (err) {
@@ -138,7 +139,8 @@ export const fetchUserDetails = createAsyncThunk(
   "user/fetchUserDetails",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await ServerApi.fetchUserDetails(userId);
+      const response = await serverAPI.fetchUserDetails(userId);
+      googleCalendarAPI.setAccessToken(response.access_token);
       return response;
     } catch (err) {
       console.error("Error fetching user data:", err);
@@ -151,7 +153,7 @@ export const fetchUserCalendars = createAsyncThunk(
   "user/fetchUserCalendars",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await ServerApi.fetchUserCalendars(userId);
+      const response = await serverAPI.fetchUserCalendars(userId);
       return response;
     } catch (err) {
       console.error("Error fetching user calendars:", err);

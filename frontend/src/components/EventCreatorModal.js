@@ -1,9 +1,19 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, Modal, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  Typography,
+  Modal,
+  TextField,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createEvent } from "../redux/eventSlice";
 import { formatISO } from "date-fns";
 import { selectUser } from "../redux/userSlice";
+import { createGoogleEvent } from "../redux/googleEventSlice";
+import googleCalendarAPI from "../api/googleCalendarAPI";
 
 const style = {
   position: "absolute",
@@ -19,9 +29,9 @@ const style = {
 
 export default function EventCreatorModal() {
   const dispatch = useDispatch();
-  const { user, userCalendar } = useSelector(selectUser);
-
+  const { user, userCalendar, userDetails } = useSelector(selectUser);
   const [open, setOpen] = useState(false);
+  const [createOnGoogle, setCreateOnGoogle] = useState(false);
   const [eventData, setEventData] = useState({
     title: "",
     start_time: "",
@@ -46,16 +56,19 @@ export default function EventCreatorModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedEventData = {
+    if (createOnGoogle) {
+      dispatch(createGoogleEvent(eventData));
+    }
+    const formattedLocalEventData = {
       ...eventData,
       calendar_id: userCalendar.id,
       title: eventData.title,
       start_time: formatISO(new Date(eventData.start_time)),
       end_time: formatISO(new Date(eventData.end_time)),
       owner_id: user.id,
+      time_zone: userDetails.time_zone,
     };
-
-    dispatch(createEvent(formattedEventData));
+    dispatch(createEvent(formattedLocalEventData));
     handleClose();
   };
 
@@ -137,6 +150,19 @@ export default function EventCreatorModal() {
             value={eventData.color_id}
             onChange={handleChange}
           />
+          {userDetails && userDetails.access_token && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={createOnGoogle}
+                  onChange={() => setCreateOnGoogle(!createOnGoogle)}
+                  name="createOnGoogle"
+                  color="primary"
+                />
+              }
+              label="Sync event with Google Calendar"
+            />
+          )}
           <Button
             type="submit"
             fullWidth

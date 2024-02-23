@@ -9,6 +9,8 @@ import {
   selectUser,
   fetchUserCalendars,
 } from "../redux/userSlice";
+import googleCalendarAPI from "../api/googleCalendarAPI";
+import { fetchGoogleEvents } from "../redux/googleEventSlice";
 
 const drawerWidth = 340;
 
@@ -27,6 +29,8 @@ export default function Homepage() {
   useEffect(() => {
     if (user && userDetails && !userCalendar) {
       dispatch(fetchUserCalendars(user.id));
+      googleCalendarAPI.setAccessToken(userDetails.access_token);
+      dispatch(fetchGoogleEvents(userDetails.access_token));
     }
   }, [dispatch, user, userDetails, userCalendar]);
 

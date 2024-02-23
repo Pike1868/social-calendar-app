@@ -1,17 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ServerApi from "../api/serverApi";
+import googleCalendarAPI from "../api/googleCalendarAPI";
 import {
   filterEventsByTimeRange,
-  normalizeGoogleEvent,
+  normalizeGoogleEventStructure,
+  revertGoogleEventStructure,
 } from "./helpers/googleEventsHelper";
+import { selectUserDetails } from "../redux/userSlice";
 
 export const fetchGoogleEvents = createAsyncThunk(
   "googleEvents/fetchGoogleEvents",
   async (accessToken, { rejectWithValue }) => {
     try {
-      const response = await ServerApi.fetchGoogleEvents(accessToken);
-      const googleEvents = filterEventsByTimeRange(response).map((e) =>
-        normalizeGoogleEvent(e)
+      //Pass token to set on api
+      const response = await googleCalendarAPI.fetchGoogleEvents(accessToken);
+      const googleEvents = filterEventsByTimeRange(response.items).map((e) =>
+        normalizeGoogleEventStructure(e)
       );
       return googleEvents;
     } catch (error) {
@@ -20,7 +23,25 @@ export const fetchGoogleEvents = createAsyncThunk(
   }
 );
 
-const googleEventsSlice = createSlice({
+export const createGoogleEvent = createAsyncThunk(
+  "googleEvent/createGoogleEvent",
+  async (eventData, { dispatch, getState, rejectWithValue }) => {
+    try {
+      const userDetails = selectUserDetails(getState()); // Assuming you have a selector to get user details
+      googleCalendarAPI.setAccessToken(userDetails.access_token); // Ensure token is set before making a request
+
+      const formattedEventData = revertGoogleEventStructure(eventData);
+      await googleCalendarAPI.createGoogleEvent(formattedEventData);
+
+      // Refetch events to update the list
+      dispatch(fetchGoogleEvents(userDetails.access_token));
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+const googleEventSlice = createSlice({
   name: "googleEvents",
   initialState: {
     events: [],
@@ -51,21 +72,31 @@ const googleEventsSlice = createSlice({
       .addCase(fetchGoogleEvents.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(createGoogleEvent.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createGoogleEvent.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(createGoogleEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export const selectCurrentGoogleEvent = (state) => {
-  const { currentGoogleEvent } = state.googleEvents;
+  const { currentGoogleEvent } = state.googleEvent;
   if (currentGoogleEvent && currentGoogleEvent.id) {
-    return state.googleEvents.events.find(
+    return state.googleEvent.events.find(
       (event) => event.id === currentGoogleEvent.id
     );
   }
 };
 
-export default googleEventsSlice.reducer;
+export default googleEventSlice.reducer;
 export const { setCurrentGoogleEvent, resetCurrentGoogleEvent } =
-  googleEventsSlice.actions;
+  googleEventSlice.actions;
 
-export const selectAllGoogleEvents = (state) => state.googleEvents.events;
+export const selectAllGoogleEvents = (state) => state.googleEvent.events;
