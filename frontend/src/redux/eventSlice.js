@@ -4,6 +4,7 @@ import serverAPI from "../api/serverAPI";
 const initialState = {
   eventList: [],
   currentEvent: null,
+  showLocalEvents: true,
   loading: false,
   error: null,
 };
@@ -23,6 +24,10 @@ const eventSlice = createSlice({
     },
     resetCurrentEvent(state) {
       state.currentEvent = null;
+    },
+    toggleLocalEventsVisibility(state) {
+      console.log(state.showLocalEvents, "What does the state look like?")
+      state.showLocalEvents = !state.showLocalEvents;
     },
   },
   extraReducers: (builder) => {
@@ -119,7 +124,12 @@ export const selectCurrentEvent = (state) => {
   }
 };
 
-export const { resetEvents, setCurrentEvent, resetCurrentEvent } =
-  eventSlice.actions;
+export const {
+  resetEvents,
+  setCurrentEvent,
+  resetCurrentEvent,
+  toggleLocalEventsVisibility,
+} = eventSlice.actions;
 export const selectEvents = (state) => state.events.eventList;
+export const selectShowLocalEvents = (state) => state.events.showLocalEvents;
 export default eventSlice.reducer;

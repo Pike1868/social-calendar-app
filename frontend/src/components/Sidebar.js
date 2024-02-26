@@ -3,7 +3,8 @@ import React from "react";
 import {
   Drawer,
   Box,
-  Button,
+  Checkbox,
+  FormControlLabel,
   Typography,
   IconButton,
   Toolbar,
@@ -13,19 +14,19 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import SmallCalendar from "./SmallCalendar";
 import EventModal from "./EventCreatorModal";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserDetails } from "../redux/userSlice";
-import { fetchGoogleEvents } from "../redux/googleEventSlice";
-import googleCalendarAPI from "../api/googleCalendarAPI";
+import {
+  toggleGoogleEventsVisibility,
+  selectShowGoogleEvents,
+} from "../redux/googleEventSlice";
+import {
+  toggleLocalEventsVisibility,
+  selectShowLocalEvents,
+} from "../redux/eventSlice";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
-  const userDetails = useSelector(selectUserDetails);
   const dispatch = useDispatch();
-
-  const handleFetchGoogleEvents = async () => {
-    if (userDetails.access_token && googleCalendarAPI.accessToken) {
-      dispatch(fetchGoogleEvents(userDetails.access_token));
-    }
-  };
+  const showLocalEvents = useSelector(selectShowLocalEvents);
+  const showGoogleEvents = useSelector(selectShowGoogleEvents);
 
   return (
     <>
@@ -56,20 +57,30 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
           </Toolbar>
           <Divider />
           <Box sx={{ overflow: "auto" }}>
-            <Typography variant="h6" sx={{ p: 2 }}>
-              SIDEBAR
-            </Typography>
+            <br></br>
             <EventModal />
             <SmallCalendar />
             {/* Calendars list can go below */}
             <Box>
-              <Button
-                variant="contained"
-                sx={{ mt: 3 }}
-                onClick={handleFetchGoogleEvents}
-              >
-                Fetch Google Events
-              </Button>
+              <Typography variant="h6">Calendars:</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showLocalEvents}
+                    onChange={() => dispatch(toggleLocalEventsVisibility())}
+                  />
+                }
+                label="Default Calendar"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showGoogleEvents}
+                    onChange={() => dispatch(toggleGoogleEventsVisibility())}
+                  />
+                }
+                label="Google Calendar"
+              />
             </Box>
           </Box>
         </Drawer>

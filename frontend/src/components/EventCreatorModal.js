@@ -13,7 +13,6 @@ import { createEvent } from "../redux/eventSlice";
 import { formatISO } from "date-fns";
 import { selectUser } from "../redux/userSlice";
 import { createGoogleEvent } from "../redux/googleEventSlice";
-import googleCalendarAPI from "../api/googleCalendarAPI";
 
 const style = {
   position: "absolute",

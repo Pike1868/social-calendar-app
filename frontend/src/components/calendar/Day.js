@@ -5,29 +5,39 @@ import {
   resetCurrentEvent,
   selectEvents,
   setCurrentEvent,
+  selectShowLocalEvents,
 } from "../../redux/eventSlice";
 import {
   resetCurrentGoogleEvent,
   selectAllGoogleEvents,
   setCurrentGoogleEvent,
+  selectShowGoogleEvents,
 } from "../../redux/googleEventSlice";
 
 import dayjs from "dayjs";
 
 export default function Day({ day, toggleModal }) {
   const dispatch = useDispatch();
+  const showGoogleEvents = useSelector(selectShowGoogleEvents);
+  const showLocalEvents = useSelector(selectShowLocalEvents);
+
+  //Local events
   const localEventList = useSelector(selectEvents);
   const localEventsForDay = localEventList.filter((event) => {
     const startTime = dayjs(event.start_time);
     const endTime = dayjs(event.end_time);
     return day.isSame(startTime, "day") || day.isSame(endTime, "day");
   });
+
+  //Google events
   const googleEventList = useSelector(selectAllGoogleEvents);
   const googleEventsForDay = googleEventList.filter((event) => {
     const startTime = dayjs(event.start_time);
     const endTime = dayjs(event.end_time);
     return day.isSame(startTime, "day") || day.isSame(endTime, "day");
   });
+
+  //Event Handling
   const handleEventClick = (eventId) => {
     dispatch(resetCurrentGoogleEvent());
     dispatch(setCurrentEvent({ id: eventId, source: "local" }));
@@ -56,22 +66,28 @@ export default function Day({ day, toggleModal }) {
     >
       <Box>{day && day.format("DD")}</Box>
       <List>
-        {localEventsForDay.map((e) => (
-          <ListItem button key={e.id} onClick={() => handleEventClick(e.id)}>
-            <ListItemText primary={e.title} />
-          </ListItem>
-        ))}
-      </List>
-      <List>
-        {googleEventsForDay.map((e) => (
-          <ListItem
-            button
-            key={e.id}
-            onClick={() => handleGoogleEventClick(e.id)}
-          >
-            <ListItemText primary={e.title} />
-          </ListItem>
-        ))}
+        {showLocalEvents &&
+          localEventsForDay.map((e) => (
+            <ListItem
+              button
+              key={e.id}
+              onClick={() => handleEventClick(e.id)}
+              sx={{ backgroundColor: "lightblue" }}
+            >
+              <ListItemText primary={e.title} />
+            </ListItem>
+          ))}
+        {showGoogleEvents &&
+          googleEventsForDay.map((e) => (
+            <ListItem
+              button
+              key={e.id}
+              onClick={() => handleGoogleEventClick(e.id)}
+              sx={{ backgroundColor: "lightgreen" }}
+            >
+              <ListItemText primary={e.title} />
+            </ListItem>
+          ))}
       </List>
     </Grid>
   );

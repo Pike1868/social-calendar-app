@@ -46,6 +46,7 @@ const googleEventSlice = createSlice({
   initialState: {
     events: [],
     currentGoogleEvent: null,
+    showGoogleEvents: false,
     status: "idle",
     error: null,
   },
@@ -58,6 +59,9 @@ const googleEventSlice = createSlice({
     },
     resetCurrentGoogleEvent(state) {
       state.currentGoogleEvent = null;
+    },
+    toggleGoogleEventsVisibility(state) {
+      state.showGoogleEvents = !state.showGoogleEvents;
     },
   },
   extraReducers: (builder) => {
@@ -96,7 +100,12 @@ export const selectCurrentGoogleEvent = (state) => {
 };
 
 export default googleEventSlice.reducer;
-export const { setCurrentGoogleEvent, resetCurrentGoogleEvent } =
-  googleEventSlice.actions;
+export const {
+  setCurrentGoogleEvent,
+  resetCurrentGoogleEvent,
+  toggleGoogleEventsVisibility,
+} = googleEventSlice.actions;
 
 export const selectAllGoogleEvents = (state) => state.googleEvent.events;
+export const selectShowGoogleEvents = (state) =>
+  state.googleEvent.showGoogleEvents;

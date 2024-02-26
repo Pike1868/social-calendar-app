@@ -74,6 +74,12 @@ class googleCalendarAPI {
       throw err;
     }
   }
+
+  /** DELETE "https://www.googleapis.com/calendar/v3/calendars/calendarId/events/eventId"
+   * 
+   * Deletes an event in  users primary google calendar
+   * 
+   */
 }
 
 export default googleCalendarAPI;
