@@ -115,7 +115,6 @@ class serverAPI {
     const endpoint = "event/create";
     const method = "post";
     const response = await this.request(endpoint, data, method);
-
     return response.event;
   }
 
@@ -159,6 +158,18 @@ class serverAPI {
     const method = "delete";
     const response = await this.request(endpoint, {}, method);
 
+    return response.event;
+  }
+
+  /** GET /event/by-google-id/:googleId => { event }
+   *
+   * Fetches an event by its Google ID.
+   *
+   * Requires token
+   */
+  static async fetchEventByGoogleId(googleId) {
+    const endpoint = `event/by-google-id/${googleId}`;
+    const response = await this.request(endpoint);
     return response.event;
   }
 }

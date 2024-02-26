@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import serverAPI from "../api/serverAPI";
+import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
+import { formatISO } from "date-fns";
 
 const initialState = {
   eventList: [],
@@ -26,7 +28,6 @@ const eventSlice = createSlice({
       state.currentEvent = null;
     },
     toggleLocalEventsVisibility(state) {
-      console.log(state.showLocalEvents, "What does the state look like?")
       state.showLocalEvents = !state.showLocalEvents;
     },
   },
@@ -82,10 +83,21 @@ export const fetchEventsByCalendar = createAsyncThunk(
 
 export const createEvent = createAsyncThunk(
   "events/createEvent",
-  async (eventData, { rejectWithValue, dispatch }) => {
+  async (eventData, { rejectWithValue, dispatch, getState }) => {
     try {
-      await serverAPI.createEvent(eventData);
-      dispatch(fetchEventsByCalendar(eventData.calendar_id));
+      const userDetails = selectUserDetails(getState());
+      const userCalendar = selectUserCalendar(getState());
+      const formattedEventData = {
+        ...eventData,
+        calendar_id: userCalendar.id,
+        title: eventData.title,
+        start_time: formatISO(new Date(eventData.start_time)),
+        end_time: formatISO(new Date(eventData.end_time)),
+        owner_id: userDetails.id,
+        time_zone: userDetails.time_zone,
+      };
+      await serverAPI.createEvent(formattedEventData);
+      dispatch(fetchEventsByCalendar(userCalendar.id));
     } catch (err) {
       return rejectWithValue(err.toString());
     }

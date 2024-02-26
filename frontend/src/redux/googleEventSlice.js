@@ -5,7 +5,10 @@ import {
   normalizeGoogleEventStructure,
   revertGoogleEventStructure,
 } from "./helpers/googleEventsHelper";
-import { selectUserDetails } from "../redux/userSlice";
+import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
+import { createEvent, removeEvent, updateEvent } from "./eventSlice";
+import { formatISO } from "date-fns";
+import serverAPI from "../api/serverAPI";
 
 export const fetchGoogleEvents = createAsyncThunk(
   "googleEvents/fetchGoogleEvents",
@@ -27,12 +30,23 @@ export const createGoogleEvent = createAsyncThunk(
   "googleEvent/createGoogleEvent",
   async (eventData, { dispatch, getState, rejectWithValue }) => {
     try {
-      const userDetails = selectUserDetails(getState()); // Assuming you have a selector to get user details
+      const userDetails = selectUserDetails(getState());
+      const userCalendar = selectUserCalendar(getState());
       googleCalendarAPI.setAccessToken(userDetails.access_token); // Ensure token is set before making a request
 
       const formattedEventData = revertGoogleEventStructure(eventData);
-      console.log(formattedEventData);
-      await googleCalendarAPI.createGoogleEvent(formattedEventData);
+      const response = await googleCalendarAPI.createGoogleEvent(
+        formattedEventData
+      );
+      dispatch(
+        createEvent({
+          ...eventData,
+          calendar_id: userCalendar.id,
+          start_time: formatISO(new Date(eventData.start_time)),
+          end_time: formatISO(new Date(eventData.end_time)),
+          google_id: response.id,
+        })
+      );
 
       // Refetch events to update the list
       dispatch(fetchGoogleEvents(userDetails.access_token));
@@ -44,12 +58,18 @@ export const createGoogleEvent = createAsyncThunk(
 
 export const removeGoogleEvent = createAsyncThunk(
   "googleEvent/removeGoogleEvent",
-  async (id, { dispatch, getState, rejectWithValue }) => {
+  async (googleId, { dispatch, getState, rejectWithValue }) => {
     try {
       const userDetails = selectUserDetails(getState());
-      await googleCalendarAPI.removeGoogleEvent(id);
+      await googleCalendarAPI.removeGoogleEvent(googleId);
 
-      // Refetch events to update the list
+      // Fetch local event ID by Google ID
+      const localEventId = await serverAPI.fetchLocalEventIdByGoogleId(
+        googleId
+      );
+
+      await dispatch(removeEvent(localEventId));
+
       dispatch(fetchGoogleEvents(userDetails.access_token));
     } catch (err) {
       return rejectWithValue(err.toString());
@@ -59,13 +79,18 @@ export const removeGoogleEvent = createAsyncThunk(
 
 export const updateGoogleEvent = createAsyncThunk(
   "googleEvent/updateGoogleEvent",
-  async ({ id, eventData }, { dispatch, getState, rejectWithValue }) => {
+  async ({ googleId, eventData }, { dispatch, getState, rejectWithValue }) => {
     try {
-      console.log(eventData);
       const userDetails = selectUserDetails(getState());
+
       const formattedEventData = revertGoogleEventStructure(eventData);
-      await googleCalendarAPI.updateGoogleEvent(id, formattedEventData);
-      // Refetch events to update the list
+      await googleCalendarAPI.updateGoogleEvent(googleId, formattedEventData);
+
+      const localEventId = await serverAPI.fetchLocalEventIdByGoogleId(
+        googleId
+      ); // Implement this function
+      dispatch(updateEvent({ id: localEventId, ...eventData })); // Assuming eventData is in the correct format for local update
+
       dispatch(fetchGoogleEvents(userDetails.access_token));
     } catch (err) {
       return rejectWithValue(err.toString());
@@ -124,7 +149,6 @@ const googleEventSlice = createSlice({
       })
       .addCase(removeGoogleEvent.fulfilled, (state, action) => {
         state.loading = false;
-        // console.log(action.payload);
       })
       .addCase(removeGoogleEvent.rejected, (state, action) => {
         state.loading = false;

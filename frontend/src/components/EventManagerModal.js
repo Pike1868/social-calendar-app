@@ -92,7 +92,7 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { id, ...updateData } = eventData;
-    //Formatting dates to UTC
+    //Formatting dates to UTC for database
     const formattedUpdateData = {
       ...updateData,
       start_time: formatISO(new Date(eventData.start_time)),
@@ -102,7 +102,6 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
       await dispatch(updateEvent({ id, eventData: formattedUpdateData }));
     }
     if (currentGoogleEvent && currentGoogleEvent.id) {
-      console.log("EventMangaer sent data to update:");
       await dispatch(updateGoogleEvent({ id, eventData: formattedUpdateData }));
     }
     closeModal();
@@ -110,11 +109,12 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
 
   // Function to handle event deletion
   const handleDeleteEvent = async () => {
-    if (currentEvent && currentEvent.id) {
-      await dispatch(removeEvent(currentEvent.id));
-    }
     if (currentGoogleEvent && currentGoogleEvent.id) {
       await dispatch(removeGoogleEvent(currentGoogleEvent.id));
+      return;
+    }
+    if (currentEvent && currentEvent.id) {
+      await dispatch(removeEvent(currentEvent.id));
     }
 
     closeModal();

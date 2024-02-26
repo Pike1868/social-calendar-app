@@ -85,8 +85,6 @@ class googleCalendarAPI {
     const endpoint = `primary/events/${id}`;
     const method = `delete`;
     try {
-      console.log("Made it to removeGoogleEvent method in API:");
-      console.log("The endpoint is:", endpoint);
       return await this.request(endpoint, method);
     } catch (err) {
       console.error("Error removing google event", err);

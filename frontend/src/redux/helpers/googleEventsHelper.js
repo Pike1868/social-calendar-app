@@ -19,7 +19,8 @@ export const filterEventsByTimeRange = (events) => {
 
 export const normalizeGoogleEventStructure = (googleEvent) => {
   return {
-    id: googleEvent.id, // Google Event ID
+    id: googleEvent.id,
+    google_id: googleEvent.id, // Google Event ID
     calendar_id: "primary",
     owner_id: "",
     title: googleEvent.summary || "",

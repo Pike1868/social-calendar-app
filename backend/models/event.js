@@ -180,6 +180,23 @@ class Event {
 
     if (!event) throw new NotFoundError(`No event found with ID: ${id}`);
   }
+
+  /** Find by google id
+   *  
+   * Throws NotFoundError if event not found.
+   */
+
+  // In Event model
+  static async findByGoogleId(google_id) {
+    const result = await db.query(
+      `SELECT id FROM events WHERE google_id = $1`,
+      [google_id]
+    );
+    const event = result.rows[0];
+    if (!event)
+      throw new NotFoundError(`No event found with Google ID: ${google_id}`);
+    return event.id;
+  }
 }
 
 module.exports = Event;

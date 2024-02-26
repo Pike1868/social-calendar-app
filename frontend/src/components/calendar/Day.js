@@ -21,13 +21,21 @@ export default function Day({ day, toggleModal }) {
   const showGoogleEvents = useSelector(selectShowGoogleEvents);
   const showLocalEvents = useSelector(selectShowLocalEvents);
 
-  //Local events
+  // Local events, filtering out any local events synced with google and by the day's date
   const localEventList = useSelector(selectEvents);
-  const localEventsForDay = localEventList.filter((event) => {
-    const startTime = dayjs(event.start_time);
-    const endTime = dayjs(event.end_time);
-    return day.isSame(startTime, "day") || day.isSame(endTime, "day");
-  });
+  const localEventsForDay = showGoogleEvents
+    ? localEventList
+        .filter((e) => !e.google_id)
+        .filter((event) => {
+          const startTime = dayjs(event.start_time);
+          const endTime = dayjs(event.end_time);
+          return day.isSame(startTime, "day") || day.isSame(endTime, "day");
+        })
+    : localEventList.filter((event) => {
+        const startTime = dayjs(event.start_time);
+        const endTime = dayjs(event.end_time);
+        return day.isSame(startTime, "day") || day.isSame(endTime, "day");
+      });
 
   //Google events
   const googleEventList = useSelector(selectAllGoogleEvents);

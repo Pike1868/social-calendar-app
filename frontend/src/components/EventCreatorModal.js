@@ -10,25 +10,12 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createEvent } from "../redux/eventSlice";
-import { formatISO } from "date-fns";
 import { selectUser } from "../redux/userSlice";
 import { createGoogleEvent } from "../redux/googleEventSlice";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 export default function EventCreatorModal() {
   const dispatch = useDispatch();
-  const { user, userCalendar, userDetails } = useSelector(selectUser);
+  const { userDetails } = useSelector(selectUser);
   const [open, setOpen] = useState(false);
   const [createOnGoogle, setCreateOnGoogle] = useState(false);
   const [eventData, setEventData] = useState({
@@ -52,22 +39,20 @@ export default function EventCreatorModal() {
     }));
   };
 
+  /**
+   * Events are always created locally by default, can be created in google calendar if user selected "sync with google calendar"
+   *
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (createOnGoogle) {
       dispatch(createGoogleEvent(eventData));
+      handleClose();
+      return;
+    } else {
+      dispatch(createEvent(eventData));
+      handleClose();
     }
-    const formattedLocalEventData = {
-      ...eventData,
-      calendar_id: userCalendar.id,
-      title: eventData.title,
-      start_time: formatISO(new Date(eventData.start_time)),
-      end_time: formatISO(new Date(eventData.end_time)),
-      owner_id: user.id,
-      time_zone: userDetails.time_zone,
-    };
-    dispatch(createEvent(formattedLocalEventData));
-    handleClose();
   };
 
   return (
@@ -76,7 +61,21 @@ export default function EventCreatorModal() {
         New Event
       </Button>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={style} component="form" onSubmit={handleSubmit}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+          component="form"
+          onSubmit={handleSubmit}
+        >
           <Typography id="event-modal-title" variant="h6" component="h2">
             Create New Event
           </Typography>
