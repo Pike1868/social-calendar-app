@@ -31,12 +31,44 @@ export const createGoogleEvent = createAsyncThunk(
       googleCalendarAPI.setAccessToken(userDetails.access_token); // Ensure token is set before making a request
 
       const formattedEventData = revertGoogleEventStructure(eventData);
+      console.log(formattedEventData);
       await googleCalendarAPI.createGoogleEvent(formattedEventData);
 
       // Refetch events to update the list
       dispatch(fetchGoogleEvents(userDetails.access_token));
     } catch (err) {
       return rejectWithValue(err);
+    }
+  }
+);
+
+export const removeGoogleEvent = createAsyncThunk(
+  "googleEvent/removeGoogleEvent",
+  async (id, { dispatch, getState, rejectWithValue }) => {
+    try {
+      const userDetails = selectUserDetails(getState());
+      await googleCalendarAPI.removeGoogleEvent(id);
+
+      // Refetch events to update the list
+      dispatch(fetchGoogleEvents(userDetails.access_token));
+    } catch (err) {
+      return rejectWithValue(err.toString());
+    }
+  }
+);
+
+export const updateGoogleEvent = createAsyncThunk(
+  "googleEvent/updateGoogleEvent",
+  async ({ id, eventData }, { dispatch, getState, rejectWithValue }) => {
+    try {
+      console.log(eventData);
+      const userDetails = selectUserDetails(getState());
+      const formattedEventData = revertGoogleEventStructure(eventData);
+      await googleCalendarAPI.updateGoogleEvent(id, formattedEventData);
+      // Refetch events to update the list
+      dispatch(fetchGoogleEvents(userDetails.access_token));
+    } catch (err) {
+      return rejectWithValue(err.toString());
     }
   }
 );
@@ -84,6 +116,17 @@ const googleEventSlice = createSlice({
         state.loading = false;
       })
       .addCase(createGoogleEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(removeGoogleEvent.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(removeGoogleEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        // console.log(action.payload);
+      })
+      .addCase(removeGoogleEvent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

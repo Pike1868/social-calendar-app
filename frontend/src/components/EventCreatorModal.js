@@ -39,7 +39,6 @@ export default function EventCreatorModal() {
     description: "",
     status: "",
     time_zone: "",
-    color_id: "",
   });
 
   const handleOpen = () => setOpen(true);
@@ -138,15 +137,6 @@ export default function EventCreatorModal() {
             multiline
             rows={4}
             value={eventData.description}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="color_id"
-            label="Color ID"
-            name="color_id"
-            value={eventData.color_id}
             onChange={handleChange}
           />
           {userDetails && userDetails.access_token && (

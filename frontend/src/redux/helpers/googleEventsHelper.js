@@ -54,5 +54,7 @@ export const revertGoogleEventStructure = (localEvent) => {
       dateTime: formattedEndDateTime,
       timeZone: userTimeZone,
     },
+    location: localEvent.location,
+    description: localEvent.description,
   };
 };

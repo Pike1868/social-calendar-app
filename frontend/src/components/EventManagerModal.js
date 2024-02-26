@@ -21,8 +21,10 @@ import {
   resetCurrentEvent,
 } from "../redux/eventSlice";
 import {
+  removeGoogleEvent,
   resetCurrentGoogleEvent,
   selectCurrentGoogleEvent,
+  updateGoogleEvent,
 } from "../redux/googleEventSlice";
 
 const style = {
@@ -51,7 +53,6 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
     description: "",
     status: "",
     time_zone: "",
-    color_id: "",
   });
 
   useEffect(() => {
@@ -97,13 +98,25 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
       start_time: formatISO(new Date(eventData.start_time)),
       end_time: formatISO(new Date(eventData.end_time)),
     };
-    await dispatch(updateEvent({ id, eventData: formattedUpdateData }));
+    if (currentEvent && currentEvent.id) {
+      await dispatch(updateEvent({ id, eventData: formattedUpdateData }));
+    }
+    if (currentGoogleEvent && currentGoogleEvent.id) {
+      console.log("EventMangaer sent data to update:");
+      await dispatch(updateGoogleEvent({ id, eventData: formattedUpdateData }));
+    }
     closeModal();
   };
 
   // Function to handle event deletion
   const handleDeleteEvent = async () => {
-    await dispatch(removeEvent(currentEvent.id));
+    if (currentEvent && currentEvent.id) {
+      await dispatch(removeEvent(currentEvent.id));
+    }
+    if (currentGoogleEvent && currentGoogleEvent.id) {
+      await dispatch(removeGoogleEvent(currentGoogleEvent.id));
+    }
+
     closeModal();
   };
 
@@ -185,15 +198,6 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
             multiline
             rows={4}
             value={eventData.description || ""}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="color_id"
-            label="Color ID"
-            name="color_id"
-            value={eventData.color_id || ""}
             onChange={handleChange}
           />
           <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }}>

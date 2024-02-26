@@ -76,10 +76,41 @@ class googleCalendarAPI {
   }
 
   /** DELETE "https://www.googleapis.com/calendar/v3/calendars/calendarId/events/eventId"
-   * 
+   *
    * Deletes an event in  users primary google calendar
-   * 
+   *
    */
+
+  static async removeGoogleEvent(id) {
+    const endpoint = `primary/events/${id}`;
+    const method = `delete`;
+    try {
+      console.log("Made it to removeGoogleEvent method in API:");
+      console.log("The endpoint is:", endpoint);
+      return await this.request(endpoint, method);
+    } catch (err) {
+      console.error("Error removing google event", err);
+      throw err;
+    }
+  }
+
+  /** PATCH
+   * https://www.googleapis.com/calendar/v3/calendars/calendarId/events/eventId
+   *
+   *Updates event in users primary calendar, only changes fields specified.
+   *
+   */
+
+  static async updateGoogleEvent(id, data) {
+    const endpoint = `primary/events/${id}`;
+    const method = `patch`;
+    try {
+      return await this.request(endpoint, method, data);
+    } catch (err) {
+      console.error("Error updating google event", err);
+      throw err;
+    }
+  }
 }
 
 export default googleCalendarAPI;
