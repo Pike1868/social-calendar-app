@@ -102,7 +102,9 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
       await dispatch(updateEvent({ id, eventData: formattedUpdateData }));
     }
     if (currentGoogleEvent && currentGoogleEvent.id) {
-      await dispatch(updateGoogleEvent({ id, eventData: formattedUpdateData }));
+      await dispatch(
+        updateGoogleEvent({ google_id: id, eventData: formattedUpdateData })
+      );
     }
     closeModal();
   };
@@ -111,7 +113,6 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
   const handleDeleteEvent = async () => {
     if (currentGoogleEvent && currentGoogleEvent.id) {
       await dispatch(removeGoogleEvent(currentGoogleEvent.id));
-      return;
     }
     if (currentEvent && currentEvent.id) {
       await dispatch(removeEvent(currentEvent.id));

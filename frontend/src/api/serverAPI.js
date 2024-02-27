@@ -167,10 +167,10 @@ class serverAPI {
    *
    * Requires token
    */
-  static async fetchEventByGoogleId(googleId) {
-    const endpoint = `event/by-google-id/${googleId}`;
+  static async fetchLocalEventIdByGoogleId(google_id) {
+    const endpoint = `event/by-google-id/${google_id}`;
     const response = await this.request(endpoint);
-    return response.event;
+    return response;
   }
 }
 

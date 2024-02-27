@@ -12,6 +12,7 @@ const { BadRequestError } = require("../expressError");
  * findAll
  * update
  * delete
+ * findByGoogleId
  *
  */
 
@@ -82,6 +83,7 @@ router.patch("/update/:id", ensureLoggedIn, async (req, res, next) => {
 
 /** DELETE /event/:id
  * required:{id}
+ *
  * Returns json {message: "Event deleted"}
  */
 router.delete(
@@ -92,6 +94,24 @@ router.delete(
     try {
       await Event.remove(req.params.id);
       return res.json({ message: "Event deleted" });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+/**GET event/:google_id
+ * required: {google_id}
+ *
+ * Returns object with event id {id:value}
+ */
+router.get(
+  "/by-google-id/:google_id",
+  ensureLoggedIn,
+  async (req, res, next) => {
+    try {
+      const event = await Event.findByGoogleId(req.params.google_id, req.body);
+      return res.status(200).json(event);
     } catch (err) {
       return next(err);
     }

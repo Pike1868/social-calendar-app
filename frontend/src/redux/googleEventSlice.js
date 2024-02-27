@@ -64,13 +64,11 @@ export const removeGoogleEvent = createAsyncThunk(
       await googleCalendarAPI.removeGoogleEvent(googleId);
 
       // Fetch local event ID by Google ID
-      const localEventId = await serverAPI.fetchLocalEventIdByGoogleId(
-        googleId
-      );
+      const { id } = await serverAPI.fetchLocalEventIdByGoogleId(googleId);
 
-      await dispatch(removeEvent(localEventId));
+      await dispatch(removeEvent(id));
 
-      dispatch(fetchGoogleEvents(userDetails.access_token));
+      await dispatch(fetchGoogleEvents(userDetails.access_token));
     } catch (err) {
       return rejectWithValue(err.toString());
     }
@@ -79,19 +77,21 @@ export const removeGoogleEvent = createAsyncThunk(
 
 export const updateGoogleEvent = createAsyncThunk(
   "googleEvent/updateGoogleEvent",
-  async ({ googleId, eventData }, { dispatch, getState, rejectWithValue }) => {
+  async ({ google_id, eventData }, { dispatch, getState, rejectWithValue }) => {
     try {
       const userDetails = selectUserDetails(getState());
-
+      const userCalendar = selectUserCalendar(getState());
       const formattedEventData = revertGoogleEventStructure(eventData);
-      await googleCalendarAPI.updateGoogleEvent(googleId, formattedEventData);
+      await googleCalendarAPI.updateGoogleEvent(google_id, formattedEventData);
+      const { id } = await serverAPI.fetchLocalEventIdByGoogleId(google_id);
+      const localFormatEventData = {
+        ...eventData,
+        calendar_id: userCalendar.id,
+      };
 
-      const localEventId = await serverAPI.fetchLocalEventIdByGoogleId(
-        googleId
-      ); // Implement this function
-      dispatch(updateEvent({ id: localEventId, ...eventData })); // Assuming eventData is in the correct format for local update
+      await dispatch(updateEvent({ id, eventData: localFormatEventData }));
 
-      dispatch(fetchGoogleEvents(userDetails.access_token));
+      await dispatch(fetchGoogleEvents(userDetails.access_token));
     } catch (err) {
       return rejectWithValue(err.toString());
     }

@@ -22,14 +22,12 @@ export const normalizeGoogleEventStructure = (googleEvent) => {
     id: googleEvent.id,
     google_id: googleEvent.id, // Google Event ID
     calendar_id: "primary",
-    owner_id: "",
     title: googleEvent.summary || "",
     location: googleEvent.location || "",
     description: googleEvent.description || "",
     start_time: googleEvent.start.dateTime || googleEvent.start.date,
     end_time: googleEvent.end.dateTime || googleEvent.end.date,
     status: googleEvent.status || "",
-    color_id: "",
   };
 };
 
