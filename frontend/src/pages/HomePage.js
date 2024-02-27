@@ -20,17 +20,20 @@ export default function Homepage() {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    // Check if user is set but userDetails are not
+    // Fetch userDetails once user is stored
     if (user && !userDetails) {
       dispatch(fetchUserDetails(user.id));
     }
   }, [dispatch, user, userDetails]);
 
   useEffect(() => {
+    // Fetch calendar and events once user and userDetails are available
     if (user && userDetails && !userCalendar) {
       dispatch(fetchUserCalendars(user.id));
       googleCalendarAPI.setAccessToken(userDetails.access_token);
-      dispatch(fetchGoogleEvents(userDetails.access_token));
+      if (userDetails.access_token) {
+        dispatch(fetchGoogleEvents(userDetails.access_token));
+      }
     }
   }, [dispatch, user, userDetails, userCalendar]);
 

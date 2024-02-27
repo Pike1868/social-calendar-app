@@ -4,6 +4,7 @@ import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import HomePage from "../pages/HomePage";
 import { useSelector } from "react-redux";
+import UserProfile from "../pages/UserProfile";
 
 /**
  * RouteList Component:
@@ -27,12 +28,14 @@ const RouteList = () => {
       {user && user.id ? (
         <>
           <Route path="/home" element={<HomePage />} />
+          <Route path="/profile" element={<UserProfile />} />
           <Route path="/*" element={<Navigate to="/home" />} />
         </>
       ) : (
         <>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+
           <Route path="/*" element={<Navigate to="/signup" />} />
         </>
       )}

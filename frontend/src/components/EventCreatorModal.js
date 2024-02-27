@@ -29,7 +29,19 @@ export default function EventCreatorModal() {
   });
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setEventData({
+      title: "",
+      start_time: "",
+      end_time: "",
+      location: "",
+      description: "",
+      status: "",
+      time_zone: "",
+    });
+
+    setOpen(false);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

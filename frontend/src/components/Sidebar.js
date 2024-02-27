@@ -11,7 +11,6 @@ import {
   Divider,
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import SmallCalendar from "./SmallCalendar";
 import EventModal from "./EventCreatorModal";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -22,11 +21,13 @@ import {
   toggleLocalEventsVisibility,
   selectShowLocalEvents,
 } from "../redux/eventSlice";
+import { selectUserDetails } from "../redux/userSlice";
 
 function Sidebar({ open, toggleDrawer, drawerWidth }) {
   const dispatch = useDispatch();
   const showLocalEvents = useSelector(selectShowLocalEvents);
   const showGoogleEvents = useSelector(selectShowGoogleEvents);
+  const userDetails = useSelector(selectUserDetails);
 
   return (
     <>
@@ -59,9 +60,7 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
           <Box sx={{ overflow: "auto" }}>
             <br></br>
             <EventModal />
-            <SmallCalendar />
-            {/* Calendars list can go below */}
-            <Box>
+            <Box sx={{ mt: 8 }}>
               <Typography variant="h6">Calendars:</Typography>
               <FormControlLabel
                 control={
@@ -72,15 +71,17 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
                 }
                 label="Default Calendar"
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showGoogleEvents}
-                    onChange={() => dispatch(toggleGoogleEventsVisibility())}
-                  />
-                }
-                label="Google Calendar"
-              />
+              {userDetails && userDetails.access_token && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={showGoogleEvents}
+                      onChange={() => dispatch(toggleGoogleEventsVisibility())}
+                    />
+                  }
+                  label="Google Calendar"
+                />
+              )}
             </Box>
           </Box>
         </Drawer>

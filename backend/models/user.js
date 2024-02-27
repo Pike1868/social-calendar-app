@@ -10,8 +10,6 @@ const {
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
 const { decrypt } = require("../helpers/cryptoHelper.js");
 
-/** Related functions for users. */
-
 class User {
   /** authenticate user with username, password.
    *
@@ -156,7 +154,8 @@ class User {
               first_name,
               last_name,
               email,
-              time_zone, 
+              time_zone,
+              birthday, 
               google_id,
               access_token
          FROM users

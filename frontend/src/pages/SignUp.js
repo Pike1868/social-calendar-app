@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Avatar,
   Box,
@@ -8,18 +8,17 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import GoogleIcon from "@mui/icons-material/Google";
 import NavBar from "../components/NavBar";
-import { useDispatch } from "react-redux";
-import { registerUser } from "../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, setError, selectUserError } from "../redux/userSlice";
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const SignUp = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const error = useSelector(selectUserError);
 
   const formFieldNames = {
     first_name: "First Name",
@@ -42,29 +41,40 @@ const SignUp = () => {
     //Check for empty fields
     for (let key in newUser) {
       if (newUser[key].trim() === "") {
-        setError(`Please enter your ${formFieldNames[key]}.`);
+        dispatch(setError(`Please enter your ${formFieldNames[key]}.`));
         return;
       }
     }
-
+    //Check email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newUser.email)) {
-      setError("Please enter a valid email address.");
+      dispatch(setError("Please enter a valid email address."));
       return;
     }
 
     //Check password length
     if (newUser.password.length < 5) {
-      setError("Password must be at least 5 characters long.");
+      dispatch(setError("Password must be at least 5 characters long."));
       return;
     }
 
     try {
       await dispatch(registerUser(newUser));
-      navigate("/home");
     } catch (err) {
-      let msg = err[0];
-      setError(msg);
+      console.log(err);
+      // Default error message
+      let errorMessage = "An unexpected error occurred during registration.";
+
+      // Handle different error structures
+      if (Array.isArray(err) && err.length > 0) {
+        errorMessage = err[0];
+      } else if (typeof err === "object" && err.message) {
+        errorMessage = err.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      }
+      //set error in redux store
+      dispatch(setError(errorMessage));
     }
   };
 

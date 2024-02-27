@@ -101,6 +101,20 @@ class serverAPI {
     return response;
   }
 
+  /** PATCH /user/:id => {user}
+   *
+   * Updates user details
+   *
+   * Allowed updates: { first_name, last_name, birthday, time_zone }
+   * Requires token
+   */
+  static async updateUser(userId, updateData) {
+    const endpoint = `user/${userId}`;
+    const method = "patch";
+    const response = await this.request(endpoint, updateData, method);
+    return response.user;
+  }
+
   //*************Event Routes */
 
   /** POST /event/create => {new event}

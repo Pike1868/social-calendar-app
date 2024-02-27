@@ -1,13 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { resetState } from "./helpers/globalActions";
 import serverAPI from "../api/serverAPI";
 import { decodeToken } from "./helpers/decodeTokenHelper";
 import googleCalendarAPI from "../api/googleCalendarAPI";
 
 /**
- * TODO:Check proper error handling of expired tokens
+ * TODO:
+ * Check proper error handling of expired tokens
+ * Handle user feedback for all errors
+ *
  */
-
 const setUserIdFromLocalStorage = () => {
+  /** Check for a token in local storage
+   * Decode to get the user id to rehydrate user state
+   * Handle invalid or expired tokens
+   */
   const token = localStorage.getItem("socialCalToken");
   if (!token) {
     return null;
@@ -36,6 +43,19 @@ const initialState = {
 };
 
 const userSlice = createSlice({
+  /**
+   * reducers:
+   * setUser
+   * setUserDetails
+   * setUserDefaultCalendar
+   * setError
+   *
+   * extra reducers (thunks):
+   * registerUser
+   * loginUser
+   * fetchUserDetails
+   * fetchUserCalendar
+   */
   name: "user",
   initialState,
   reducers: {
@@ -45,16 +65,11 @@ const userSlice = createSlice({
     setUserDetails: (state, action) => {
       state.userDetails = action.payload;
     },
-    logoutUser(state) {
-      state.user = null;
-      state.userDetails = null;
-      state.userCalendar = null;
-      state.loading = false;
-      state.error = null;
-      localStorage.removeItem("socialCalToken");
-    },
     setUserDefaultCalendar: (state, action) => {
       state.userCalendar = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -103,11 +118,17 @@ const userSlice = createSlice({
       .addCase(fetchUserCalendars.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
-      });
+      })
+      .addCase(resetState, () => initialState);
   },
 });
 
 export const registerUser = createAsyncThunk(
+  /**
+   * Registers user with signup user data
+   * Receives token as a response.
+   * Decodes token to set Users state
+   */
   "user/registerUser",
   async (newUser, { rejectWithValue }) => {
     try {
@@ -115,6 +136,7 @@ export const registerUser = createAsyncThunk(
       const decoded = decodeToken(token);
       return { id: decoded.id }; //payload for fulfilled action
     } catch (err) {
+      console.log(err);
       console.error("Error registering user:", err);
       return rejectWithValue(err); //payload for rejected action
     }
@@ -122,6 +144,11 @@ export const registerUser = createAsyncThunk(
 );
 
 export const loginUser = createAsyncThunk(
+  /**
+   * Login user with credentials
+   * Receives token as a response.
+   * Decodes token to set users state
+   */
   "user/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
@@ -136,6 +163,10 @@ export const loginUser = createAsyncThunk(
 );
 
 export const fetchUserDetails = createAsyncThunk(
+  /**
+   *  Fetch user details by id
+   *  save to userDetails state
+   */
   "user/fetchUserDetails",
   async (userId, { rejectWithValue }) => {
     try {
@@ -150,6 +181,10 @@ export const fetchUserDetails = createAsyncThunk(
 );
 
 export const fetchUserCalendars = createAsyncThunk(
+  /**
+   * Fetch user's calendars by user id
+   * save to userCalendar state
+   */
   "user/fetchUserCalendars",
   async (userId, { rejectWithValue }) => {
     try {
@@ -162,8 +197,23 @@ export const fetchUserCalendars = createAsyncThunk(
   }
 );
 
-export const { setUser, setUserDetails, logoutUser } = userSlice.actions;
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async (userData, { getState, rejectWithValue }) => {
+    try {
+      const { user } = getState();
+      const response = await serverAPI.updateUser({ id: user.id, ...userData });
+      return response;
+    } catch (err) {
+      console.error("Error updating user:", err);
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const { setUser, setUserDetails, setError } = userSlice.actions;
 export const selectUser = (state) => state.user;
 export const selectUserDetails = (state) => state.user.userDetails;
 export const selectUserCalendar = (state) => state.user.userCalendar;
+export const selectUserError = (state) => state.user.error;
 export default userSlice.reducer;

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { resetState } from "./helpers/globalActions";
 import serverAPI from "../api/serverAPI";
 import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
 import { formatISO } from "date-fns";
@@ -65,7 +66,8 @@ const eventSlice = createSlice({
       .addCase(removeEvent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(resetState, () => initialState);
   },
 });
 

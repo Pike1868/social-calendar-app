@@ -1,5 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 
+//Checks for expired tokens when decoding
+
 export const decodeToken = (token) => {
   try {
     const decoded = jwtDecode(token);

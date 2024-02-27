@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Avatar,
   Box,
@@ -12,17 +12,16 @@ import { Link as RouterLink } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import GoogleIcon from "@mui/icons-material/Google";
 import NavBar from "../components/NavBar";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, selectUserError, setError } from "../redux/userSlice";
 
 const SignIn = () => {
   const dispatch = useDispatch();
-
-  const [error, setError] = useState("");
+  const error = useSelector(selectUserError);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(null);
+    dispatch(setError(null));
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
     const password = data.get("password");
@@ -30,7 +29,9 @@ const SignIn = () => {
     try {
       await dispatch(loginUser({ email, password }));
     } catch (err) {
-      setError(err || "An error occurred during sign in, please try again.");
+      dispatch(
+        setError(err || "An error occurred during sign in, please try again.")
+      );
     }
   };
 

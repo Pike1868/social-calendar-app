@@ -47,6 +47,14 @@ router.post("/token", async function (req, res, next) {
 router.post("/register", async function (req, res, next) {
   try {
     const { email } = req.body;
+    // Check if email ends with @gmail.com
+    if (email.endsWith("@gmail.com")) {
+      return res.status(400).json({
+        error: {
+          message: "Please sign in using Google",
+        },
+      });
+    }
 
     // Check for duplicate email
     let userExists;

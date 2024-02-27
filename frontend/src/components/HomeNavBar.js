@@ -12,9 +12,9 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link as RouterLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { logoutUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
-import { resetEvents } from "../redux/eventSlice";
+import { setUser } from "../redux/userSlice";
+import { resetState } from "../redux/helpers/globalActions";
 
 const drawerWidth = 340; // Needs to match drawerWidth of Sidebar
 
@@ -39,8 +39,9 @@ const HomeNavBar = ({ open, toggleDrawer }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const logout = () => {
-    dispatch(logoutUser());
-    dispatch(resetEvents());
+    localStorage.removeItem("socialCalToken");
+    dispatch(setUser(null));
+    dispatch(resetState());
     navigate("/");
   };
   return (

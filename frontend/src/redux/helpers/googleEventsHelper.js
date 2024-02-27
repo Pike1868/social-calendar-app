@@ -12,15 +12,20 @@ export const filterEventsByTimeRange = (events) => {
   const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 2)); // +2 because we already subtracted a year
 
   return events.filter((event) => {
-    const eventStartTime = new Date(event.start.dateTime || event.start.date); // Adjust based on the actual event date format
+    const eventStartTime = new Date(event.start.dateTime || event.start.date);
     return eventStartTime >= oneYearAgo && eventStartTime <= oneYearFromNow;
   });
 };
 
 export const normalizeGoogleEventStructure = (googleEvent) => {
+  /* Note: Using the Google event ID as the event's ID (`id`) 
+   and also storing it as `google_id`. 
+   
+   This is done to facilitate easier updates and management of events across both systems.
+  */
   return {
     id: googleEvent.id,
-    google_id: googleEvent.id, // Google Event ID
+    google_id: googleEvent.id,
     calendar_id: "primary",
     title: googleEvent.summary || "",
     location: googleEvent.location || "",
@@ -31,6 +36,14 @@ export const normalizeGoogleEventStructure = (googleEvent) => {
   };
 };
 
+/**
+ * Reverts the structure of a local event object to the Google Calendar event format.
+ * Currently, this function statically maps predefined local event properties to their
+ * corresponding Google Calendar event fields.
+ *
+ * TODO: Make this function dynamic, allowing it to adjust the
+ * fields to update based on the specific event object passed in.
+ */
 export const revertGoogleEventStructure = (localEvent) => {
   const startDateTime = parseISO(localEvent.start_time);
   const endDateTime = parseISO(localEvent.end_time);

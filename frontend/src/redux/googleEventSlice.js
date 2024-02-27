@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { resetState } from "./helpers/globalActions";
 import googleCalendarAPI from "../api/googleCalendarAPI";
 import {
   filterEventsByTimeRange,
@@ -10,7 +11,20 @@ import { createEvent, removeEvent, updateEvent } from "./eventSlice";
 import { formatISO } from "date-fns";
 import serverAPI from "../api/serverAPI";
 
+const initialState = {
+  events: [],
+  currentGoogleEvent: null,
+  showGoogleEvents: false,
+  status: "idle",
+  error: null,
+};
+
 export const fetchGoogleEvents = createAsyncThunk(
+  /**
+   * Fetch google events with user access token
+   * Uses a helper function to modify data structure
+   * to match local events for easier integration with UI
+   */
   "googleEvents/fetchGoogleEvents",
   async (accessToken, { rejectWithValue }) => {
     try {
@@ -27,6 +41,15 @@ export const fetchGoogleEvents = createAsyncThunk(
 );
 
 export const createGoogleEvent = createAsyncThunk(
+  /**
+   * Creates an event with eventData
+   * Uses getState to use the users access token for the request
+   *
+   * After it is created in google the event is then created locally
+   * with data formatted to include calendar_id to link with local calendar
+   * and google_id to link with google calendar event.
+   *
+   */
   "googleEvent/createGoogleEvent",
   async (eventData, { dispatch, getState, rejectWithValue }) => {
     try {
@@ -57,6 +80,11 @@ export const createGoogleEvent = createAsyncThunk(
 );
 
 export const removeGoogleEvent = createAsyncThunk(
+  /**
+   * Removes an event from google
+   * then uses the google_id to find the local event id
+   * to then use the existing removeEvent action to also delete the event locally
+   */
   "googleEvent/removeGoogleEvent",
   async (googleId, { dispatch, getState, rejectWithValue }) => {
     try {
@@ -76,6 +104,11 @@ export const removeGoogleEvent = createAsyncThunk(
 );
 
 export const updateGoogleEvent = createAsyncThunk(
+  /**
+   * Updates a event from google
+   * then uses the google_id to find the local event id
+   * to then use the existing updateEvent action to also update the event locally
+   */
   "googleEvent/updateGoogleEvent",
   async ({ google_id, eventData }, { dispatch, getState, rejectWithValue }) => {
     try {
@@ -99,14 +132,19 @@ export const updateGoogleEvent = createAsyncThunk(
 );
 
 const googleEventSlice = createSlice({
+  /**
+   * reducers:
+   * setCurrentGoogleEvent
+   * resetCurrentGoogleEvent
+   * toggleGoogleEventsVisibility
+   *
+   * extra reducers (thunks):
+   * fetchGoogleEvents
+   * createGoogleEvent
+   * removeGoogleEvent
+   */
   name: "googleEvents",
-  initialState: {
-    events: [],
-    currentGoogleEvent: null,
-    showGoogleEvents: false,
-    status: "idle",
-    error: null,
-  },
+  initialState,
   reducers: {
     setCurrentGoogleEvent(state, action) {
       state.currentGoogleEvent = {
@@ -144,6 +182,16 @@ const googleEventSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(updateGoogleEvent.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateGoogleEvent.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(updateGoogleEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(removeGoogleEvent.pending, (state) => {
         state.loading = true;
       })
@@ -153,7 +201,8 @@ const googleEventSlice = createSlice({
       .addCase(removeGoogleEvent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(resetState, () => initialState);
   },
 });
 

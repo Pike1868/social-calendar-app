@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/user-update-schema",
+    "type": "object",
+    "properties": {
+      "first_name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 30
+      },
+      "last_name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 30
+      },
+      "birthday": {
+        "type": "string",
+        "format": "date"
+      },
+      "time_zone": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "additionalProperties": false
+  }
+  

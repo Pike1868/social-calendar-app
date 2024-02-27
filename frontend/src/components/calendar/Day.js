@@ -16,6 +16,13 @@ import {
 
 import dayjs from "dayjs";
 
+/**TODO:
+ *
+ * Allow users to create an event
+ * with date pre-populated when a user
+ * clicks on a day in the grid
+ */
+
 export default function Day({ day, toggleModal }) {
   const dispatch = useDispatch();
   const showGoogleEvents = useSelector(selectShowGoogleEvents);
