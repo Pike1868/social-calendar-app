@@ -11,6 +11,18 @@ import { createEvent, removeEvent, updateEvent } from "./eventSlice";
 import { formatISO } from "date-fns";
 import serverAPI from "../api/serverAPI";
 
+/**
+ *
+ * googleEventSlice contains all user state for google calendar events,
+ * and functions to set or remove those from the store.
+ *
+ *
+ * TODO:
+ * Tests
+ * Handle user feedback for all errors
+ *
+ */
+
 const initialState = {
   events: [],
   currentGoogleEvent: null,
@@ -48,7 +60,6 @@ export const createGoogleEvent = createAsyncThunk(
    * After it is created in google the event is then created locally
    * with data formatted to include calendar_id to link with local calendar
    * and google_id to link with google calendar event.
-   *
    */
   "googleEvent/createGoogleEvent",
   async (eventData, { dispatch, getState, rejectWithValue }) => {
@@ -132,17 +143,6 @@ export const updateGoogleEvent = createAsyncThunk(
 );
 
 const googleEventSlice = createSlice({
-  /**
-   * reducers:
-   * setCurrentGoogleEvent
-   * resetCurrentGoogleEvent
-   * toggleGoogleEventsVisibility
-   *
-   * extra reducers (thunks):
-   * fetchGoogleEvents
-   * createGoogleEvent
-   * removeGoogleEvent
-   */
   name: "googleEvents",
   initialState,
   reducers: {
@@ -208,7 +208,7 @@ const googleEventSlice = createSlice({
 
 export const selectCurrentGoogleEvent = (state) => {
   const { currentGoogleEvent } = state.googleEvent;
-  if (currentGoogleEvent && currentGoogleEvent.id) {
+  if (currentGoogleEvent?.id) {
     return state.googleEvent.events.find(
       (event) => event.id === currentGoogleEvent.id
     );

@@ -5,11 +5,16 @@ import { decodeToken } from "./helpers/decodeTokenHelper";
 import googleCalendarAPI from "../api/googleCalendarAPI";
 
 /**
+ * userSlice contains all user state needed for
+ * calendars and events, and functions to
+ * set or remove those from the store.
+ *
  * TODO:
+ * Tests
  * Check proper error handling of expired tokens
  * Handle user feedback for all errors
- *
  */
+
 const setUserIdFromLocalStorage = () => {
   /** Check for a token in local storage
    * Decode to get the user id to rehydrate user state
@@ -43,19 +48,6 @@ const initialState = {
 };
 
 const userSlice = createSlice({
-  /**
-   * reducers:
-   * setUser
-   * setUserDetails
-   * setUserDefaultCalendar
-   * setError
-   *
-   * extra reducers (thunks):
-   * registerUser
-   * loginUser
-   * fetchUserDetails
-   * fetchUserCalendar
-   */
   name: "user",
   initialState,
   reducers: {
@@ -74,19 +66,13 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(registerUser.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.user = action.payload; // Set user ith decoded id
+        state.user = action.payload;
         state.loading = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.error = action.payload; //Gets error info from payload
+        state.error = action.payload;
         state.loading = false;
-      })
-      .addCase(loginUser.pending, (state) => {
-        state.loading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload;
@@ -96,20 +82,13 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
-      .addCase(fetchUserDetails.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(fetchUserDetails.fulfilled, (state, action) => {
         state.userDetails = action.payload;
         state.loading = false;
       })
-
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
-      })
-      .addCase(fetchUserCalendars.pending, (state) => {
-        state.loading = true;
       })
       .addCase(fetchUserCalendars.fulfilled, (state, action) => {
         state.userCalendar = action.payload.calendars[0];
@@ -119,7 +98,14 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
-      .addCase(resetState, () => initialState);
+      .addCase(resetState, () => initialState)
+      .addMatcher(
+        (action) => action.type.endsWith("./pending"),
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
+      );
   },
 });
 

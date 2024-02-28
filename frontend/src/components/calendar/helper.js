@@ -8,7 +8,7 @@ function getMonthGrid(date = dayjs()) {
   //Finds the day that first day of the month should be on
   const firstDayOfMonth = date.startOf("month").startOf("week");
 
-  //Builds a matrix of arrays, 6(weeks) x 7(days)
+  //Builds a matrix of arrays, 5(weeks) x 7(days)
   for (let week = 0; week < NUM_WEEKS_PER_MONTH; week++) {
     let weekDays = [];
     for (let day = 0; day < NUM_DAYS_OF_WEEK; day++) {

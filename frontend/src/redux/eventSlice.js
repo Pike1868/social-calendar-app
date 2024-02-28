@@ -4,6 +4,15 @@ import serverAPI from "../api/serverAPI";
 import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
 import { formatISO } from "date-fns";
 
+/**
+ * eventSlice contains all user state for local application
+ * events, and functions to set or remove those from the store.
+ *
+ * TODO:
+ * Tests
+ * Handle user feedback for all errors
+ */
+
 const initialState = {
   eventList: [],
   currentEvent: null,
@@ -16,14 +25,10 @@ const eventSlice = createSlice({
   name: "events",
   initialState,
   reducers: {
-    resetEvents(state) {
-      Object.assign(state, initialState);
-    },
+    resetEvents: () => initialState,
     setCurrentEvent(state, action) {
-      state.currentEvent = {
-        id: action.payload.id,
-        source: action.payload.source,
-      };
+      const { id, source } = action.payload;
+      state.currentEvent = { id, source };
     },
     resetCurrentEvent(state) {
       state.currentEvent = null;
@@ -34,40 +39,40 @@ const eventSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchEventsByCalendar.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(fetchEventsByCalendar.fulfilled, (state, action) => {
-        state.loading = false;
         state.eventList = action.payload;
       })
       .addCase(fetchEventsByCalendar.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(updateEvent.pending, (state) => {
-        state.loading = true;
+        state.error = action.error.message || action.payload;
       })
       .addCase(updateEvent.fulfilled, (state, action) => {
-        state.loading = false;
-        state.event = action.payload;
+        state.currentEvent = action.payload;
       })
       .addCase(updateEvent.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(removeEvent.pending, (state) => {
-        state.loading = true;
+        state.error = action.error.message || action.payload;
       })
       .addCase(removeEvent.fulfilled, (state, action) => {
-        state.loading = false;
-        state.event = action.payload;
+        state.currentEvent = action.payload;
       })
       .addCase(removeEvent.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.error = action.error.message || action.payload;
       })
-      .addCase(resetState, () => initialState);
+      .addCase(resetState, () => initialState)
+      .addMatcher(
+        (action) => action.type.endsWith("/pending"),
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
+      )
+      .addMatcher(
+        (action) =>
+          action.type.endsWith("/fulfilled") ||
+          action.type.endsWith("/rejected"),
+        (state) => {
+          state.loading = false;
+        }
+      );
   },
 });
 
@@ -78,12 +83,19 @@ export const fetchEventsByCalendar = createAsyncThunk(
       const response = await serverAPI.fetchEventsByCalendar(calendar_id);
       return response;
     } catch (err) {
-      return rejectWithValue(err.toString());
+      return rejectWithValue(err.response.data.error || err.message);
     }
   }
 );
 
 export const createEvent = createAsyncThunk(
+  /**
+   * Creates a local application event with eventData
+   * Uses getState to access user details which are used
+   * to format the eventData for the request
+   *
+   * dispatches action to fetch events for an updated list
+   */
   "events/createEvent",
   async (eventData, { rejectWithValue, dispatch, getState }) => {
     try {
@@ -101,31 +113,41 @@ export const createEvent = createAsyncThunk(
       await serverAPI.createEvent(formattedEventData);
       dispatch(fetchEventsByCalendar(userCalendar.id));
     } catch (err) {
-      return rejectWithValue(err.toString());
+      return rejectWithValue(err.response.data.error || err.message);
     }
   }
 );
 
 export const updateEvent = createAsyncThunk(
+  /**
+   * updates a local event by id with eventData
+   *
+   * returns the updated {event obj}
+   */
   "events/updateEvent",
   async ({ id, eventData }, { rejectWithValue }) => {
     try {
       const response = await serverAPI.updateEvent(id, eventData);
       return response;
     } catch (err) {
-      return rejectWithValue(err.toString());
+      return rejectWithValue(err.response.data.error || err.message);
     }
   }
 );
 
 export const removeEvent = createAsyncThunk(
+  /**
+   * removes a local event by id
+   * 
+   * returns { message: "Event deleted" }
+   */
   "events/removeEvent",
   async (id, { rejectWithValue }) => {
     try {
       const response = await serverAPI.removeEvent(id);
       return response;
     } catch (err) {
-      return rejectWithValue(err.toString());
+      return rejectWithValue(err.response.data.error || err.message);
     }
   }
 );

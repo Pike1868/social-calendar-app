@@ -13,33 +13,28 @@ import { createEvent } from "../redux/eventSlice";
 import { selectUser } from "../redux/userSlice";
 import { createGoogleEvent } from "../redux/googleEventSlice";
 
+const DEFAULT_EVENT_DATA = {
+  title: "",
+  start_time: "",
+  end_time: "",
+  location: "",
+  description: "",
+  status: "",
+  time_zone: "",
+};
+
 export default function EventCreatorModal() {
   const dispatch = useDispatch();
   const { userDetails } = useSelector(selectUser);
+
   const [open, setOpen] = useState(false);
   const [createOnGoogle, setCreateOnGoogle] = useState(false);
-  const [eventData, setEventData] = useState({
-    title: "",
-    start_time: "",
-    end_time: "",
-    location: "",
-    description: "",
-    status: "",
-    time_zone: "",
-  });
+  const [eventData, setEventData] = useState(DEFAULT_EVENT_DATA);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setEventData({
-      title: "",
-      start_time: "",
-      end_time: "",
-      location: "",
-      description: "",
-      status: "",
-      time_zone: "",
-    });
 
+  const handleClose = () => {
+    setEventData(DEFAULT_EVENT_DATA);
     setOpen(false);
   };
 
@@ -51,128 +46,108 @@ export default function EventCreatorModal() {
     }));
   };
 
-  /**
-   * Events are always created locally by default, can be created in google calendar if user selected "sync with google calendar"
-   *
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (createOnGoogle) {
-      dispatch(createGoogleEvent(eventData));
-      handleClose();
-      return;
-    } else {
-      dispatch(createEvent(eventData));
-      handleClose();
-    }
+
+    const action = createOnGoogle ? createGoogleEvent : createEvent;
+
+    dispatch(action(eventData));
+    handleClose();
   };
 
   return (
-    <div>
+    <>
       <Button onClick={handleOpen} variant="contained">
         New Event
       </Button>
       <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-          }}
-          component="form"
-          onSubmit={handleSubmit}
-        >
-          <Typography id="event-modal-title" variant="h6" component="h2">
+        <Box sx={modalStyle}>
+          <Typography variant="h6" component="h2">
             Create New Event
           </Typography>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="title"
-            label="Event Title"
-            name="title"
-            autoFocus
-            value={eventData.title}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="start_time"
-            label="Start Time"
-            name="start_time"
-            type="datetime-local"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={eventData.start_time}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="end_time"
-            label="End Time"
-            name="end_time"
-            type="datetime-local"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={eventData.end_time}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="location"
-            label="Location"
-            name="location"
-            value={eventData.location}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Description"
-            name="description"
-            multiline
-            rows={4}
-            value={eventData.description}
-            onChange={handleChange}
-          />
-          {userDetails && userDetails.access_token && (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={createOnGoogle}
-                  onChange={() => setCreateOnGoogle(!createOnGoogle)}
-                  name="createOnGoogle"
-                  color="primary"
-                />
-              }
-              label="Sync event with Google Calendar"
-            />
-          )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Create Event
-          </Button>
+          <form onSubmit={handleSubmit}>
+            {renderTextFields()}
+            {renderSyncWithGoogleCheckbox()}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={buttonStyle}
+            >
+              Create Event
+            </Button>
+          </form>
         </Box>
       </Modal>
-    </div>
+    </>
   );
+
+  function renderTextFields() {
+    const fields = [
+      { name: "title", label: "Event Title", required: true, autoFocus: true },
+      {
+        name: "start_time",
+        label: "Start Time",
+        type: "datetime-local",
+        required: true,
+      },
+      {
+        name: "end_time",
+        label: "End Time",
+        type: "datetime-local",
+        required: true,
+      },
+      { name: "location", label: "Location" },
+      { name: "description", label: "Description", multiline: true, rows: 4 },
+    ];
+
+    return fields.map((field) => (
+      <TextField
+        key={field.name}
+        margin="normal"
+        fullWidth
+        value={eventData[field.name]}
+        onChange={handleChange}
+        {...field}
+        InputLabelProps={
+          field.type === "datetime-local" ? { shrink: true } : null
+        }
+      />
+    ));
+  }
+
+  function renderSyncWithGoogleCheckbox() {
+    return (
+      userDetails?.access_token && (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={createOnGoogle}
+              onChange={() => setCreateOnGoogle(!createOnGoogle)}
+              color="primary"
+              name="createOnGoogle"
+            />
+          }
+          label="Sync event with Google Calendar"
+        />
+      )
+    );
+  }
 }
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
+const buttonStyle = {
+  mt: 3,
+  mb: 2,
+};
