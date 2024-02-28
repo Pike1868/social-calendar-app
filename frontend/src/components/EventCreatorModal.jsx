@@ -19,14 +19,11 @@ const DEFAULT_EVENT_DATA = {
   end_time: "",
   location: "",
   description: "",
-  status: "",
-  time_zone: "",
 };
 
 export default function EventCreatorModal() {
   const dispatch = useDispatch();
   const { userDetails } = useSelector(selectUser);
-
   const [open, setOpen] = useState(false);
   const [createOnGoogle, setCreateOnGoogle] = useState(false);
   const [eventData, setEventData] = useState(DEFAULT_EVENT_DATA);

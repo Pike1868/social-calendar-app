@@ -1,8 +1,7 @@
 // HomeNavBar.js
 import React from "react";
-import { styled } from "@mui/material/styles";
 import {
-  AppBar as MuiAppBar,
+  AppBar,
   Button,
   Link,
   Toolbar,
@@ -15,25 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlice";
 import { resetState } from "../redux/helpers/globalActions";
-
-const drawerWidth = 340; // Needs to match drawerWidth of Sidebar
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
 
 const HomeNavBar = ({ open, toggleDrawer }) => {
   const dispatch = useDispatch();
@@ -59,7 +39,6 @@ const HomeNavBar = ({ open, toggleDrawer }) => {
         <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
           Social Calendar
         </Typography>
-        {/* Add additional elements like user profile/logout button here */}
         <>
           <Link
             component={RouterLink}

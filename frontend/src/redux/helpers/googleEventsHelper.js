@@ -1,5 +1,6 @@
 import { parseISO } from "date-fns";
 import { format } from "date-fns-tz";
+import { ISO_DATE_TIME_FORMAT } from "./dateTimeFormats";
 
 // set local timezone from browser, or default
 const userTimeZone =
@@ -48,12 +49,10 @@ export const revertGoogleEventStructure = (localEvent) => {
   const startDateTime = parseISO(localEvent.start_time);
   const endDateTime = parseISO(localEvent.end_time);
   // Format dates with timezone offset
-  const formattedStartDateTime = format(
-    startDateTime,
-    "yyyy-MM-dd'T'HH:mm:ssXXX",
-    { userTimeZone }
-  );
-  const formattedEndDateTime = format(endDateTime, "yyyy-MM-dd'T'HH:mm:ssXXX", {
+  const formattedStartDateTime = format(startDateTime, ISO_DATE_TIME_FORMAT, {
+    userTimeZone,
+  });
+  const formattedEndDateTime = format(endDateTime, ISO_DATE_TIME_FORMAT, {
     userTimeZone,
   });
   return {
