@@ -1,16 +1,16 @@
 import dayjs from "dayjs";
 
+const NUM_DAYS_OF_WEEK = 7;
+const NUM_WEEKS_PER_MONTH = 6;
+
 function getMonthGrid(date = dayjs()) {
   const firstDayOfMonth = date.startOf("month").startOf("week");
-  const daysInMonth = date.daysInMonth();
 
-  const weeksInMonth = Math.ceil((firstDayOfMonth.date() + daysInMonth) / 7);
-
-  const daysMatrix = Array.from({ length: weeksInMonth }, (_, weekIndex) => {
-    return Array.from({ length: 7 }, (_, dayIndex) => {
-      return firstDayOfMonth.add(weekIndex * 7 + dayIndex, "day");
-    });
-  });
+  const daysMatrix = Array.from({ length: NUM_WEEKS_PER_MONTH }, (_, weekIndex) =>
+    Array.from({ length: NUM_DAYS_OF_WEEK }, (_, dayIndex) =>
+      firstDayOfMonth.add(weekIndex * 7 + dayIndex, "day")
+    )
+  );
 
   return daysMatrix;
 }
