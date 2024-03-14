@@ -93,7 +93,7 @@ const SignIn = () => {
               }}
             >
               <a
-                href="http://localhost:3001/auth/google"
+                href="https://social-calendar-app.onrender.com/auth/google"
                 style={{
                   textDecoration: "none",
                   display: "flex",
