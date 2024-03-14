@@ -18,7 +18,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.REACT_APP_BASE_URL}/auth/google/callback`,
+      callbackURL: `${process.env.SERVER_BASE_URL}/auth/google/callback`,
     },
     async function (accessToken, refreshToken, profile, done) {
       let encryptedAccessToken;
@@ -92,7 +92,7 @@ router.get(
     const token = createToken(req.user);
 
     // Send response back to signup page with token
-    res.redirect(`http://localhost:3000/signup?token=${token}`);
+    res.redirect(`${process.env.REACT_APP_BASE_URL}/signup?token=${token}`);
   }
 );
 
