@@ -1,20 +1,30 @@
-// cryptoHelper.js
 const crypto = require("crypto");
 
-//Grab from env file
-const SECRET_KEY = process.env.SECRET_KEY;
-const ALGORITHM = process.env.ALGORITHM;
+// Make sure SECRET_KEY is 32 bytes for aes-256-ctr.
+const SECRET_KEY = crypto
+  .createHash("sha256")
+  .update(String(process.env.SECRET_KEY))
+  .digest("base64")
+  .substr(0, 32);
+const ALGORITHM = process.env.ALGORITHM || "aes-256-ctr";
+
+// Generates a random IV for each encryption.
+const generateIV = () => crypto.randomBytes(16); // AES block size is 16 bytes for CTR mode.
 
 const encrypt = (text) => {
-  const cipher = crypto.createCipher(ALGORITHM, SECRET_KEY);
+  const iv = generateIV();
+  const cipher = crypto.createCipheriv(ALGORITHM, SECRET_KEY, iv);
   let encrypted = cipher.update(text, "utf8", "hex");
   encrypted += cipher.final("hex");
-  return encrypted;
+  return iv.toString("hex") + ":" + encrypted; // IV needed for decryption
 };
 
-const decrypt = (text) => {
-  const decipher = crypto.createDecipher(ALGORITHM, SECRET_KEY);
-  let decrypted = decipher.update(text, "hex", "utf8");
+const decrypt = (hash) => {
+  const parts = hash.split(":");
+  const iv = Buffer.from(parts.shift(), "hex");
+  const encryptedText = parts.join(":");
+  const decipher = crypto.createDecipheriv(ALGORITHM, SECRET_KEY, iv);
+  let decrypted = decipher.update(encryptedText, "hex", "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;
 };
