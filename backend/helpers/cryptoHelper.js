@@ -6,7 +6,7 @@ const SECRET_KEY = crypto
   .update(String(process.env.SECRET_KEY))
   .digest("base64")
   .substring(0, 32);
-const ALGORITHM = process.env.ALGORITHM || "aes-256-ctr";
+const ALGORITHM = "aes-256-ctr";
 const IV = crypto.randomBytes(16);
 
 const encrypt = (text) => {

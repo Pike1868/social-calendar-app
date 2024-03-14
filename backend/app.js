@@ -14,7 +14,8 @@ const app = express();
 
 // Initialize Passport
 app.use(passport.initialize());
-app.use(cors());
+//Allow requests from front end
+app.use(cors({ origin: "https://react-social-calendar-app.onrender.com" }));
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
