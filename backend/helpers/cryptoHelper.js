@@ -22,3 +22,5 @@ const decrypt = (encryptedText) => {
   decrypted += decipher.final("utf8");
   return decrypted;
 };
+
+module.exports = { encrypt, decrypt };
