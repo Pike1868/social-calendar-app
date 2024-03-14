@@ -1,5 +1,6 @@
 import axios from "axios";
-const BASE_URL = process.env.SERVER_URL || "http://localhost:3001";
+const BASE_URL =
+  process.env.SERVER_URL || "https://social-calendar-app.onrender.com";
 
 /** API Class.
  *
