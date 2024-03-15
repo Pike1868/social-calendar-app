@@ -6,6 +6,12 @@ const ALGORITHM = "aes-256-ctr";
 
 // Generate a random IV
 const IV = crypto.randomBytes(16);
+console.log(
+  "SECRET_KEY: ",
+  SECRET_KEY,
+  " Should log 32 as key length: ",
+  SECRET_KEY.length
+);
 
 const encrypt = (text) => {
   // Check if text is not undefined and is a string
