@@ -69,7 +69,7 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
                     onChange={() => dispatch(toggleLocalEventsVisibility())}
                   />
                 }
-                label="Default Calendar"
+                label="Local Calendar"
               />
               {userDetails && userDetails.access_token && (
                 <FormControlLabel
