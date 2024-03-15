@@ -71,6 +71,7 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
                 }
                 label="Local Calendar"
               />
+               <br></br>
               {userDetails && userDetails.access_token && (
                 <FormControlLabel
                   control={

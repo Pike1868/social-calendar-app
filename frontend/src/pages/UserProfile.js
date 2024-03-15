@@ -16,6 +16,15 @@ import { selectUserDetails, setUserDetails } from "../redux/userSlice";
 import { format, parseISO } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 
+/** UserProfile component
+ *
+ * Displays the logged in user's information.
+ *
+ * TODO:
+ * Add Tests
+ * Check formatting on birthday
+ */
+
 export default function UserProfile() {
   const userDetails = useSelector(selectUserDetails);
   const dispatch = useDispatch();
@@ -56,7 +65,6 @@ export default function UserProfile() {
     closeProfile();
   };
   const closeProfile = () => {
-    console.log("closing profile page");
     navigate("/");
   };
 

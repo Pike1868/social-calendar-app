@@ -27,12 +27,9 @@ passport.use(
       try {
         let existingUser = await User.get(profile._json.email);
 
-        console.log(accessToken, typeof accessToken);
-        console.log(refreshToken, typeof refreshToken);
         // Encrypt tokens before saving them
         encryptedAccessToken = encrypt(accessToken);
         
-
         if (existingUser.id) {
           // Update existing user's access token
           User.update(existingUser.id, {

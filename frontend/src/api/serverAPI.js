@@ -23,7 +23,6 @@ class serverAPI {
     }
 
     //passing authorization token in the header.
-    console.log("BASE_URL:", BASE_URL);
     const url = `${BASE_URL}/${endpoint}`;
     const headers = { Authorization: `Bearer ${serverAPI.token}` };
     const params = method === "get" ? data : {};
