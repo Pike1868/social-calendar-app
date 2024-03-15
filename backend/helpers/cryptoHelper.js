@@ -15,6 +15,7 @@ console.log(
 
 const encrypt = (text) => {
   // Check if text is not undefined and is a string
+  console.log("cryptohelper text:",text, typeof(text));
   if (typeof text !== "string") {
     console.error("Encryption error: text must be a string");
     throw new Error("Encryption error: text must be a string");
