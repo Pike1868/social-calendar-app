@@ -21,11 +21,13 @@ passport.use(
       callbackURL: `${process.env.SERVER_BASE_URL}/auth/google/callback`,
     },
     async function (accessToken, refreshToken, profile, done) {
-      let encryptedAccessToken;
-      let encryptedRefreshToken;
+      let encryptedAccessToken = String(accessToken);
+      let encryptedRefreshToken = String(refreshToken);
       try {
         let existingUser = await User.get(profile._json.email);
 
+        console.log(accessToken, typeof accessToken);
+        console.log(refreshToken, typeof refreshToken);
         // Encrypt tokens before saving them
         encryptedAccessToken = encrypt(accessToken);
         encryptedRefreshToken = encrypt(refreshToken);
