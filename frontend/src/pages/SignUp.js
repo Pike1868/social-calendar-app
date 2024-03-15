@@ -166,7 +166,7 @@ const SignUp = () => {
               }}
             >
               <a
-                href="https://social-calendar-app.onrender.com/auth/google"
+                href={`${process.env.REACT_APP_SERVER_URL}/auth/google`}
                 style={{
                   textDecoration: "none",
                   display: "flex",

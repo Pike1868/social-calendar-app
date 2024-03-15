@@ -1,6 +1,5 @@
 import axios from "axios";
-const BASE_URL =
-  process.env.SERVER_URL || "https://social-calendar-app.onrender.com";
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 /** API Class.
  *
@@ -24,7 +23,7 @@ class serverAPI {
     }
 
     //passing authorization token in the header.
-
+    console.log("BASE_URL:", BASE_URL);
     const url = `${BASE_URL}/${endpoint}`;
     const headers = { Authorization: `Bearer ${serverAPI.token}` };
     const params = method === "get" ? data : {};
