@@ -22,7 +22,8 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       let encryptedAccessToken = String(accessToken);
-      let encryptedRefreshToken = String(refreshToken);
+      
+      
       try {
         let existingUser = await User.get(profile._json.email);
 
@@ -30,13 +31,12 @@ passport.use(
         console.log(refreshToken, typeof refreshToken);
         // Encrypt tokens before saving them
         encryptedAccessToken = encrypt(accessToken);
-        encryptedRefreshToken = encrypt(refreshToken);
+        
 
         if (existingUser.id) {
-          // Update existing user's access and refresh tokens
+          // Update existing user's access token
           User.update(existingUser.id, {
             access_token: encryptedAccessToken,
-            refresh_token: encryptedRefreshToken,
           });
           done(null, existingUser);
         }
@@ -48,7 +48,6 @@ passport.use(
 
           // Encrypt tokens before saving them
           encryptedAccessToken = encrypt(accessToken);
-          encryptedRefreshToken = encrypt(refreshToken);
 
           const newUser = await User.create({
             id: newUserId,
@@ -57,7 +56,6 @@ passport.use(
             last_name: profile._json.family_name,
             googleId: profile.id,
             access_token: encryptedAccessToken,
-            refresh_token: encryptedRefreshToken,
           });
 
           if (newUser.id) {
