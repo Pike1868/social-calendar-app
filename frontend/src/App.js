@@ -14,6 +14,13 @@ function App() {
     // Grab token from google auth redirection
     const urlParams = new URLSearchParams(window.location.search);
     const authToken = urlParams.get("token");
+    console.log(
+      "useEffect triggered",
+      "urlParams: ",
+      urlParams,
+      "authToken:",
+      authToken
+    );
     if (authToken) {
       // Store token and update the application state
       localStorage.setItem("socialCalToken", authToken);
