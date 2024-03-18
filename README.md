@@ -1,7 +1,78 @@
-# Project Proposal: Social Calendar App
+# Starting the Application
 
-## Description
-After leaving college and moving farther from friends and family, I found it challenging to keep track of everyone's plans and find time to meet up. This app aims to simplify scheduling among friends and family by having everyone's schedules in one place, making it easier to plan get-togethers and stay connected.
+## Initial Setup
+
+### Environment Variables
+
+Before running the application, you need to set up environment variables for both the backend and frontend.
+
+#### Backend `.env` Configuration
+
+Navigate to the `/backend` directory and create a `.env` file with the following variables:
+
+```plaintext
+SECRET_KEY='your_secret_key'  # A 32-bit secret key needed for backend encryption
+PORT=3001
+DB_URI_DEV="postgresql:///social_cal_dev"
+DB_URI_TEST="postgresql:///social_cal_test"
+DB_URI_PROD="postgresql:///social_cal_prod"
+NODE_ENV="dev"  # Change the NODE_ENV to change databases
+GOOGLE_CLIENT_ID="your_google_client_id"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
+ALGORITHM="aes-256-ctr"  # Algorithm used to encrypt Google token
+REACT_APP_BASE_URL="http://localhost:3000"  # Frontend URL
+SERVER_BASE_URL="http://localhost:3001"  # Backend URL
+```
+
+- **!Security Note!**: Make sure include your .env file in your .gitignore file. Also replace placeholder values (e.g., `your_secret_key`, `your_google_client_id`, `your_google_client_secret`) with actual credentials when setting environmental variables.
+
+
+#### Frontend `.env` Configuration
+
+Navigate to the `/frontend` directory and create a `.env` file with:
+
+```plaintext
+REACT_APP_SERVER_URL="http://localhost:3001"  # URL to the backend server
+```
+
+### Database Setup
+
+Ensure PostgreSQL is installed and running on your system. Then, use the provided `db-schema.sql` file to set up your database schema. You can do this by navigating to the backend folder then opening a terminal and running the following command:
+
+```bash
+psql -d your_database_name -a -f db-schema.sql
+```
+
+##### Database Setup Command Explained:
+```plaintext
+psql: This is the PostgreSQL command line interface, allowing you to interact with your PostgreSQL database.
+-d your_database_name: Specifies the database to which you want to connect.
+-a: Aborts the transaction on errors. This ensures that if any part of your SQL script fails, the command stops running further commands.
+-f db-schema.sql: Executes SQL commands from the file specified; in this case, it's db-schema.sql. This file contains your database schema and any initial data setup.
+```
+
+Replace `your_database_name` with the actual name of your database (e.g., `social_cal_dev`).
+
+## Running the Application
+
+### Backend
+
+1. Navigate to the `/backend` directory.
+2. Install the necessary packages with `npm install`.
+3. Start the server using `npm run server.js` or `nodemon server.js`.
+
+### Frontend
+
+1. Navigate to the `/frontend` directory.
+2. Install the necessary packages with `npm install`.
+3. Start the application with `npm start`.
+
+Access the application in your browser at `http://localhost:3000`.
+
+# Project Overview: Social Calendar App
+
+## Purpose and Motivation
+The Social Calendar App was inspired by the challenge of staying connected with friends and family after significant life changes, such as graduating from college or relocating. The primary goal is to simplify the scheduling process among a user's social circle, making it easier to plan get-togethers, stay connected, and manage social engagements through a unified platform.
 
 ## Tech Stack
 - **Frontend**: React for building the user interface
@@ -9,74 +80,54 @@ After leaving college and moving farther from friends and family, I found it cha
 - **Database**: PostgreSQL for storing user data, events, and calendar information.
 - **Authentication**: JWT (JSON Web Tokens) for secure user authentication.
 - **APIs**: Google Calendar API for Gmail calendar integration, Public Holidays API for important dates.
-- **Deployment**: TBD
+- **Deployment**: Render: https://react-social-calendar-app.onrender.com
 
-## Type
-A web application designed for group scheduling, event management, and social connectivity.
+## Target Audience
+The app targets individuals and groups seeking a streamlined approach to social planning, including friends, family, and small organizational teams.
 
-## Goal
-To provide a platform that simplifies the process of group scheduling, making it more efficient and user-friendly. It aims to enhance connectivity among friends and family, reducing the hassle of planning joint activities.
+## Data Management
+- **User-Generated Data**: Profiles, event details, calendar entries
+- **API Data**: Gmail calendar events.
 
-## Focus of the Project
-The project will be a full-stack application with an evenly distributed focus on both the front-end and back-end. The front-end will offer a user-friendly interface, while the back-end will handle data management, user authentication, and API integration.
-
-## Users Demographic
-The primary users will be individuals looking to streamline their social planning, including groups of friends, family members, and possibly small teams or organizations.
-
-## Data
-- **User-Generated Data**: User profiles, event details, and calendar data.
-- **API Data**: Public holidays, Gmail calendar events.
-
-
-## Core Features:
+## Current Features:
 
 ### Database Design for Event and User Data
-- **Priority**: High
-- **Description**: Establishing a backend database to store and manage user and event data.
+- Backend database setup for storing user profiles and event information.
 
-### User Account Creation
-- **Priority**: High
-- **Description**: Enables user registration, login.
+### User Account Creation and Management:
+-  Registration, login, and profile management functionalities.
 
 ### Calendar Viewing
-- **Priority**: High
-- **Description**: Users can view their own calendar.
+- Users can view their personal local calendar and their google main calendar.
 
-### User Account Management
-- **Priority**: High
-- **Description**: Enables user profile management.
-
-### Event Creation, Editing, and Deletion
-- **Priority**: High
-- **Description**: Allows users to manage events on their calendars.
-
-### Calendar Sharing
-- **Priority**: High
-- **Description**: Users can view share calendars with others.
-
-### Google Calendar API Integration
-- **Priority**: Medium
-- **Description**: Synchronizing events with users' Google Calendars.
+### Event Creation and Management:
+-  Allows users to manage events on their calendars.
 
 ### Security and Authentication
-- **Priority**: High
-- **Description**: Implement secure authentication mechanisms and protect user data.
+- Implementation of JWT for secure access.
+
+
+## Partially Completed or Deferred:
+
+### Google Calendar API Integration
+- **Description**: Partial integration for synchronizing events with Google Calendar.
 
 ### Responsive Frontend Design
-- **Priority**: High
-- **Description**: Designing a user-friendly and responsive user interface.
+- **Description**: Using MUI for a responsive frontend. Needs some work on smaller screen sizes.
 
-### Public/Private Event Settings
-- **Priority**: Medium
-- **Description**: Option for users to set events as public or private.
+## Future Development and Todos:
+ 
+### Testing 
+ - Better testing coverage for existing features
 
-### Invitations and Notifications
-- **Priority**: Medium
-- **Description**: Send event invites and receive notifications.
+### Complete Google Calendar API Integration:
+ - Ensure seamless synchronization between the app and users' Google Calendars.
 
-## Development Approach
-1. Begin with high-priority core features such as user account management, event management, and calendar functionalities.
-2. Implement security measures and authentication early in the development process.
-3. Progress to additional features that enhance usability and user experience.
-4. Focus on developing a simple responsive frontend design in tandem with the backend development, aiming to complete and complete one feature at a time.
-5. Prepare for deployment after establishing a stable and functional application.
+### Implement Calendar Sharing: 
+- Allow users to share their calendars with others, enhancing collaboration and scheduling efficiency.
+
+### Develop Public/Private Event Settings:
+- Enable users to designate events as public or private, providing control over event visibility.
+
+### Introduce Invitations and Notifications: 
+- Implement a system for sending event invitations and receiving notifications, improving engagement and user experience.
