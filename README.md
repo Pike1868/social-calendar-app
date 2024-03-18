@@ -6,7 +6,7 @@
 
 Before running the application, you need to set up environment variables for both the backend and frontend.
 
-#### Backend `.env` Configuration
+### Backend `.env` Configuration
 
 Navigate to the `/backend` directory and create a `.env` file with the following variables:
 
@@ -24,10 +24,10 @@ REACT_APP_BASE_URL="http://localhost:3000"  # Frontend URL
 SERVER_BASE_URL="http://localhost:3001"  # Backend URL
 ```
 
-- **!Security Note!**: Make sure include your .env file in your .gitignore file. Also replace placeholder values (e.g., `your_secret_key`, `your_google_client_id`, `your_google_client_secret`) with actual credentials when setting environmental variables.
+- **Security Note: Make sure you include your .env file in your .gitignore file. Also replace placeholder values (e.g., `your_secret_key`, `your_google_client_id`, `your_google_client_secret`) with actual credentials when setting environmental variables.**
 
 
-#### Frontend `.env` Configuration
+### Frontend `.env` Configuration
 
 Navigate to the `/frontend` directory and create a `.env` file with:
 
@@ -68,6 +68,8 @@ Replace `your_database_name` with the actual name of your database (e.g., `socia
 3. Start the application with `npm start`.
 
 Access the application in your browser at `http://localhost:3000`.
+
+
 
 # Project Overview: Social Calendar App
 
