@@ -81,7 +81,7 @@ The Social Calendar App was inspired by the challenge of staying connected with 
 - **Backend**: Node.js with Express for the server-side logic
 - **Database**: PostgreSQL for storing user data, events, and calendar information.
 - **Authentication**: JWT (JSON Web Tokens) for secure user authentication.
-- **APIs**: Google Calendar API for Gmail calendar integration, Public Holidays API for important dates.
+- **APIs**: Google Calendar API for Gmail calendar integration.
 - **Deployment**: Render: https://react-social-calendar-app.onrender.com
 
 ## Target Audience
