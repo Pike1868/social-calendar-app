@@ -33,6 +33,7 @@ Navigate to the `/frontend` directory and create a `.env` file with:
 
 ```plaintext
 REACT_APP_SERVER_URL="http://localhost:3001"  # URL to the backend server
+REACT_APP_TICKETMASTER_API_KEY="your_ticketmaster_api_key" #free to create an account at https://developer.ticketmaster.com/
 ```
 
 ### Database Setup
