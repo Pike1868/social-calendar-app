@@ -21,7 +21,6 @@ class TicketmasterAPI {
   // Method to get events in the United States
   static async fetchEventsInUS() {
     const endpoint = "events.json";
-    // Adding the sort parameter for chronological sorting
     const params = { countryCode: "US" };
     try {
       let result = await this.request(endpoint, params);

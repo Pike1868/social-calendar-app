@@ -11,7 +11,8 @@ import UserProfile from "../pages/UserProfile";
  *
  * Defines all routes for app
  *  ---Available when logged in:
- * "/basic": Displays basic homepage for now
+ * "/home": Displays basic homepage for now
+ * "/profile": Displays user information on a profile page
  *
  * "/signin": Displays form for existing users to sign in
  * "/signup": Displays form for new users to sign up
