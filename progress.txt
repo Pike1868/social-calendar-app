@@ -302,3 +302,10 @@ Agent: Claude
 
 Privacy controls complete: sharing_enabled on users, sharing_preferences table with per-friend toggles, SharingPreference model with canViewAvailability check, privacy routes, frontend Privacy & Sharing section in profile with master + per-friend switches.
 ---
+
+## 2026-03-08T04:21:47.081Z
+Story: US-018 - Location Awareness (User City + Travel Detection)
+Agent: Claude
+
+Location awareness complete: travelDetection service scans Google Calendar for travel keywords, extracts destination cities, GET /discover/travel-matches cross-references with friends' home cities and returns matches.
+---

@@ -328,8 +328,8 @@
         "User can manually set 'I'll be in [city]' as override"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "Depends on friends system + suggestions engine."
+      "passes": true,
+      "notes": "Location awareness complete: travelDetection service scans Google Calendar for travel keywords, extracts destination cities, GET /discover/travel-matches cross-references with friends' home cities and returns matches."
     },
     {
       "id": "US-019",
