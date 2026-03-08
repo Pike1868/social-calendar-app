@@ -1,136 +1,218 @@
-# Starting the Application
-
-## Initial Setup
-
-### Environment Variables
-
-Before running the application, you need to set up environment variables for both the backend and frontend.
-
-### Backend `.env` Configuration
-
-Navigate to the `/backend` directory and create a `.env` file with the following variables:
-
-```plaintext
-SECRET_KEY='your_secret_key'  # A 32-bit secret key needed for backend encryption
-PORT=3001
-DB_URI_DEV="postgresql:///social_cal_dev"
-DB_URI_TEST="postgresql:///social_cal_test"
-DB_URI_PROD="postgresql:///social_cal_prod"
-NODE_ENV="dev"  # Change the NODE_ENV to change databases
-GOOGLE_CLIENT_ID="your_google_client_id"
-GOOGLE_CLIENT_SECRET="your_google_client_secret"
-ALGORITHM="aes-256-ctr"  # Algorithm used to encrypt Google token
-REACT_APP_BASE_URL="http://localhost:3000"  # Frontend URL
-SERVER_BASE_URL="http://localhost:3001"  # Backend URL
-```
-
-- **Security Note: Make sure you include your .env file in your .gitignore file. Also replace placeholder values (e.g., `your_secret_key`, `your_google_client_id`, `your_google_client_secret`) with actual credentials when setting environmental variables.**
-
-
-### Frontend `.env` Configuration
-
-Navigate to the `/frontend` directory and create a `.env` file with:
-
-```plaintext
-REACT_APP_SERVER_URL="http://localhost:3001"  # URL to the backend server
-REACT_APP_TICKETMASTER_API_KEY="your_ticketmaster_api_key" #free to create an account at https://developer.ticketmaster.com/
-```
-
-### Database Setup
-
-Ensure PostgreSQL is installed and running on your system. Then, use the provided `db-schema.sql` file to set up your database schema. You can do this by navigating to the backend folder then opening a terminal and running the following command:
-
-```bash
-psql -d your_database_name -a -f db-schema.sql
-```
-
-##### Database Setup Command Explained:
-```plaintext
-psql: This is the PostgreSQL command line interface, allowing you to interact with your PostgreSQL database.
--d your_database_name: Specifies the database to which you want to connect.
--a: Aborts the transaction on errors. This ensures that if any part of your SQL script fails, the command stops running further commands.
--f db-schema.sql: Executes SQL commands from the file specified; in this case, it's db-schema.sql. This file contains your database schema and any initial data setup.
-```
-
-Replace `your_database_name` with the actual name of your database (e.g., `social_cal_dev`).
-
-## Running the Application
-
-### Backend
-
-1. Navigate to the `/backend` directory.
-2. Install the necessary packages with `npm install`.
-3. Start the server using `npm run server.js` or `nodemon server.js`.
-
-### Frontend
-
-1. Navigate to the `/frontend` directory.
-2. Install the necessary packages with `npm install`.
-3. Start the application with `npm start`.
-
-Access the application in your browser at `http://localhost:3000`.
-
-
-
-# Project Overview: Social Calendar App
+# Circl — Social Calendar App
 
 ## Purpose and Motivation
-The Social Calendar App was inspired by the challenge of staying connected with friends and family after significant life changes, such as graduating from college or relocating. The primary goal is to simplify the scheduling process among a user's social circle, making it easier to plan get-togethers, stay connected, and manage social engagements through a unified platform.
+Circl was inspired by the challenge of staying connected with friends and family after significant life changes — graduating, relocating, starting a new job. Life gets busy and people drift apart, not because they don't care, but because coordinating schedules is exhausting. Circl simplifies that by showing you when your people are free and suggesting things to do together.
+
+Connect your Google Calendar, add your circle, and the app handles the rest.
 
 ## Tech Stack
-- **Frontend**: React for building the user interface
-- **Backend**: Node.js with Express for the server-side logic
-- **Database**: PostgreSQL for storing user data, events, and calendar information.
-- **Authentication**: JWT (JSON Web Tokens) for secure user authentication.
-- **APIs**: Google Calendar API for Gmail calendar integration.
-- **Deployment**: Render: https://react-social-calendar-app.onrender.com
+- **Frontend**: React 18, Redux Toolkit, MUI v5 (custom theme)
+- **Backend**: Node.js with Express
+- **Database**: PostgreSQL
+- **Calendar**: FullCalendar (month/week/day views)
+- **Authentication**: JWT + Google OAuth 2.0
+- **APIs**: Google Calendar API, Ticketmaster, SeatGeek, Eventbrite, OpenStreetMap (Nominatim/Overpass)
+- **Deployment**: Render (main branch) or Vercel Serverless Functions (vercel-migration branch)
 
-## Target Audience
-The app targets individuals and groups seeking a streamlined approach to social planning, including friends, family, and small organizational teams.
+## Features
 
-## Data Management
-- **User-Generated Data**: Profiles, event details, calendar entries
-- **API Data**: Gmail calendar events.
+### Authentication & Onboarding
+- Google OAuth (primary) + email/password signup
+- 4-step onboarding: display name, city (with geolocation detect), invite friends, privacy explainer
+- Token refresh flow (15min access + 7-day refresh tokens)
+- Session persistence across page refreshes
 
-## Current Features:
+### Calendar
+- FullCalendar with month, week, and day views
+- Multi-Google-Calendar support — sees all calendars you have access to
+- Per-calendar visibility toggles
+- Color-coded events (local = green, Google = gold)
+- Mobile: dot indicators with tap-to-expand, swipe navigation
+- Event creation with Google Calendar sync option
 
-### Database Design for Event and User Data
-- Backend database setup for storing user profiles and event information.
+### Friend System
+- Add friends by email or shareable invite link
+- Invite links auto-accept friendship on signup (no extra step)
+- Organize friends into circles (Family, College Friends, etc.)
+- Friend cards with avatars, city, and status
 
-### User Account Creation and Management:
--  Registration, login, and profile management functionalities.
+### Shared Availability (Find a Time)
+- Uses Google Calendar FreeBusy API — shows only free/busy, never event details
+- Select friends or a circle, see overlaid availability on a week view
+- Mutual free windows highlighted — tap to create an event
+- Privacy controls: master toggle + per-friend sharing preferences
 
-### Calendar Viewing
-- Users can view their personal local calendar and their google main calendar.
+### Smart Suggestions
+- Availability match: "You and Sarah are both free Saturday afternoon"
+- Proximity alerts: "You'll be in Austin next week — 3 friends live there"
+- Event discovery: "Food festival near you and 2 friends this weekend"
+- Reconnect nudges: "Haven't seen College Friends circle in 6 weeks"
 
-### Event Creation and Management:
--  Allows users to manage events on their calendars.
+### Things To Do
+- Multi-source event discovery (Ticketmaster, SeatGeek, Eventbrite)
+- Nearby restaurants/bars/parks/entertainment via OpenStreetMap Overpass API
+- Dashboard widget with category filters and horizontal scroll cards
+- Event detail view shows nearby places
 
-### Security and Authentication
-- Implementation of JWT for secure access.
+### Notifications
+- In-app notification bell with unread badge
+- Friend requests, suggestion alerts, event reminders
+- 60-second polling for real-time updates
 
+### Design
+- Custom design system: white, gold, dark green, black
+- macOS system font (SF Pro / -apple-system)
+- Mobile-first responsive (320px — 1440px+)
+- Bottom tab navigation on mobile, collapsible sidebar on desktop
+- Dark mode support
+- Bottom sheet modals on mobile, centered dialogs on desktop
 
-## Partially Completed or Deferred:
+---
 
-### Google Calendar API Integration
-- **Description**: Partial integration for synchronizing events with Google Calendar.
+# Getting Started
 
-### Responsive Frontend Design
-- **Description**: Using MUI for a responsive frontend. Needs some work on smaller screen sizes.
+## Environment Variables
 
-## Future Development and Todos:
- 
-### Testing 
- - Better testing coverage for existing features
+### Backend `.env`
 
-### Complete Google Calendar API Integration:
- - Ensure seamless synchronization between the app and users' Google Calendars.
+Navigate to `/backend` and create a `.env` file:
 
-### Implement Calendar Sharing: 
-- Allow users to share their calendars with others, enhancing collaboration and scheduling efficiency.
+```plaintext
+SECRET_KEY=your_64_char_hex_key_here          # 64 hex chars (32 bytes) for AES-256 encryption + JWT signing
+PORT=3001
+DB_URI_DEV=postgresql://postgres:postgres@localhost:5432/social_calendar_dev
+DB_URI_TEST=postgresql://postgres:postgres@localhost:5432/social_calendar_test
+NODE_ENV=dev
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+REACT_APP_BASE_URL=http://localhost:3000
+SERVER_BASE_URL=http://localhost:3001
+```
 
-### Develop Public/Private Event Settings:
-- Enable users to designate events as public or private, providing control over event visibility.
+**Security Note: Make sure your .env file is in .gitignore. Replace placeholder values with actual credentials.**
 
-### Introduce Invitations and Notifications: 
-- Implement a system for sending event invitations and receiving notifications, improving engagement and user experience.
+### Frontend `.env`
+
+Navigate to `/frontend` and create a `.env` file:
+
+```plaintext
+REACT_APP_SERVER_URL=http://localhost:3001
+```
+
+### Optional API Keys (for richer event/places data)
+
+Add to `backend/.env` if you have them:
+```plaintext
+REACT_APP_TICKETMASTER_API_KEY=your_key    # Free at developer.ticketmaster.com
+SEATGEEK_CLIENT_ID=your_key                # Free at seatgeek.com/build
+EVENTBRITE_TOKEN=your_key                  # Free at eventbrite.com/platform
+YELP_API_KEY=your_key                      # Free at yelp.com/developers
+```
+
+The app works without these — they just add more event/places sources.
+
+## Database Setup
+
+Make sure PostgreSQL is installed and running. Create your database, then run the schema:
+
+```bash
+createdb social_calendar_dev
+cd backend
+psql -d social_calendar_dev -f db-schema.sql
+```
+
+## Running Locally
+
+### Backend
+```bash
+cd backend
+npm install
+npm start
+```
+
+### Frontend (separate terminal)
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Open `http://localhost:3000` in your browser.
+
+## Google OAuth Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Create OAuth 2.0 credentials
+3. Add authorized JavaScript origin: `http://localhost:3000`
+4. Add authorized redirect URI: `http://localhost:3001/auth/google/callback`
+5. Enable the **Google Calendar API** in APIs & Services > Library
+
+---
+
+# Deployment
+
+## Option A: Render (main branch)
+
+The `main` branch runs as a traditional Express server. Deploy backend and frontend as separate Render services. This is how the original app was deployed.
+
+**Live**: https://react-social-calendar-app.onrender.com
+
+Note: Render free tier has ~30 second cold starts after inactivity.
+
+## Option B: Vercel Serverless (vercel-migration branch)
+
+The `vercel-migration` branch wraps the Express app in a single Vercel Serverless Function — no cold start delays.
+
+1. Import the repo on [vercel.com](https://vercel.com)
+2. Set branch to `vercel-migration`
+3. Set environment variables:
+
+| Variable | Value |
+|----------|-------|
+| `SECRET_KEY` | Your 64-char hex key |
+| `DATABASE_URL` | Supabase/Vercel Postgres connection string |
+| `GOOGLE_CLIENT_ID` | Your Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Your Google OAuth secret |
+| `SERVER_BASE_URL` | `https://your-app.vercel.app/api` |
+| `REACT_APP_BASE_URL` | `https://your-app.vercel.app` |
+| `REACT_APP_SERVER_URL` | `/api` |
+
+4. Deploy
+5. Add `https://your-app.vercel.app/api/auth/google/callback` to Google Cloud Console
+
+For the database, [Supabase](https://supabase.com) offers free PostgreSQL (500MB, no expiry). Create a project, run `db-schema.sql` in their SQL Editor, and use the pooler connection string.
+
+---
+
+# Project Structure
+
+```
+social-calendar-app/
+├── api/                        # Vercel serverless catch-all (vercel-migration branch only)
+├── backend/
+│   ├── routes/                 # Express routes (auth, user, event, friends, circles, etc.)
+│   ├── models/                 # PostgreSQL models (User, Event, Friendship, Circle, etc.)
+│   ├── middleware/             # JWT auth middleware
+│   ├── services/               # Event discovery, suggestions engine, travel detection, places
+│   ├── helpers/                # Token, crypto, SQL helpers
+│   ├── schemas/                # JSON validation schemas
+│   ├── migrations/             # Incremental SQL migrations
+│   ├── tests/                  # Backend tests (115 passing)
+│   ├── app.js                  # Express app setup
+│   ├── server.js               # Server entry point
+│   ├── db.js                   # PostgreSQL connection pool
+│   └── db-schema.sql           # Full database schema
+├── frontend/
+│   ├── src/
+│   │   ├── pages/              # SignIn, SignUp, Home, Friends, Suggestions, Profile, FindATime, Onboarding
+│   │   ├── components/         # Calendar, layout shell, modals, widgets
+│   │   ├── redux/              # 7 slices (user, event, googleEvent, friend, freeBusy, suggestion, notification)
+│   │   ├── api/                # Server API + Google Calendar API wrappers
+│   │   ├── hooks/              # City autocomplete hook
+│   │   ├── theme.js            # MUI theme with Circl design tokens
+│   │   └── ThemeContext.js     # Dark mode provider
+│   └── public/
+├── vercel.json                 # Vercel deployment config
+├── PRD.md                      # Product requirements document
+└── prd.json                    # User stories with completion status
+```
