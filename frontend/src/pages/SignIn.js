@@ -1,23 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  Avatar,
   Box,
   Button,
-  Container,
-  Grid,
   Typography,
   TextField,
+  Divider,
+  Alert,
+  Fade,
+  CircularProgress,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import GoogleIcon from "@mui/icons-material/Google";
-import NavBar from "../components/NavBar";
+import AuthLayout from "../components/AuthLayout";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, selectUserError, setError } from "../redux/userSlice";
+import {
+  loginUser,
+  selectUserError,
+  setError,
+} from "../redux/userSlice";
+import { tokens } from "../theme";
 
 const SignIn = () => {
   const dispatch = useDispatch();
   const error = useSelector(selectUserError);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -26,49 +32,117 @@ const SignIn = () => {
     const email = data.get("email");
     const password = data.get("password");
 
+    setLoading(true);
     try {
       await dispatch(loginUser({ email, password }));
     } catch (err) {
       dispatch(
         setError(err || "An error occurred during sign in, please try again.")
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <NavBar />
-      <Container component="main" maxWidth="xs">
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "#253031", p: 2 }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
+    <AuthLayout>
+      <Fade in timeout={400}>
+        <Box>
+          <Typography
+            variant="h5"
+            component="h2"
+            sx={{
+              fontWeight: 600,
+              textAlign: "center",
+              mb: 1,
+              color: "text.primary",
+            }}
+          >
+            Welcome back
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              textAlign: "center",
+              color: "text.secondary",
+              mb: 5,
+            }}
+          >
+            Sign in to continue to Circl
           </Typography>
 
-          {error && <Typography color="error">{error}</Typography>}
+          {error && (
+            <Alert
+              severity="error"
+              sx={{
+                mb: 4,
+                borderRadius: 2,
+                "& .MuiAlert-message": { fontSize: "0.875rem" },
+              }}
+              onClose={() => dispatch(setError(null))}
+            >
+              {error}
+            </Alert>
+          )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          {/* Primary CTA: Continue with Google */}
+          <Button
+            component="a"
+            href={`${process.env.REACT_APP_SERVER_URL}/auth/google`}
+            fullWidth
+            variant="contained"
+            size="large"
+            startIcon={
+              <GoogleIcon sx={{ color: tokens.colors.accent, fontSize: 22 }} />
+            }
+            sx={{
+              py: 3,
+              bgcolor: "primary.main",
+              color: tokens.colors.white,
+              fontWeight: 600,
+              fontSize: { xs: "0.9rem", sm: "1rem" },
+              borderRadius: 2.5,
+              textTransform: "none",
+              boxShadow: tokens.shadows.medium,
+              "&:hover": {
+                bgcolor: "primary.light",
+                boxShadow: tokens.shadows.elevated,
+              },
+            }}
+          >
+            Continue with Google
+          </Button>
+
+          {/* Divider */}
+          <Divider
+            sx={{
+              my: 4,
+              color: "text.secondary",
+              fontSize: "0.75rem",
+              "&::before, &::after": {
+                borderColor: "divider",
+              },
+            }}
+          >
+            or sign in with email
+          </Divider>
+
+          {/* Secondary: Email/Password form */}
+          <Box component="form" onSubmit={handleSubmit}>
             <TextField
-              margin="normal"
+              margin="dense"
               required
               fullWidth
               id="email"
-              label="email"
+              label="Email"
               name="email"
               autoComplete="email"
-              autoFocus
+              variant="outlined"
+              size="small"
+              sx={{ mb: 3 }}
             />
             <TextField
-              margin="normal"
+              margin="dense"
               required
               fullWidth
               name="password"
@@ -76,55 +150,65 @@ const SignIn = () => {
               type="password"
               id="password"
               autoComplete="current-password"
+              variant="outlined"
+              size="small"
+              sx={{ mb: 4 }}
             />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-              Sign In
-            </Button>
             <Button
+              type="submit"
               fullWidth
-              variant="contained"
+              variant="outlined"
+              size="large"
+              disabled={loading}
               sx={{
-                mt: 3,
-                mb: 2,
-                backgroundColor: "green",
+                py: 2.5,
+                borderRadius: 2.5,
+                fontWeight: 500,
+                fontSize: "0.9rem",
+                textTransform: "none",
+                borderColor: "divider",
+                color: "text.primary",
                 "&:hover": {
-                  backgroundColor: "darkgreen",
+                  borderColor: "primary.main",
+                  bgcolor: "transparent",
                 },
               }}
             >
-              <a
-                href={`${process.env.REACT_APP_SERVER_URL}/auth/google`}
-                style={{
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                  color: "inherit",
-                }}
-              >
-                <GoogleIcon sx={{ mr: 1 }} />
-                <Typography
-                  variant="button"
-                  sx={{ textTransform: "uppercase" }}
-                >
-                  Sign in with Google
-                </Typography>
-              </a>
+              {loading ? (
+                <CircularProgress size={22} color="primary" />
+              ) : (
+                "Sign In"
+              )}
             </Button>
-
-            <Grid container>
-              <Grid item></Grid>
-              <Grid item>
-                <RouterLink to="/signup" variant="body2">
-                  Don't have an account? Sign Up!
-                </RouterLink>
-              </Grid>
-            </Grid>
           </Box>
+
+          {/* Toggle to sign up */}
+          <Typography
+            variant="body2"
+            sx={{
+              textAlign: "center",
+              mt: 4,
+              color: "text.secondary",
+            }}
+          >
+            Don't have an account?{" "}
+            <Typography
+              component={RouterLink}
+              to="/signup"
+              variant="body2"
+              sx={{
+                color: "primary.main",
+                fontWeight: 600,
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              Sign Up
+            </Typography>
+          </Typography>
         </Box>
-      </Container>
-    </>
+      </Fade>
+    </AuthLayout>
   );
 };
 

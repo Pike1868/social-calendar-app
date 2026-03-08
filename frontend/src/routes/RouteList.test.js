@@ -26,7 +26,7 @@ test("renders SignIn and SignUp for unauthenticated user", () => {
     </Provider>
   );
 
-  expect(screen.getByText("Sign up")).toBeInTheDocument();
+  expect(screen.getByText("Create your account")).toBeInTheDocument();
 });
 
 //Test for authenticated user
