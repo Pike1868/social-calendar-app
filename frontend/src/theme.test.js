@@ -1,4 +1,4 @@
-import { lightTheme, darkTheme, tokens } from "./theme";
+import { lightTheme, darkTheme, tokens, layout } from "./theme";
 
 describe("Circl Design System Theme", () => {
   describe("Design Tokens", () => {
@@ -93,6 +93,32 @@ describe("Circl Design System Theme", () => {
 
     it("has dark divider color", () => {
       expect(darkTheme.palette.divider).toBe("#333333");
+    });
+  });
+
+  describe("Breakpoints", () => {
+    it("defines correct breakpoint values", () => {
+      expect(lightTheme.breakpoints.values.xs).toBe(0);
+      expect(lightTheme.breakpoints.values.sm).toBe(600);
+      expect(lightTheme.breakpoints.values.md).toBe(900);
+      expect(lightTheme.breakpoints.values.lg).toBe(1200);
+      expect(lightTheme.breakpoints.values.xl).toBe(1536);
+    });
+  });
+
+  describe("Layout Constants", () => {
+    it("defines sidebar widths", () => {
+      expect(layout.sidebarWidth).toBe(260);
+      expect(layout.sidebarCollapsedWidth).toBe(72);
+    });
+
+    it("defines top bar and bottom nav heights", () => {
+      expect(layout.topBarHeight).toBe(64);
+      expect(layout.bottomNavHeight).toBe(56);
+    });
+
+    it("defines transition duration", () => {
+      expect(layout.transitionDuration).toBe("225ms");
     });
   });
 });

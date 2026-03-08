@@ -59,6 +59,15 @@ const getDesignTokens = (mode) => {
   const modeColors = isDark ? tokens.colors.dark : tokens.colors.light;
 
   return createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
     palette: {
       mode,
       primary: {
@@ -198,6 +207,15 @@ const getDesignTokens = (mode) => {
       },
     },
   });
+};
+
+// Layout constants
+export const layout = {
+  sidebarWidth: 260,
+  sidebarCollapsedWidth: 72,
+  topBarHeight: 64,
+  bottomNavHeight: 56,
+  transitionDuration: "225ms",
 };
 
 export const lightTheme = getDesignTokens("light");

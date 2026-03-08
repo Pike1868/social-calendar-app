@@ -7,6 +7,7 @@ import userReducer from "../redux/userSlice";
 import eventReducer from "../redux/eventSlice";
 import googleEventReducer from "../redux/googleEventSlice";
 import RouteList from "./RouteList";
+import { ThemeProvider } from "../ThemeContext";
 
 //Test for unauthenticated user
 
@@ -55,11 +56,14 @@ test("renders HomePage for authenticated user", () => {
 
   render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={["/signup"]}>
-        <RouteList />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter initialEntries={["/signup"]}>
+          <RouteList />
+        </MemoryRouter>
+      </ThemeProvider>
     </Provider>
   );
 
-  expect(screen.getByText(/profile/i)).toBeInTheDocument();
+  // "Profile" appears in both the sidebar nav and the top app bar
+  expect(screen.getAllByText(/profile/i).length).toBeGreaterThanOrEqual(1);
 });

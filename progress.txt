@@ -46,3 +46,8 @@ Files Modified:
 **Learnings for future iterations:**
 1. The old NavBar component is no longer used on auth pages - AuthLayout replaces it with integrated branding. NavBar.jsx still exists for potential use elsewhere but auth pages no longer import it. 2. MUI Button with component="a" works well for the Google OAuth link - cleaner than nesting an anchor tag inside a Button. 3. MUI Fade component provides smooth transitions between sign-in/sign-up views without needing react-transition-group directly. 4. RouteList.test.js had a hardcoded "Sign up" text assertion that needed updating to match the new heading "Create your account". 5. Using configureStore with preloadedState in tests allows injecting error states to verify Alert rendering without mocking Redux actions.
 ---
+
+## 2026-03-08T02:58:18.340Z
+## 2026-03-08T03:05:00.000Z
+STATUS_UPDATE: US-003 - Responsive Layout Shell - STARTED. Building mobile bottom nav, desktop collapsible sidebar, responsive top app bar. Replacing fixed 340px Drawer.
+---

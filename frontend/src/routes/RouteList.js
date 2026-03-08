@@ -3,45 +3,42 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import HomePage from "../pages/HomePage";
-import { useSelector } from "react-redux";
 import UserProfile from "../pages/UserProfile";
+import AppLayout from "../components/layout/AppLayout";
+import { useSelector } from "react-redux";
 
-/**
- * RouteList Component:
- *
- * Defines all routes for app
- *  ---Available when logged in:
- * "/home": Displays basic homepage for now
- * "/profile": Displays user information on a profile page
- *
- * "/signin": Displays form for existing users to sign in
- * "/signup": Displays form for new users to sign up
- * - "/*": A catch-all route that redirects any paths with no matches
- *
- */
-
-// RouteList Component
 const RouteList = () => {
   const userState = useSelector((state) => state.user);
   const user = userState.user;
   return (
     <Routes>
       {user && user.id ? (
-        <>
+        <Route element={<AppLayout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/friends" element={<PlaceholderPage title="Friends" />} />
+          <Route path="/suggestions" element={<PlaceholderPage title="Suggestions" />} />
           <Route path="/*" element={<Navigate to="/home" />} />
-        </>
+        </Route>
       ) : (
         <>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-
           <Route path="/*" element={<Navigate to="/signup" />} />
         </>
       )}
     </Routes>
   );
 };
+
+// Placeholder for pages not yet built
+function PlaceholderPage({ title }) {
+  return (
+    <div style={{ padding: "24px" }}>
+      <h2>{title}</h2>
+      <p>Coming soon.</p>
+    </div>
+  );
+}
 
 export default RouteList;

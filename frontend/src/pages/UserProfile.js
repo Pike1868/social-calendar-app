@@ -69,8 +69,8 @@ export default function UserProfile() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 8 }}>
-      <Paper elevation={24} sx={{ margin: "auto", maxWidth: "40%" }}>
+    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+      <Paper elevation={3} sx={{ margin: "auto", maxWidth: { xs: "100%", sm: "80%", md: "60%", lg: "40%" }, p: 3, position: "relative" }}>
         <IconButton
           onClick={closeProfile}
           sx={{ position: "absolute", right: 8, top: 8 }}
