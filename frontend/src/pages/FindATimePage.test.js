@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { BrowserRouter } from "react-router-dom";
@@ -10,6 +10,7 @@ import eventReducer from "../redux/eventSlice";
 import googleEventReducer from "../redux/googleEventSlice";
 import friendReducer from "../redux/friendSlice";
 import freeBusyReducer from "../redux/freeBusySlice";
+import notificationReducer from "../redux/notificationSlice";
 
 // Mock dayjs to have consistent dates in tests
 jest.mock("dayjs", () => {
@@ -23,14 +24,16 @@ jest.mock("dayjs", () => {
 jest.mock("../api/serverAPI", () => ({
   __esModule: true,
   default: {
-    fetchFriends: jest.fn().mockResolvedValue([
+    fetchFriends: () => Promise.resolve([
       { id: "friend-1", user_id: "friend-1", first_name: "Alice", last_name: "Johnson", display_name: "Alice J", email: "alice@test.com", friendship_id: "fs-1" },
       { id: "friend-2", user_id: "friend-2", first_name: "Bob", last_name: "Smith", display_name: "Bob S", email: "bob@test.com", friendship_id: "fs-2" },
     ]),
-    fetchCircles: jest.fn().mockResolvedValue([
+    fetchCircles: () => Promise.resolve([
       { id: "circle-1", name: "College Friends", members: [{ user_id: "friend-1" }, { user_id: "friend-2" }] },
     ]),
-    fetchFreeBusy: jest.fn().mockResolvedValue({}),
+    fetchFreeBusy: () => Promise.resolve({}),
+    fetchNotifications: () => Promise.resolve([]),
+    getUnreadCount: () => Promise.resolve(0),
   },
 }));
 
@@ -74,6 +77,7 @@ function createTestStore(overrides = {}) {
       googleEvent: googleEventReducer,
       friends: friendReducer,
       freeBusy: freeBusyReducer,
+      notifications: notificationReducer,
     },
     preloadedState: {
       user: {
@@ -109,6 +113,12 @@ function createTestStore(overrides = {}) {
         currentGoogleEvent: null,
         showGoogleEvents: true,
         status: "idle",
+        error: null,
+      },
+      notifications: {
+        notifications: [],
+        unreadCount: 0,
+        loading: false,
         error: null,
       },
       ...overrides,
@@ -156,9 +166,26 @@ describe("FindATimePage", () => {
     ).toBeInTheDocument();
   });
 
-  test("shows circles as quick-add buttons", () => {
-    renderPage();
-    expect(screen.getByText("College Friends")).toBeInTheDocument();
+  test("shows circles as quick-add buttons", async () => {
+    const store = createTestStore();
+    const { container } = render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <FindATimePage />
+          </ThemeProvider>
+        </BrowserRouter>
+      </Provider>
+    );
+    // Wait for fetchFriends & fetchCircles to resolve
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.friends.loading).toBe(false);
+      expect(state.friends.circlesLoading).toBe(false);
+    });
+    await waitFor(() => {
+      expect(screen.getByText("College Friends")).toBeInTheDocument();
+    });
   });
 
   test("shows Today button", () => {
@@ -207,39 +234,63 @@ describe("FindATimePage", () => {
     expect(screen.getByText("Today")).toBeInTheDocument();
   });
 
-  test("shows error snackbar when freeBusy has error", () => {
-    renderPage({
-      freeBusy: {
-        availability: {},
-        loading: false,
-        error: "Something went wrong",
-      },
+  test("shows error snackbar when freeBusy has error", async () => {
+    const store = createTestStore();
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <FindATimePage />
+          </ThemeProvider>
+        </BrowserRouter>
+      </Provider>
+    );
+    // Dispatch a properly-formed rejected action (with meta.rejectedWithValue)
+    store.dispatch({
+      type: "freeBusy/fetchFreeBusy/rejected",
+      payload: "Something went wrong",
+      meta: { rejectedWithValue: true, arg: {}, requestId: "test", requestStatus: "rejected" },
     });
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
-  });
-
-  test("shows error snackbar for array errors", () => {
-    renderPage({
-      freeBusy: {
-        availability: {},
-        loading: false,
-        error: ["Error 1", "Error 2"],
-      },
+    await waitFor(() => {
+      expect(screen.getByText("Something went wrong")).toBeInTheDocument();
     });
-    expect(screen.getByText("Error 1, Error 2")).toBeInTheDocument();
   });
 
-  test("renders search input for friends", () => {
-    renderPage();
-    expect(
-      screen.getByPlaceholderText("Search friends...")
-    ).toBeInTheDocument();
+  test("shows error snackbar for array errors", async () => {
+    const store = createTestStore();
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <FindATimePage />
+          </ThemeProvider>
+        </BrowserRouter>
+      </Provider>
+    );
+    store.dispatch({
+      type: "freeBusy/fetchFreeBusy/rejected",
+      payload: ["Error 1", "Error 2"],
+      meta: { rejectedWithValue: true, arg: {}, requestId: "test2", requestStatus: "rejected" },
+    });
+    await waitFor(() => {
+      expect(screen.getByText("Error 1, Error 2")).toBeInTheDocument();
+    });
   });
 
-  test("shows circle names as quick-add chips", () => {
+  test("renders search input for friends", async () => {
     renderPage();
-    // Circle name chip should be in the DOM
-    expect(screen.getByText("College Friends")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText("Search friends...")
+      ).toBeInTheDocument();
+    });
+  });
+
+  test("shows circle names as quick-add chips", async () => {
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByText("College Friends")).toBeInTheDocument();
+    });
   });
 });
 

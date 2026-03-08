@@ -61,9 +61,10 @@ describe("POST /auth/register", () => {
   test("works: registers user", async function () {
     const response = await request(app).post("/auth/register").send({
       email: "luisTest@test.com",
-      firstName: "Luis",
-      lastName: "Test",
+      first_name: "Luis",
+      last_name: "Test",
       password: "hashed_password",
+      time_zone: "America/Chicago",
     });
 
     expect(response.statusCode).toEqual(201);
@@ -82,10 +83,11 @@ describe("POST /auth/register", () => {
 
   test("bad request: invalid user data", async function () {
     const resp = await request(app).post("/auth/register").send({
-      firstName: "first",
-      lastName: "last",
+      first_name: "first",
+      last_name: "last",
       password: "password",
       email: "not-an-email",
+      time_zone: "America/Chicago",
     });
     expect(resp.statusCode).toEqual(400);
   });
@@ -95,8 +97,9 @@ describe("POST /auth/register", () => {
     const response = await request(app).post("/auth/register").send({
       email: "testUser1@test.com",
       password: "password2",
-      firstName: "Test",
-      lastName: "User2",
+      first_name: "Test",
+      last_name: "User2",
+      time_zone: "America/Chicago",
     });
     expect(response.statusCode).toEqual(400);
     expect(response.body.error).toEqual(

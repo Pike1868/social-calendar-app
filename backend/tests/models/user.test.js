@@ -53,6 +53,7 @@ describe("User.register", function () {
       email: "new@test.com",
       first_name: "New",
       last_name: "User",
+      time_zone: null,
     });
   });
 

@@ -132,7 +132,6 @@ export const registerUser = createAsyncThunk(
       const decoded = decodeToken(token);
       return { id: decoded.id }; //payload for fulfilled action
     } catch (err) {
-      console.log(err);
       console.error("Error registering user:", err);
       return rejectWithValue(err); //payload for rejected action
     }

@@ -24,7 +24,6 @@ class TicketmasterAPI {
     const params = { countryCode: "US" };
     try {
       let result = await this.request(endpoint, params);
-      console.log(result);
       return result;
     } catch (err) {
       console.error("Error fetching events in the US", err);

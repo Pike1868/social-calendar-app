@@ -6,6 +6,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "../../redux/userSlice";
 import eventReducer from "../../redux/eventSlice";
 import googleEventReducer from "../../redux/googleEventSlice";
+import friendReducer from "../../redux/friendSlice";
+import notificationReducer from "../../redux/notificationSlice";
 import AppLayout from "./AppLayout";
 import { ThemeProvider } from "../../ThemeContext";
 
@@ -70,8 +72,27 @@ const renderWithProviders = (
       user: userReducer,
       events: eventReducer,
       googleEvent: googleEventReducer,
+      friends: friendReducer,
+      notifications: notificationReducer,
     },
-    preloadedState: defaultState,
+    preloadedState: {
+      ...defaultState,
+      friends: {
+        friends: [],
+        requests: [],
+        circles: [],
+        loading: false,
+        requestsLoading: false,
+        circlesLoading: false,
+        error: null,
+      },
+      notifications: {
+        notifications: [],
+        unreadCount: 0,
+        loading: false,
+        error: null,
+      },
+    },
   });
 
   return {

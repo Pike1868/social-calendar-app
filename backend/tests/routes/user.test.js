@@ -36,6 +36,7 @@ describe("GET /user/:id", () => {
       refresh_token: null,
       onboarding_complete: false,
       sharing_opt_in: false,
+      sharing_enabled: true,
     });
   });
 
