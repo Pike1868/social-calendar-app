@@ -147,8 +147,8 @@
         "Unit tests for models, integration tests for routes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Core social feature. No frontend dependency — can be built in parallel with UI work."
+      "passes": true,
+      "notes": "Friend system backend complete: friendships/circles/circle_members DB tables, Friendship+Circle models with full CRUD, REST routes mounted at /friends and /circles, JSON validation schemas, all protected with ensureLoggedIn."
     },
     {
       "id": "US-009",

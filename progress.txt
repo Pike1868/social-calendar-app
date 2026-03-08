@@ -195,3 +195,15 @@ Files Modified:
 **Learnings for future iterations:**
 1. The sqlForPartialUpdate helper automatically handles new fields without needing changes — just add them to the destructured updateData in the route and the RETURNING clause in the model. 2. Avatar upload implemented as base64 data URL stored in avatar_url column — works without a separate file upload endpoint, but avatar_url maxLength in schema should be generous (500+) since base64 images are large strings. For production, should migrate to proper file storage (S3/cloud storage). 3. Backend tests fail due to missing .env (PORT undefined) — pre-existing infrastructure issue, not related to changes. 4. MUI useMediaQuery with theme.breakpoints.down("sm") works well for responsive card layouts that switch between row/column flex direction.
 ---
+
+## 2026-03-08T03:32:58.624Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-008 - Friend System Backend (DB + API) - STARTED. Creating friendships, circles, circle_members tables and full REST API.
+---
+
+## 2026-03-08T03:42:54.313Z
+Story: US-008 - Friend System Backend (DB + API)
+Agent: Claude
+
+Friend system backend complete: friendships/circles/circle_members DB tables, Friendship+Circle models with full CRUD, REST routes mounted at /friends and /circles, JSON validation schemas, all protected with ensureLoggedIn.
+---

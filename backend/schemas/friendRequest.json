@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/friendRequest.json",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "minLength": 3
+    }
+  },
+  "required": ["email"],
+  "additionalProperties": false
+}

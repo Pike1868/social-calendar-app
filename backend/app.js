@@ -11,6 +11,8 @@ const tokenRefreshRoutes = require("./routes/tokenRefresh");
 const EventRoutes = require("./routes/event");
 const UserRoutes = require("./routes/user");
 const CalendarRoutes = require("./routes/calendar");
+const FriendsRoutes = require("./routes/friends");
+const CirclesRoutes = require("./routes/circles");
 const app = express();
 
 // Initialize Passport
@@ -28,6 +30,8 @@ app.use("/auth", tokenRefreshRoutes);
 app.use("/user", UserRoutes);
 app.use("/event", EventRoutes);
 app.use("/calendar", CalendarRoutes);
+app.use("/friends", FriendsRoutes);
+app.use("/circles", CirclesRoutes);
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 
