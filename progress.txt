@@ -1,0 +1,30 @@
+# Ralph Progress Log
+Started: 2026-03-08T02:47:17.136Z
+---
+
+## Codebase Patterns
+(Add reusable patterns discovered during development here)
+
+---
+
+
+## 2026-03-08T02:47:17.137Z
+STATUS_UPDATE: US-001 - Design System & MUI Theme Setup - STARTED. Creating custom MUI theme with Circl design tokens, dark mode support, and global ThemeProvider.
+---
+
+## 2026-03-08T02:51:46.340Z
+Story: US-001 - Design System & MUI Theme Setup
+Agent: claude-main
+
+Created custom MUI theme with all Circl design tokens from PRD 6.1. Includes dark green primary (#1B5E20), gold accent (#C6993A), SF Pro font stack, 4px spacing base, 8/12/16px border radii, subtle/medium/elevated shadows, and full dark mode variant. Theme applied globally via ThemeProvider wrapping App.js with CssBaseline. Dark mode persists to localStorage. 19 theme tests + 1 existing test all pass.
+
+Files Modified:
+- frontend/src/theme.js
+- frontend/src/ThemeContext.js
+- frontend/src/App.js
+- frontend/src/theme.test.js
+- frontend/src/__snapshots__/App.test.js.snap
+
+**Learnings for future iterations:**
+1. react-scripts binary doesn't work directly via node on Windows/Git Bash - use npx instead. 2. Adding ThemeProvider changes MUI CSS class hashes, so existing snapshots need updating with -u flag. 3. MUI shadows array expects exactly 25 entries (0-24) - fill remaining slots with the elevated shadow. 4. ThemeProvider must wrap inside BrowserRouter but outside components that use useNavigate.
+---

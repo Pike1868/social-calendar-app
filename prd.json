@@ -14,8 +14,8 @@
         "Theme applied globally via ThemeProvider in App.js"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Foundation for all other UI work. Must be done first."
+      "passes": true,
+      "notes": "Created custom MUI theme with all Circl design tokens from PRD 6.1. Includes dark green primary (#1B5E20), gold accent (#C6993A), SF Pro font stack, 4px spacing base, 8/12/16px border radii, subtle/medium/elevated shadows, and full dark mode variant. Theme applied globally via ThemeProvider wrapping App.js with CssBaseline. Dark mode persists to localStorage. 19 theme tests + 1 existing test all pass."
     },
     {
       "id": "US-002",
