@@ -162,7 +162,8 @@ class User {
               google_id,
               access_token,
               refresh_token,
-              onboarding_complete
+              onboarding_complete,
+              sharing_opt_in
          FROM users
          WHERE id = $1`,
       [id]
@@ -199,7 +200,7 @@ class User {
     const querySql = `UPDATE users
                         SET ${setCols}
                         WHERE id = ${idVarIdx}
-                        RETURNING id, first_name, last_name, display_name, home_city, avatar_url, email, birthday, time_zone, access_token, refresh_token, onboarding_complete`;
+                        RETURNING id, first_name, last_name, display_name, home_city, avatar_url, email, birthday, time_zone, access_token, refresh_token, onboarding_complete, sharing_opt_in`;
     const result = await db.query(querySql, [...values, id]);
     const user = result.rows[0];
 

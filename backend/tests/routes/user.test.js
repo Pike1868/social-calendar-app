@@ -26,7 +26,16 @@ describe("GET /user/:id", () => {
       email: "testUser1@test.com",
       first_name: "Test",
       last_name: "User1",
+      display_name: null,
+      home_city: null,
+      avatar_url: null,
+      birthday: null,
       time_zone: null,
+      google_id: null,
+      access_token: null,
+      refresh_token: null,
+      onboarding_complete: false,
+      sharing_opt_in: false,
     });
   });
 

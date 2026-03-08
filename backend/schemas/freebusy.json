@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/freebusy.json",
+  "type": "object",
+  "properties": {
+    "friendIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 20
+    },
+    "timeMin": {
+      "type": "string"
+    },
+    "timeMax": {
+      "type": "string"
+    }
+  },
+  "required": ["friendIds", "timeMin", "timeMax"],
+  "additionalProperties": false
+}

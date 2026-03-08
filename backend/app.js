@@ -13,6 +13,7 @@ const UserRoutes = require("./routes/user");
 const CalendarRoutes = require("./routes/calendar");
 const FriendsRoutes = require("./routes/friends");
 const CirclesRoutes = require("./routes/circles");
+const FreeBusyRoutes = require("./routes/freebusy");
 const app = express();
 
 // Initialize Passport
@@ -32,6 +33,7 @@ app.use("/event", EventRoutes);
 app.use("/calendar", CalendarRoutes);
 app.use("/friends", FriendsRoutes);
 app.use("/circles", CirclesRoutes);
+app.use("/freebusy", FreeBusyRoutes);
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 

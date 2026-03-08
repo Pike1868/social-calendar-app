@@ -35,6 +35,9 @@
       },
       "onboarding_complete": {
         "type": "boolean"
+      },
+      "sharing_opt_in": {
+        "type": "boolean"
       }
     },
     "additionalProperties": false

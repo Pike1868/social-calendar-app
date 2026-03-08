@@ -59,7 +59,7 @@ router.patch(
         throw new BadRequestError(errs);
       }
 
-      const { first_name, last_name, display_name, home_city, avatar_url, birthday, time_zone, onboarding_complete } = req.body;
+      const { first_name, last_name, display_name, home_city, avatar_url, birthday, time_zone, onboarding_complete, sharing_opt_in } = req.body;
 
       // Ensure only allowed fields are updated
       const updateData = {
@@ -71,6 +71,7 @@ router.patch(
         birthday,
         time_zone,
         onboarding_complete,
+        sharing_opt_in,
       };
       const user = await User.update(req.params.id, updateData);
 

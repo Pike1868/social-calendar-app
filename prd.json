@@ -187,8 +187,8 @@
         "Error handling for invalid tokens, API failures"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "Depends on US-008 friendships. Requires Google Calendar FreeBusy scope."
+      "passes": true,
+      "notes": "FreeBusy backend complete: POST /freebusy endpoint with friendship verification, Google Calendar FreeBusy API integration via existing service, per-friend error handling, JSON schema validation, sharing opt-in check."
     },
     {
       "id": "US-011",

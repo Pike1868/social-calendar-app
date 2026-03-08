@@ -257,3 +257,15 @@ Files Modified:
 **Learnings for future iterations:**
 1. OnboardingGate pattern works well for intercepting routes - fetch user details at the gate level, redirect to /onboarding if onboarding_complete is false, render children only when complete. 2. The existing updateUser thunk in userSlice has a bug - it passes {id: user.id, ...userData} as a single object to serverAPI.updateUser which expects (userId, updateData) as separate args. The completeOnboarding thunk was written correctly with separate args. 3. RouteList tests need userDetails with onboarding_complete: true in preloadedState since the OnboardingGate returns null while waiting for details to load. 4. MUI Autocomplete with freeSolo works well for city input - allows both selecting from suggestions and typing custom values.
 ---
+
+## 2026-03-08T03:56:26.267Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-010 - FreeBusy API Integration (Backend) - STARTED. Building backend proxy for Google Calendar FreeBusy API with friendship verification, sharing opt-in, token refresh, and normalized time block responses.
+---
+
+## 2026-03-08T04:06:07.708Z
+Story: US-010 - FreeBusy API Integration (Backend)
+Agent: Claude
+
+FreeBusy backend complete: POST /freebusy endpoint with friendship verification, Google Calendar FreeBusy API integration via existing service, per-friend error handling, JSON schema validation, sharing opt-in check.
+---

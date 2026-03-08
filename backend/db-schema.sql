@@ -26,7 +26,8 @@ CREATE TABLE users (
     last_login TIMESTAMP,
     access_token TEXT,
     refresh_token TEXT,
-    onboarding_complete BOOLEAN NOT NULL DEFAULT FALSE
+    onboarding_complete BOOLEAN NOT NULL DEFAULT FALSE,
+    sharing_opt_in BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE TABLE calendars (
     id VARCHAR(100) PRIMARY KEY,
