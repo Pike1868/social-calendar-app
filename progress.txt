@@ -51,3 +51,26 @@ Files Modified:
 ## 2026-03-08T03:05:00.000Z
 STATUS_UPDATE: US-003 - Responsive Layout Shell - STARTED. Building mobile bottom nav, desktop collapsible sidebar, responsive top app bar. Replacing fixed 340px Drawer.
 ---
+
+## 2026-03-08T03:03:21.126Z
+Story: US-003 - Responsive Layout Shell (Mobile Nav + Desktop Sidebar)
+Agent: claude-main
+
+Rebuilt the app layout shell with full responsive support. Mobile (<900px): bottom tab navigation with 4 tabs (Calendar, Friends, Suggestions, Profile) + top app bar with notification bell and hamburger menu for secondary actions (profile, theme toggle, logout). Desktop (>=900px): collapsible left sidebar with navigation links, calendar filter checkboxes, and smooth expand/collapse transitions + top app bar with search bar, notifications, theme toggle, profile, and logout. Removed old fixed 340px Sidebar/Drawer approach. Added proper MUI breakpoints (xs:0, sm:600, md:900, lg:1200, xl:1536). Layout uses React Router Outlet pattern so all authenticated pages render inside AppLayout. 74 tests pass including 22 new layout tests covering all breakpoints.
+
+Files Modified:
+- frontend/src/components/layout/AppLayout.jsx
+- frontend/src/components/layout/TopAppBar.jsx
+- frontend/src/components/layout/DesktopSidebar.jsx
+- frontend/src/components/layout/MobileBottomNav.jsx
+- frontend/src/components/layout/AppLayout.test.js
+- frontend/src/pages/HomePage.js
+- frontend/src/pages/UserProfile.js
+- frontend/src/routes/RouteList.js
+- frontend/src/routes/RouteList.test.js
+- frontend/src/theme.js
+- frontend/src/theme.test.js
+
+**Learnings for future iterations:**
+1. MUI useMediaQuery with createMatchMedia mock works well for testing responsive layouts - parse min-width/max-width from query strings. 2. When text appears in multiple places (e.g. "Profile" in sidebar nav AND top bar button), use getAllByText instead of getByText in tests. 3. React Router Outlet pattern is ideal for layout shells - wrap authenticated routes in a parent Route with element={<AppLayout />} and use <Outlet /> for page content. 4. Redux store key naming matters for tests - check store.js for actual keys (e.g. 'googleEvent' not 'googleEvents'). 5. ThemeProvider must wrap any component that uses useThemeMode hook, including in tests for components rendered inside AppLayout.
+---

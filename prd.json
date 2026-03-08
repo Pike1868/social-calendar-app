@@ -48,8 +48,8 @@
         "All breakpoints render correctly: 320px, 600px, 900px, 1200px, 1536px"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Layout shell that all pages render inside."
+      "passes": true,
+      "notes": "Rebuilt the app layout shell with full responsive support. Mobile (<900px): bottom tab navigation with 4 tabs (Calendar, Friends, Suggestions, Profile) + top app bar with notification bell and hamburger menu for secondary actions (profile, theme toggle, logout). Desktop (>=900px): collapsible left sidebar with navigation links, calendar filter checkboxes, and smooth expand/collapse transitions + top app bar with search bar, notifications, theme toggle, profile, and logout. Removed old fixed 340px Sidebar/Drawer approach. Added proper MUI breakpoints (xs:0, sm:600, md:900, lg:1200, xl:1536). Layout uses React Router Outlet pattern so all authenticated pages render inside AppLayout. 74 tests pass including 22 new layout tests covering all breakpoints."
     },
     {
       "id": "US-004",
