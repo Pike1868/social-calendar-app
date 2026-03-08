@@ -17,6 +17,7 @@ const FreeBusyRoutes = require("./routes/freebusy");
 const discoverRoutes = require("./routes/discover");
 const suggestionRoutes = require("./routes/suggestions");
 const privacyRoutes = require("./routes/privacy");
+const notificationRoutes = require("./routes/notifications");
 const app = express();
 
 // Initialize Passport
@@ -40,6 +41,7 @@ app.use("/freebusy", FreeBusyRoutes);
 app.use("/discover", discoverRoutes);
 app.use("/suggestions", suggestionRoutes);
 app.use("/privacy", privacyRoutes);
+app.use("/notifications", notificationRoutes);
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 

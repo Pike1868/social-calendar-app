@@ -1,6 +1,7 @@
 -- Drop existing tables and triggers if they exist
 DROP TRIGGER IF EXISTS update_calendars_update_time ON calendars CASCADE;
 DROP TRIGGER IF EXISTS update_events_update_time ON events CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS suggestions CASCADE;
 DROP TABLE IF EXISTS circle_members CASCADE;
 DROP TABLE IF EXISTS circles CASCADE;
@@ -137,6 +138,19 @@ CREATE TABLE suggestions (
     expires_at TIMESTAMP
 );
 CREATE INDEX idx_suggestions_user ON suggestions(user_id, status);
+
+-- Notifications table
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT,
+    metadata JSONB,
+    read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_notifications_user ON notifications(user_id, read);
 
 -- Function to update 'updated_at' columns
 CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now();

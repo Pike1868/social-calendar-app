@@ -303,6 +303,58 @@ class serverAPI {
     );
     return response.availability;
   }
+
+  //*************Suggestion Routes */
+
+  /** GET /suggestions => { suggestions: [...] } */
+  static async fetchSuggestions() {
+    const response = await this.request("suggestions");
+    return response.suggestions;
+  }
+
+  /** PATCH /suggestions/:id/dismiss => { suggestion } */
+  static async dismissSuggestion(id) {
+    const response = await this.request(`suggestions/${id}/dismiss`, {}, "patch");
+    return response.suggestion;
+  }
+
+  /** PATCH /suggestions/:id/acted => { suggestion } */
+  static async actOnSuggestion(id) {
+    const response = await this.request(`suggestions/${id}/acted`, {}, "patch");
+    return response.suggestion;
+  }
+
+  /** POST /suggestions/generate => { suggestions: [...] } */
+  static async generateSuggestions() {
+    const response = await this.request("suggestions/generate", {}, "post");
+    return response.suggestions;
+  }
+
+  //*************Notification Routes */
+
+  /** GET /notifications => { notifications: [...] } */
+  static async fetchNotifications() {
+    const response = await this.request("notifications");
+    return response.notifications;
+  }
+
+  /** GET /notifications/unread-count => { count: number } */
+  static async getUnreadCount() {
+    const response = await this.request("notifications/unread-count");
+    return response.count;
+  }
+
+  /** PATCH /notifications/:id/read => { notification } */
+  static async markNotificationRead(id) {
+    const response = await this.request(`notifications/${id}/read`, {}, "patch");
+    return response.notification;
+  }
+
+  /** PATCH /notifications/read-all => { updated: number } */
+  static async markAllNotificationsRead() {
+    const response = await this.request("notifications/read-all", {}, "patch");
+    return response.updated;
+  }
 }
 
 export default serverAPI;

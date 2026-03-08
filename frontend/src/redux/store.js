@@ -4,6 +4,8 @@ import eventReducer from "./eventSlice";
 import googleEventReducer from "./googleEventSlice";
 import friendReducer from "./friendSlice";
 import freeBusyReducer from "./freeBusySlice";
+import suggestionReducer from "./suggestionSlice";
+import notificationReducer from "./notificationSlice";
 
 export default configureStore({
   reducer: {
@@ -12,5 +14,7 @@ export default configureStore({
     googleEvent: googleEventReducer,
     friends: friendReducer,
     freeBusy: freeBusyReducer,
+    suggestions: suggestionReducer,
+    notifications: notificationReducer,
   },
 });

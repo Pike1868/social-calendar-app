@@ -6,6 +6,7 @@ import HomePage from "../pages/HomePage";
 import UserProfile from "../pages/UserProfile";
 import FriendsPage from "../pages/FriendsPage";
 import FindATimePage from "../pages/FindATimePage";
+import SuggestionsPage from "../pages/SuggestionsPage";
 import OnboardingPage from "../pages/OnboardingPage";
 import AppLayout from "../components/layout/AppLayout";
 import { useSelector, useDispatch } from "react-redux";
@@ -61,7 +62,7 @@ const RouteList = () => {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/friends" element={<FriendsPage />} />
             <Route path="/find-a-time" element={<FindATimePage />} />
-            <Route path="/suggestions" element={<PlaceholderPage title="Suggestions" />} />
+            <Route path="/suggestions" element={<SuggestionsPage />} />
             <Route path="/*" element={<Navigate to="/home" />} />
           </Route>
         </>
