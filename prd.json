@@ -67,8 +67,8 @@
         "Calendar is fully responsive across all breakpoints"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Core calendar experience. Evaluate FullCalendar vs Schedule-X — pick whichever integrates better with MUI theme."
+      "passes": true,
+      "notes": "Replaced hand-rolled dayjs calendar grid with FullCalendar (@fullcalendar/react). Supports Month/Week/Day views with toggle. Events color-coded: local=dark green (#1B5E20), Google=gold (#C6993A). Mobile: month view shows dot indicators, tap day to expand events list in bottom drawer, swipe left/right to navigate. Event click opens detail modal (bottom sheet on mobile, dialog on desktop). Fully responsive across all MUI breakpoints. Integrates with existing Redux eventSlice and googleEventSlice. All 74 tests pass, build succeeds, lint clean."
     },
     {
       "id": "US-005",

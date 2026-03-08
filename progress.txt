@@ -83,3 +83,22 @@ LEARNING: Codex and Gemini agents fail with ENOENT when spawned by nightshift-mc
 ## 2026-03-08T03:15:00.000Z
 STATUS_UPDATE: US-004 - Calendar Component Replacement - STARTED. Replacing hand-rolled dayjs calendar grid with FullCalendar. Will support Month/Week/Day views, mobile dot indicators, swipe navigation, color-coded events, and Redux integration.
 ---
+
+## 2026-03-08T03:10:04.443Z
+Story: US-004 - Calendar Component Replacement
+Agent: claude-main
+
+Replaced hand-rolled dayjs calendar grid with FullCalendar (@fullcalendar/react). Supports Month/Week/Day views with toggle. Events color-coded: local=dark green (#1B5E20), Google=gold (#C6993A). Mobile: month view shows dot indicators, tap day to expand events list in bottom drawer, swipe left/right to navigate. Event click opens detail modal (bottom sheet on mobile, dialog on desktop). Fully responsive across all MUI breakpoints. Integrates with existing Redux eventSlice and googleEventSlice. All 74 tests pass, build succeeds, lint clean.
+
+Files Modified:
+- frontend/package.json
+- frontend/package-lock.json
+- frontend/src/components/calendar/Calendar.jsx
+- frontend/src/components/calendar/CalendarView.jsx
+- frontend/src/components/calendar/EventDetailModal.jsx
+- frontend/src/components/calendar/MobileDayDrawer.jsx
+- progress.txt
+
+**Learnings for future iterations:**
+1. FullCalendar headerToolbar must be set to false (not hidden via CSS) to use a custom toolbar — otherwise it renders twice. 2. For mobile dot indicators, override .fc-daygrid-event styles to transparent and render custom dot content via eventContent callback. 3. FullCalendar's dateClick from interaction plugin is ideal for mobile day-tap behavior. 4. Swipe navigation works via touch event handlers on the container wrapping FullCalendar — use prev/next API methods. 5. FullCalendar respects height="auto" for responsive layouts — avoid fixed heights.
+---
