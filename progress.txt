@@ -316,3 +316,10 @@ Agent: Claude
 
 Suggestions feed frontend complete: suggestionSlice with 4 thunks, SuggestionsPage with card-based feed, type icons, gold accents, CTA buttons, dismiss, empty state with generate button, skeleton loading, responsive design.
 ---
+
+## 2026-03-08T04:24:45.492Z
+Story: US-015 - Notification System
+Agent: Claude
+
+Notification system complete: notifications DB table, Notification model, REST routes at /notifications, notificationSlice with unread count polling, TopAppBar updated with Badge + Popover dropdown showing notifications with type icons, read/unread styling, mark all read.
+---

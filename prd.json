@@ -279,8 +279,8 @@
         "Styled with design tokens"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "Phase 3 feature. Web push is stretch goal."
+      "passes": true,
+      "notes": "Notification system complete: notifications DB table, Notification model, REST routes at /notifications, notificationSlice with unread count polling, TopAppBar updated with Badge + Popover dropdown showing notifications with type icons, read/unread styling, mark all read."
     },
     {
       "id": "US-016",
