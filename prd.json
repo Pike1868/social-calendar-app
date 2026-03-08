@@ -31,8 +31,8 @@
         "Error states styled consistently with design system"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "First screen users see. Sets the tone for the whole app."
+      "passes": true,
+      "notes": "Redesigned Sign In and Sign Up pages with modern, clean aesthetic. Created shared AuthLayout component with Circl branding, subtle geometric gold/green circle and line accents, and privacy trust messaging. Google OAuth \"Continue with Google\" is the primary CTA (dark green button with gold icon, large size, elevated shadow). Email/password is secondary (outlined, minimal style). Both pages use MUI Fade transitions for smooth appearance. Fully responsive mobile-first layout (works 320px through 1440px+). Error states use MUI Alert with dismiss button, styled consistently with design system. 27 new tests covering rendering, validation, error states, and privacy messaging. All 47 tests pass."
     },
     {
       "id": "US-003",

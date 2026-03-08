@@ -28,3 +28,21 @@ Files Modified:
 **Learnings for future iterations:**
 1. react-scripts binary doesn't work directly via node on Windows/Git Bash - use npx instead. 2. Adding ThemeProvider changes MUI CSS class hashes, so existing snapshots need updating with -u flag. 3. MUI shadows array expects exactly 25 entries (0-24) - fill remaining slots with the elevated shadow. 4. ThemeProvider must wrap inside BrowserRouter but outside components that use useNavigate.
 ---
+
+## 2026-03-08T02:56:44.986Z
+Story: US-002 - Auth Pages Redesign (Sign In / Sign Up)
+Agent: claude-main
+
+Redesigned Sign In and Sign Up pages with modern, clean aesthetic. Created shared AuthLayout component with Circl branding, subtle geometric gold/green circle and line accents, and privacy trust messaging. Google OAuth "Continue with Google" is the primary CTA (dark green button with gold icon, large size, elevated shadow). Email/password is secondary (outlined, minimal style). Both pages use MUI Fade transitions for smooth appearance. Fully responsive mobile-first layout (works 320px through 1440px+). Error states use MUI Alert with dismiss button, styled consistently with design system. 27 new tests covering rendering, validation, error states, and privacy messaging. All 47 tests pass.
+
+Files Modified:
+- frontend/src/components/AuthLayout.jsx
+- frontend/src/pages/SignIn.js
+- frontend/src/pages/SignUp.js
+- frontend/src/pages/AuthPages.test.js
+- frontend/src/routes/RouteList.test.js
+- frontend/src/__snapshots__/App.test.js.snap
+
+**Learnings for future iterations:**
+1. The old NavBar component is no longer used on auth pages - AuthLayout replaces it with integrated branding. NavBar.jsx still exists for potential use elsewhere but auth pages no longer import it. 2. MUI Button with component="a" works well for the Google OAuth link - cleaner than nesting an anchor tag inside a Button. 3. MUI Fade component provides smooth transitions between sign-in/sign-up views without needing react-transition-group directly. 4. RouteList.test.js had a hardcoded "Sign up" text assertion that needed updating to match the new heading "Create your account". 5. Using configureStore with preloadedState in tests allows injecting error states to verify Alert rendering without mocking Redux actions.
+---
