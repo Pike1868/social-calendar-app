@@ -6,7 +6,21 @@ import axios from "axios";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 
-jest.mock("axios");
+jest.mock("axios", () => {
+  const mockAxios = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.create = jest.fn(() => ({
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+    get: jest.fn(() => Promise.resolve({ data: {} })),
+    post: jest.fn(() => Promise.resolve({ data: {} })),
+  }));
+  mockAxios.get = jest.fn(() => Promise.resolve({ data: [] }));
+  mockAxios.post = jest.fn(() => Promise.resolve({ data: {} }));
+  mockAxios.defaults = { headers: { common: {} } };
+  return mockAxios;
+});
 
 //Smoke Test
 test("renders App without crashing", () => {

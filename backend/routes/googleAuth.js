@@ -5,7 +5,7 @@ const express = require("express");
 const router = new express.Router();
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const { createToken } = require("../helpers/token");
+const { createTokenPair } = require("../helpers/token");
 const { v4: uuidv4 } = require("uuid");
 const { NotFoundError } = require("../expressError");
 const {
@@ -21,47 +21,46 @@ passport.use(
       callbackURL: `${process.env.SERVER_BASE_URL}/auth/google/callback`,
     },
     async function (accessToken, refreshToken, profile, done) {
-      let encryptedAccessToken = String(accessToken);
-      
-      
       try {
-        let existingUser = await User.get(profile._json.email);
+        // Encrypt tokens before saving
+        const encryptedAccessToken = encrypt(accessToken);
+        const encryptedRefreshToken = refreshToken ? encrypt(refreshToken) : null;
 
-        // Encrypt tokens before saving them
-        encryptedAccessToken = encrypt(accessToken);
-        
-        if (existingUser.id) {
-          // Update existing user's access token
-          User.update(existingUser.id, {
-            access_token: encryptedAccessToken,
-          });
-          done(null, existingUser);
+        let existingUser;
+        try {
+          existingUser = await User.get(profile._json.email);
+        } catch (err) {
+          if (!(err instanceof NotFoundError)) throw err;
         }
-      } catch (err) {
-        if (err instanceof NotFoundError) {
-          // Create a new user if existing user is not found
 
+        if (existingUser) {
+          // Update existing user's tokens
+          const updateData = { access_token: encryptedAccessToken };
+          if (encryptedRefreshToken) {
+            updateData.refresh_token = encryptedRefreshToken;
+          }
+          await User.update(existingUser.id, updateData);
+          done(null, existingUser);
+        } else {
+          // Create a new user
           const newUserId = uuidv4();
-
-          // Encrypt tokens before saving them
-          encryptedAccessToken = encrypt(accessToken);
-
           const newUser = await User.create({
             id: newUserId,
             email: profile._json.email,
             first_name: profile._json.given_name,
             last_name: profile._json.family_name,
-            googleId: profile.id,
+            google_id: profile.id,
             access_token: encryptedAccessToken,
+            refresh_token: encryptedRefreshToken,
           });
 
           if (newUser.id) {
-            await createDefaultCalendarForUser(newUserId, newUser.firstName);
+            await createDefaultCalendarForUser(newUserId, newUser.first_name);
             done(null, newUser);
           }
-        } else {
-          done(err);
         }
+      } catch (err) {
+        done(err);
       }
     }
   )
@@ -85,11 +84,13 @@ router.get(
     session: false,
   }),
   function (req, res) {
-    // If authentication was successful, generate a JWT token
-    const token = createToken(req.user);
+    // Generate JWT token pair
+    const { accessToken, refreshToken } = createTokenPair(req.user);
 
-    // Send response back to signup page with token
-    res.redirect(`${process.env.REACT_APP_BASE_URL}/signup?token=${token}`);
+    // Send response back to signup page with both tokens
+    res.redirect(
+      `${process.env.REACT_APP_BASE_URL}/signup?token=${accessToken}&refreshToken=${refreshToken}`
+    );
   }
 );
 

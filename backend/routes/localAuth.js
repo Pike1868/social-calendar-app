@@ -4,7 +4,7 @@ const jsonschema = require("jsonschema");
 const User = require("../models/user");
 const express = require("express");
 const router = new express.Router();
-const { createToken } = require("../helpers/token");
+const { createTokenPair } = require("../helpers/token");
 const userLocalRegistrationSchema = require("../schemas/userLocalRegistration.json");
 const userLocalAuth = require("../schemas/userLocalAuth.json");
 const { BadRequestError, NotFoundError } = require("../expressError");
@@ -29,8 +29,8 @@ router.post("/token", async function (req, res, next) {
 
     const { email, password } = req.body;
     const user = await User.authenticate(email, password);
-    const token = createToken(user);
-    return res.json({ token });
+    const { accessToken, refreshToken } = createTokenPair(user);
+    return res.json({ accessToken, refreshToken });
   } catch (err) {
     return next(err);
   }
@@ -92,8 +92,8 @@ router.post("/register", async function (req, res, next) {
     // Create a default calendar for the new user
     await createDefaultCalendarForUser(newUserId, req.body.firstName);
 
-    const token = createToken(newUser);
-    return res.status(201).json({ token });
+    const { accessToken, refreshToken } = createTokenPair(newUser);
+    return res.status(201).json({ accessToken, refreshToken });
   } catch (err) {
     return next(err);
   }

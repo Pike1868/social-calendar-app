@@ -106,13 +106,14 @@ class User {
     last_name,
     google_id,
     access_token,
+    refresh_token = null,
   }) {
     const result = await db.query(
       `INSERT INTO users
-          (id, email, first_name, last_name, google_id, access_token)
-          VALUES ($1, $2, $3, $4, $5, $6)
-          RETURNING id, email, first_name ,last_name, access_token`,
-      [id, email, first_name, last_name, google_id, access_token]
+          (id, email, first_name, last_name, google_id, access_token, refresh_token)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING id, email, first_name, last_name, access_token`,
+      [id, email, first_name, last_name, google_id, access_token, refresh_token]
     );
     const user = result.rows[0];
     return user;
@@ -154,9 +155,10 @@ class User {
               last_name,
               email,
               time_zone,
-              birthday, 
+              birthday,
               google_id,
-              access_token
+              access_token,
+              refresh_token
          FROM users
          WHERE id = $1`,
       [id]

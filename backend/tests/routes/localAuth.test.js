@@ -28,7 +28,8 @@ describe("POST /auth/token", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
-      token: expect.any(String),
+      accessToken: expect.any(String),
+      refreshToken: expect.any(String),
     });
   });
   test("bad request error: invalid user data", async function () {
@@ -67,7 +68,8 @@ describe("POST /auth/register", () => {
 
     expect(response.statusCode).toEqual(201);
     expect(response.body).toEqual({
-      token: expect.any(String),
+      accessToken: expect.any(String),
+      refreshToken: expect.any(String),
     });
   });
 

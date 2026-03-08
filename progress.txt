@@ -143,3 +143,8 @@ Files Modified:
 **Learnings for future iterations:**
 1. MUI DateTimePicker v6 requires LocalizationProvider with AdapterDayjs wrapping the app - added to ThemeContext.js which already wraps MuiThemeProvider. 2. EventManagerModal's userDetails selector can be undefined when user is not authenticated - must use optional chaining (userDetails?.time_zone). 3. EventManagerModal was not imported/used anywhere in the app - connected it through CalendarView by wiring EventDetailModal's onEdit prop to open EventManagerModal. 4. Follow the existing Drawer/Dialog responsive pattern established by EventDetailModal for consistency across all modals. 5. DateTimePicker values should be stored as dayjs objects (not strings) and formatted on submission with dayjs().format().
 ---
+
+## 2026-03-08T03:19:55.301Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-016 - Token Refresh & Session Persistence - STARTED. Implementing JWT refresh token flow, Google OAuth token refresh, axios interceptors for auto-refresh, and session persistence.
+---

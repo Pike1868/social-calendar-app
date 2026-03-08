@@ -1,4 +1,5 @@
 import axios from "axios";
+import serverAPI from "./serverAPI";
 
 /** Google Calendar API Class.
  *
@@ -15,9 +16,9 @@ class googleCalendarAPI {
     googleCalendarAPI.accessToken = token;
   }
 
-  // Request builder function
-  static async request(endpoint, method = "get", data = {}) {
-    console.debug("Google API Call:", endpoint, data, method, this.accessToken);
+  // Request builder function with automatic Google token refresh on 401
+  static async request(endpoint, method = "get", data = {}, _retried = false) {
+    console.debug("Google API Call:", endpoint, data, method);
 
     const url = `https://www.googleapis.com/calendar/v3/calendars/${endpoint}`;
     const headers = {
@@ -28,6 +29,16 @@ class googleCalendarAPI {
       const response = await axios({ url, method, data, headers });
       return response.data;
     } catch (err) {
+      // If 401 and we haven't retried, try refreshing the Google token
+      if (err.response && err.response.status === 401 && !_retried) {
+        try {
+          const newToken = await serverAPI.refreshGoogleToken();
+          this.setAccessToken(newToken);
+          return this.request(endpoint, method, data, true);
+        } catch (refreshErr) {
+          console.error("Google token refresh failed:", refreshErr);
+        }
+      }
       console.error(
         `Error with Google Calendar API request to ${method}-${endpoint}:`,
         err

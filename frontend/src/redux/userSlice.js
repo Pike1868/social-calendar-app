@@ -30,11 +30,13 @@ const setUserIdFromLocalStorage = () => {
       return { id: decoded.id };
     } else {
       localStorage.removeItem("socialCalToken");
+      localStorage.removeItem("socialCalRefreshToken");
       return null;
     }
   } catch (err) {
     console.error("Token is invalid or expired: ", err);
     localStorage.removeItem("socialCalToken");
+    localStorage.removeItem("socialCalRefreshToken");
     return null;
   }
 };
@@ -157,7 +159,9 @@ export const fetchUserDetails = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await serverAPI.fetchUserDetails(userId);
-      googleCalendarAPI.setAccessToken(response.access_token);
+      if (response.access_token) {
+        googleCalendarAPI.setAccessToken(response.access_token);
+      }
       return response;
     } catch (err) {
       console.error("Error fetching user data:", err);

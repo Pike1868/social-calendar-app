@@ -7,6 +7,7 @@ const { NotFoundError } = require("./expressError");
 const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/localAuth");
 const googleAuthRoutes = require("./routes/googleAuth");
+const tokenRefreshRoutes = require("./routes/tokenRefresh");
 const EventRoutes = require("./routes/event");
 const UserRoutes = require("./routes/user");
 const CalendarRoutes = require("./routes/calendar");
@@ -23,6 +24,7 @@ app.use(authenticateJWT);
 //Route Prefixes
 app.use("/auth", authRoutes);
 app.use("/auth", googleAuthRoutes);
+app.use("/auth", tokenRefreshRoutes);
 app.use("/user", UserRoutes);
 app.use("/event", EventRoutes);
 app.use("/calendar", CalendarRoutes);

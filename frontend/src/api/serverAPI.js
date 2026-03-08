@@ -8,105 +8,139 @@ const BASE_URL = process.env.REACT_APP_SERVER_URL;
  **Error handling centralized to request method
  */
 
-class serverAPI {
-  // token for API stored here.
-  static token;
-  static async request(endpoint, data = {}, method = "get") {
-    console.debug("API Call:", endpoint, data, method);
+// Keys for localStorage
+const ACCESS_TOKEN_KEY = "socialCalToken";
+const REFRESH_TOKEN_KEY = "socialCalRefreshToken";
 
-    // If no token is set, check localStorage and set token
-    if (!serverAPI.token) {
-      const token = localStorage.getItem("socialCalToken");
-      if (token) {
-        serverAPI.token = token;
+// Create axios instance for API calls
+const apiClient = axios.create({ baseURL: `${BASE_URL}/` });
+
+// Track in-flight refresh to avoid duplicate refresh calls
+let refreshPromise = null;
+
+/** Attempt to refresh the access token using stored refresh token. */
+async function refreshAccessToken() {
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (!refreshToken) {
+    throw new Error("No refresh token available");
+  }
+
+  const response = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken });
+  const { accessToken } = response.data;
+
+  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  return accessToken;
+}
+
+// Request interceptor: attach access token to every request
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response interceptor: auto-refresh on 401
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Only retry once, and don't retry the refresh endpoint itself
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh")
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        // Deduplicate concurrent refresh calls
+        if (!refreshPromise) {
+          refreshPromise = refreshAccessToken().finally(() => {
+            refreshPromise = null;
+          });
+        }
+        const newToken = await refreshPromise;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshErr) {
+        // Refresh failed — clear tokens and force re-login
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        window.dispatchEvent(new Event("auth:logout"));
+        return Promise.reject(refreshErr);
       }
     }
 
-    //passing authorization token in the header.
-    const url = `${BASE_URL}/${endpoint}`;
-    const headers = { Authorization: `Bearer ${serverAPI.token}` };
+    return Promise.reject(error);
+  }
+);
+
+class serverAPI {
+  // Keep static token for backward compat with googleCalendarAPI flow
+  static token;
+
+  static async request(endpoint, data = {}, method = "get") {
+    console.debug("API Call:", endpoint, data, method);
+
     const params = method === "get" ? data : {};
     try {
-      return (await axios({ url, method, data, params, headers })).data;
+      return (await apiClient({ url: endpoint, method, data, params })).data;
     } catch (err) {
       console.error("API Error:", err.response || err);
-      let message = err.response.data.error.message;
+      let message = err.response?.data?.error?.message || "An error occurred";
       throw Array.isArray(message) ? message : [message];
     }
   }
 
   //*************Authentication Routes */
 
-  /** POST "/auth/register" - { user } => { token }
-   * user must include { email , password, first_name, last_name, time_zone = ""}
-   * Returns token
-   */
-
+  /** POST "/auth/register" - { user } => { accessToken, refreshToken } */
   static async register({ email, password, first_name, last_name, time_zone }) {
     const endpoint = "auth/register";
     const method = "post";
     const data = { email, password, first_name, last_name, time_zone };
 
     const response = await this.request(endpoint, data, method);
-    serverAPI.token = response.token;
-    localStorage.setItem("socialCalToken", response.token);
-    return response.token;
+    serverAPI.token = response.accessToken;
+    localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+    return response.accessToken;
   }
 
-  /** POST "/auth/token" - { email, password } => { token }
-   * Authenticates email and password
-   * Returns token
-   **/
+  /** POST "/auth/token" - { email, password } => { accessToken, refreshToken } */
   static async login(email, password) {
     const endpoint = "auth/token";
     const method = "post";
     const data = { email, password };
 
     const response = await this.request(endpoint, data, method);
-    //Save token to api class
-    serverAPI.token = response.token;
-    localStorage.setItem("socialCalToken", response.token);
-
-    return response.token;
+    serverAPI.token = response.accessToken;
+    localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+    return response.accessToken;
   }
 
   //*************User Routes */
 
-  /** GET /user/:id => {user}
-   *
-   * Fetches user details by id.
-   *
-   * Requires token
-   *
-   */
-
+  /** GET /user/:id => {user} */
   static async fetchUserDetails(userId) {
     const endpoint = `user/${userId}`;
     const response = await this.request(endpoint, {});
-
     return response;
   }
 
-  /** GET /user/:id/calendars => [{calendar1}]
-   * Fetches users calendars
-   *
-   * Requires token
-   */
-
+  /** GET /user/:id/calendars => [{calendar1}] */
   static async fetchUserCalendars(userId) {
     const endpoint = `user/${userId}/calendars`;
     const response = await this.request(endpoint, {});
-
     return response;
   }
 
-  /** PATCH /user/:id => {user}
-   *
-   * Updates user details
-   *
-   * Allowed updates: { first_name, last_name, birthday, time_zone }
-   * Requires token
-   */
+  /** PATCH /user/:id => {user} */
   static async updateUser(userId, updateData) {
     const endpoint = `user/${userId}`;
     const method = "patch";
@@ -116,14 +150,7 @@ class serverAPI {
 
   //*************Event Routes */
 
-  /** POST /event/create => {new event}
-   *
-   * need: {calendar_id, title, start_time, end_time}
-   * optional: {location, description, status, color_id, time_zone, google_id}
-   *
-   * Requires token
-   */
-
+  /** POST /event/create => {new event} */
   static async createEvent(data) {
     const endpoint = "event/create";
     const method = "post";
@@ -131,59 +158,44 @@ class serverAPI {
     return response.event;
   }
 
-  /** GET /event/findAll/:calendar_id => [{evt1}, {evt2}, {evt3}]
-   *
-   * Fetches events from a calendar
-   *
-   * Requires token
-   */
+  /** GET /event/findAll/:calendar_id => [{evt1}, {evt2}, {evt3}] */
   static async fetchEventsByCalendar(calendar_id) {
     const endpoint = `event/findAll/${calendar_id}`;
     const response = await this.request(endpoint);
-
     return response.events;
   }
 
-  /** PATCH /event/update/:id => {updatedEvt}
-   *
-   * Updates an existing event
-   *
-   * Requires token
-   */
-
+  /** PATCH /event/update/:id => {updatedEvt} */
   static async updateEvent(id, eventData) {
     const endpoint = `event/update/${id}`;
     const method = "patch";
     const response = await this.request(endpoint, eventData, method);
-
     return response.event;
   }
 
-  /** DELETE /event/:id => {message}
-   *
-   * Removes/deletes an event
-   *
-   * Requires token
-   */
-
+  /** DELETE /event/:id => {message} */
   static async removeEvent(id) {
     const endpoint = `event/${id}`;
     const method = "delete";
     const response = await this.request(endpoint, {}, method);
-
     return response.event;
   }
 
-  /** GET /event/by-google-id/:googleId => { event }
-   *
-   * Fetches an event by its Google ID.
-   *
-   * Requires token
-   */
+  /** GET /event/by-google-id/:googleId => { event } */
   static async fetchLocalEventIdByGoogleId(google_id) {
     const endpoint = `event/by-google-id/${google_id}`;
     const response = await this.request(endpoint);
     return response;
+  }
+
+  /** POST /auth/refresh-google => { access_token }
+   * Refreshes the Google OAuth access token using stored refresh_token.
+   */
+  static async refreshGoogleToken() {
+    const endpoint = "auth/refresh-google";
+    const method = "post";
+    const response = await this.request(endpoint, {}, method);
+    return response.access_token;
   }
 }
 
