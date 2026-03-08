@@ -1,22 +1,16 @@
 "use strict";
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const { getDatabaseUri } = require("./config");
 
-let db;
-
-if (process.env.NODE_ENV === "production") {
-  db = new Client({
-    connectionString: getDatabaseUri(),
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
-} else {
-  db = new Client({
-    connectionString: getDatabaseUri(),
-  });
-}
-
-db.connect();
+const db = new Pool({
+  connectionString: getDatabaseUri(),
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : undefined,
+  max: process.env.VERCEL ? 3 : 10,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 5000,
+});
 
 module.exports = db;
