@@ -3,13 +3,28 @@ import {
   Box,
   Button,
   Typography,
-  Modal,
   TextField,
   IconButton,
+  Dialog,
+  Drawer,
+  Divider,
+  useMediaQuery,
+  useTheme,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { formatToISO } from '../redux/helpers/dateTimeFormats';
+import SaveIcon from "@mui/icons-material/Save";
+import EditIcon from "@mui/icons-material/Edit";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import NotesIcon from "@mui/icons-material/Notes";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
+import { formatToISO } from "../redux/helpers/dateTimeFormats";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
 import {
@@ -29,10 +44,16 @@ import { formatDateTimeForDisplay } from "../redux/helpers/dateTimeFormats";
 
 const DEFAULT_EVENT_DATA = {
   title: "",
-  start_time: "",
-  end_time: "",
+  start_time: null,
+  end_time: null,
   location: "",
   description: "",
+};
+
+const DEFAULT_ERRORS = {
+  title: "",
+  start_time: "",
+  end_time: "",
 };
 
 export default function EventManagerModal({ isModalOpen, toggleModal }) {
@@ -41,47 +62,86 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
   const dispatch = useDispatch();
   const currentGoogleEvent = useSelector(selectCurrentGoogleEvent);
   const currentEvent = useSelector(selectCurrentEvent);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [eventData, setEventData] = useState(DEFAULT_EVENT_DATA);
+  const [errors, setErrors] = useState(DEFAULT_ERRORS);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  //Display event times in users time_zone
   const userTimezone =
-  userDetails.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    userDetails?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  // Format to proper dateTime format to display
   useEffect(() => {
     let formattedData = currentEvent || currentGoogleEvent;
     if (formattedData) {
       setEventData({
         ...formattedData,
-        start_time: formattedData.start_time ? formatDateTimeForDisplay(formattedData.start_time, userTimezone) : "",
-        end_time: formattedData.end_time ? formatDateTimeForDisplay(formattedData.end_time, userTimezone) : "",
+        start_time: formattedData.start_time
+          ? dayjs(formatDateTimeForDisplay(formattedData.start_time, userTimezone))
+          : null,
+        end_time: formattedData.end_time
+          ? dayjs(formatDateTimeForDisplay(formattedData.end_time, userTimezone))
+          : null,
       });
     }
   }, [currentEvent, currentGoogleEvent, userTimezone]);
-  
-  // Handles changes on form inputs
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEventData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setEventData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
-  /** Handles update submission
-   * 
-   * *If google event has local copy, 
-   *  google action will handle both
-  */
+  const handleDateChange = (name, value) => {
+    setEventData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors = { title: "", start_time: "", end_time: "" };
+    let valid = true;
+
+    if (!eventData.title || !eventData.title.trim()) {
+      newErrors.title = "Event title is required";
+      valid = false;
+    }
+    if (!eventData.start_time || !dayjs(eventData.start_time).isValid()) {
+      newErrors.start_time = "Start time is required";
+      valid = false;
+    }
+    if (!eventData.end_time || !dayjs(eventData.end_time).isValid()) {
+      newErrors.end_time = "End time is required";
+      valid = false;
+    }
+    if (
+      eventData.start_time &&
+      eventData.end_time &&
+      dayjs(eventData.end_time).isBefore(dayjs(eventData.start_time))
+    ) {
+      newErrors.end_time = "End time must be after start time";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
+
     const { id, ...updateData } = eventData;
-    //Formatting dates to UTC for database
     const formattedUpdateData = {
       ...updateData,
-      start_time: formatToISO(eventData.start_time),
-    end_time: formatToISO(eventData.end_time),
+      start_time: dayjs(eventData.start_time).format(),
+      end_time: dayjs(eventData.end_time).format(),
     };
+
     if (currentEvent && currentEvent.id) {
       await dispatch(updateEvent({ id, eventData: formattedUpdateData }));
     }
@@ -93,12 +153,9 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
     closeModal();
   };
 
-  /**Dispatch action to delete event in corresponding system
-   * 
-   * *If google event has local copy, 
-   *  google action will handle both
-  */
   const handleDeleteEvent = async () => {
+    setDeleteConfirmOpen(false);
+
     if (currentGoogleEvent?.id) {
       await dispatch(removeGoogleEvent(currentGoogleEvent.id));
     }
@@ -110,90 +167,226 @@ export default function EventManagerModal({ isModalOpen, toggleModal }) {
   };
 
   const closeModal = () => {
+    setErrors(DEFAULT_ERRORS);
     dispatch(fetchEventsByCalendar(userCal.id));
     dispatch(resetCurrentEvent());
     dispatch(resetCurrentGoogleEvent());
     toggleModal();
   };
 
-  return (
-    <div>
-      <Modal open={isModalOpen} onClose={closeModal}>
-        <Box sx={modalStyle} component="form" onSubmit={handleSubmit}>
-          <IconButton
-            onClick={closeModal}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography id="event-modal-title" variant="h6" component="h2">
-            Manage Event
+  const formContent = (
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ p: isMobile ? 2 : 3, display: "flex", flexDirection: "column", gap: 2 }}
+    >
+      {/* Header */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <EditIcon sx={{ color: "primary.main" }} />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Edit Event
           </Typography>
+        </Box>
+        <IconButton onClick={closeModal} size="small" aria-label="Close">
+          <CloseIcon />
+        </IconButton>
+      </Box>
 
-          {renderTextFields()}
-          <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Update Event
+      <Divider />
+
+      {/* Title */}
+      <TextField
+        name="title"
+        label="Event Title"
+        value={eventData.title || ""}
+        onChange={handleChange}
+        fullWidth
+        required
+        autoFocus
+        error={!!errors.title}
+        helperText={errors.title}
+      />
+
+      {/* Date/Time Pickers */}
+      <Box sx={{ display: "flex", gap: 2, flexDirection: isMobile ? "column" : "row" }}>
+        <DateTimePicker
+          label="Start Time"
+          value={eventData.start_time}
+          onChange={(val) => handleDateChange("start_time", val)}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              required: true,
+              error: !!errors.start_time,
+              helperText: errors.start_time,
+            },
+          }}
+        />
+        <DateTimePicker
+          label="End Time"
+          value={eventData.end_time}
+          onChange={(val) => handleDateChange("end_time", val)}
+          minDateTime={eventData.start_time || undefined}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              required: true,
+              error: !!errors.end_time,
+              helperText: errors.end_time,
+            },
+          }}
+        />
+      </Box>
+
+      {/* Location */}
+      <TextField
+        name="location"
+        label="Location"
+        value={eventData.location || ""}
+        onChange={handleChange}
+        fullWidth
+        placeholder="Add a location"
+        InputProps={{
+          startAdornment: (
+            <LocationOnIcon sx={{ color: "text.secondary", mr: 1, fontSize: 20 }} />
+          ),
+        }}
+      />
+
+      {/* Description */}
+      <TextField
+        name="description"
+        label="Description"
+        value={eventData.description || ""}
+        onChange={handleChange}
+        fullWidth
+        multiline
+        rows={3}
+        placeholder="Add details about this event"
+        InputProps={{
+          startAdornment: (
+            <NotesIcon sx={{ color: "text.secondary", mr: 1, fontSize: 20, alignSelf: "flex-start", mt: 1 }} />
+          ),
+        }}
+      />
+
+      {/* Action Buttons */}
+      <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<SaveIcon />}
+          sx={{ flex: 1, py: 1.5, fontWeight: 600 }}
+        >
+          Save Changes
+        </Button>
+        <Button
+          onClick={() => setDeleteConfirmOpen(true)}
+          variant="outlined"
+          color="error"
+          size="large"
+          startIcon={<DeleteIcon />}
+          sx={{ py: 1.5, fontWeight: 600 }}
+        >
+          Delete
+        </Button>
+      </Box>
+    </Box>
+  );
+
+  return (
+    <>
+      {/* Mobile: Bottom Sheet Drawer */}
+      {isMobile ? (
+        <Drawer
+          anchor="bottom"
+          open={isModalOpen}
+          onClose={closeModal}
+          PaperProps={{
+            sx: {
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              maxHeight: "90vh",
+            },
+          }}
+        >
+          {/* Drag handle */}
+          <Box sx={{ display: "flex", justifyContent: "center", pt: 1, pb: 0 }}>
+            <Box
+              sx={{
+                width: 36,
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: theme.palette.divider,
+              }}
+            />
+          </Box>
+          {formContent}
+        </Drawer>
+      ) : (
+        /* Desktop: Centered Dialog */
+        <Dialog
+          open={isModalOpen}
+          onClose={closeModal}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              boxShadow: theme.shadows[8],
+            },
+          }}
+        >
+          {formContent}
+        </Dialog>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+            maxWidth: 400,
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1 }}>
+          <WarningAmberIcon sx={{ color: "error.main" }} />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Delete Event
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete &ldquo;{eventData.title}&rdquo;? This action
+            cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={() => setDeleteConfirmOpen(false)}
+            variant="outlined"
+            sx={{ fontWeight: 500 }}
+          >
+            Cancel
           </Button>
           <Button
             onClick={handleDeleteEvent}
             variant="contained"
-            sx={buttonStyle}
             color="error"
+            startIcon={<DeleteIcon />}
+            sx={{ fontWeight: 600 }}
           >
-            <DeleteIcon />
+            Delete
           </Button>
-        </Box>
-      </Modal>
-    </div>
+        </DialogActions>
+      </Dialog>
+    </>
   );
-
-function renderTextFields(){
-  const fields = [
-    { name: "title", label: "Event Title", required: true, autoFocus: true },
-      {
-        name: "start_time",
-        label: "Start Time",
-        type: "datetime-local",
-        required: true,
-      },
-      {
-        name: "end_time",
-        label: "End Time",
-        type: "datetime-local",
-        required: true,
-      },
-      { name: "location", label: "Location" },
-      { name: "description", label: "Description", multiline: true, rows: 4 },
-  ];
-
-  return fields.map((field)=>
-   ( <TextField
-    key={field.name}
-    margin="normal"
-    fullWidth
-    value={eventData[field.name] || ""}
-    onChange={handleChange}
-    {...field}
-    InputLabelProps={
-      field.type === "datetime-local" ? {shrink: true} : null
-    }
-    />)
-  )
 }
-}
-
-
-
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
-const buttonStyle = { mt: 3, mb: 2, ml: 1 }

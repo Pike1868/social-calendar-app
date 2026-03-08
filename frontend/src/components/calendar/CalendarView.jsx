@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectEvents, selectShowLocalEvents, setCurrentEvent, resetCurrentEvent } from "../../redux/eventSlice";
 import { selectAllGoogleEvents, selectShowGoogleEvents, setCurrentGoogleEvent, resetCurrentGoogleEvent } from "../../redux/googleEventSlice";
 import EventDetailModal from "./EventDetailModal";
+import EventManagerModal from "../EventManagerModal";
 import MobileDayDrawer from "./MobileDayDrawer";
 import dayjs from "dayjs";
 
@@ -39,6 +40,7 @@ export default function CalendarView() {
   const [title, setTitle] = useState("");
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [dayDrawerOpen, setDayDrawerOpen] = useState(false);
   const [dayDrawerDate, setDayDrawerDate] = useState(null);
   const [dayDrawerEvents, setDayDrawerEvents] = useState([]);
@@ -149,6 +151,18 @@ export default function CalendarView() {
     dispatch(resetCurrentEvent());
     dispatch(resetCurrentGoogleEvent());
   }, [dispatch]);
+
+  // Open edit modal from detail view
+  const handleEditEvent = useCallback(() => {
+    setDetailOpen(false);
+    setEditModalOpen(true);
+  }, []);
+
+  // Close edit modal
+  const handleEditModalClose = useCallback(() => {
+    setEditModalOpen(false);
+    setSelectedEvent(null);
+  }, []);
 
   // View change handler
   const handleViewChange = useCallback((_event, newView) => {
@@ -484,6 +498,13 @@ export default function CalendarView() {
         open={detailOpen}
         event={selectedEvent}
         onClose={handleDetailClose}
+        onEdit={handleEditEvent}
+      />
+
+      {/* Event Manager Modal (Edit/Delete) */}
+      <EventManagerModal
+        isModalOpen={editModalOpen}
+        toggleModal={handleEditModalClose}
       />
 
       {/* Mobile Day Drawer */}

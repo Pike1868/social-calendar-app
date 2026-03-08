@@ -121,3 +121,8 @@ Files Modified:
 **Learnings for future iterations:**
 1. dayjs format tokens differ from date-fns: YYYY not yyyy, DD not dd, etc. 2. dayjs.utc(str).tz(zone) replaces date-fns-tz utcToZonedTime+format. 3. dayjs(date).format() with no args produces ISO 8601 with timezone offset, equivalent to date-fns formatISO. 4. dayjs parses ISO strings natively - no parseISO equivalent needed. 5. The third-party packages dayjs-plugin-utc and dayjs-timezone-iana-plugin were unused - the official dayjs/plugin/utc and dayjs/plugin/timezone (bundled with dayjs) are sufficient.
 ---
+
+## 2026-03-08T03:14:04.309Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-005 - Event Modals Redesign (Create + Manage) - STARTED. Redesigning EventCreatorModal and EventManagerModal with responsive bottom sheet/dialog pattern, MUI DateTimePicker, design tokens, and form validation.
+---
