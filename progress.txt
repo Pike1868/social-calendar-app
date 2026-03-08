@@ -126,3 +126,20 @@ Files Modified:
 ## 2026-03-08T03:15:00.000Z
 STATUS_UPDATE: US-005 - Event Modals Redesign (Create + Manage) - STARTED. Redesigning EventCreatorModal and EventManagerModal with responsive bottom sheet/dialog pattern, MUI DateTimePicker, design tokens, and form validation.
 ---
+
+## 2026-03-08T03:17:36.616Z
+Story: US-005 - Event Modals Redesign (Create + Manage)
+Agent: claude-main
+
+Redesigned EventCreatorModal and EventManagerModal with responsive bottom sheet (mobile) / centered dialog (desktop) pattern. Replaced raw datetime-local inputs with MUI DateTimePicker using dayjs adapter. Added LocalizationProvider to ThemeContext. Styled all form fields with design tokens (green/gold/white/black). Google Calendar sync checkbox retained with styled highlight container. Added form validation with clear error states. Added styled delete confirmation dialog. Connected EventManagerModal to CalendarView via EventDetailModal's edit button. All 74 tests pass, build succeeds.
+
+Files Modified:
+- frontend/src/ThemeContext.js
+- frontend/src/components/EventCreatorModal.jsx
+- frontend/src/components/EventManagerModal.jsx
+- frontend/src/components/calendar/CalendarView.jsx
+- progress.txt
+
+**Learnings for future iterations:**
+1. MUI DateTimePicker v6 requires LocalizationProvider with AdapterDayjs wrapping the app - added to ThemeContext.js which already wraps MuiThemeProvider. 2. EventManagerModal's userDetails selector can be undefined when user is not authenticated - must use optional chaining (userDetails?.time_zone). 3. EventManagerModal was not imported/used anywhere in the app - connected it through CalendarView by wiring EventDetailModal's onEdit prop to open EventManagerModal. 4. Follow the existing Drawer/Dialog responsive pattern established by EventDetailModal for consistency across all modals. 5. DateTimePicker values should be stored as dayjs objects (not strings) and formatted on submission with dayjs().format().
+---

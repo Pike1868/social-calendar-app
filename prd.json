@@ -85,8 +85,8 @@
         "Form validation with clear error states"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Redesigned EventCreatorModal and EventManagerModal with responsive bottom sheet (mobile) / centered dialog (desktop) pattern. Replaced raw datetime-local inputs with MUI DateTimePicker using dayjs adapter. Added LocalizationProvider to ThemeContext. Styled all form fields with design tokens (green/gold/white/black). Google Calendar sync checkbox retained with styled highlight container. Added form validation with clear error states. Added styled delete confirmation dialog. Connected EventManagerModal to CalendarView via EventDetailModal's edit button. All 74 tests pass, build succeeds."
     },
     {
       "id": "US-006",
