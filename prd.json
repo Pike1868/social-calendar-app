@@ -205,8 +205,8 @@
         "Styled with design tokens"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "Depends on US-010 FreeBusy backend."
+      "passes": true,
+      "notes": "Find a Time page complete: friend/circle picker, week view with busy block overlays, mutual free windows highlighted in green, click-to-create event, privacy indicator, responsive mobile/desktop, FreeBusy Redux slice integrated."
     },
     {
       "id": "US-012",

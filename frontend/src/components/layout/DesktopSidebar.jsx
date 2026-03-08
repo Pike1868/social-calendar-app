@@ -17,6 +17,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -35,6 +36,7 @@ import { layout } from "../../theme";
 const navItems = [
   { label: "Calendar", icon: <CalendarMonthIcon />, path: "/home" },
   { label: "Friends", icon: <PeopleOutlineIcon />, path: "/friends" },
+  { label: "Find a Time", icon: <EventAvailableOutlinedIcon />, path: "/find-a-time" },
   {
     label: "Suggestions",
     icon: <LightbulbOutlinedIcon />,

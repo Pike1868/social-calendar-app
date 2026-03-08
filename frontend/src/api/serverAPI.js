@@ -273,6 +273,18 @@ class serverAPI {
     const response = await this.request(`circles/${circleId}`, {}, "delete");
     return response;
   }
+
+  //*************FreeBusy Routes */
+
+  /** POST /freebusy => { availability: { [friendId]: { busy, displayName } } } */
+  static async fetchFreeBusy({ friendIds, timeMin, timeMax }) {
+    const response = await this.request(
+      "freebusy",
+      { friendIds, timeMin, timeMax },
+      "post"
+    );
+    return response.availability;
+  }
 }
 
 export default serverAPI;

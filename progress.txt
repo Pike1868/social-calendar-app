@@ -269,3 +269,15 @@ Agent: Claude
 
 FreeBusy backend complete: POST /freebusy endpoint with friendship verification, Google Calendar FreeBusy API integration via existing service, per-friend error handling, JSON schema validation, sharing opt-in check.
 ---
+
+## 2026-03-08T04:08:29.010Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-011 - Find a Time — Shared Availability View - STARTED. Building friend/circle picker, week view with overlaid free/busy blocks, mutual free window highlighting, and event creator pre-fill.
+---
+
+## 2026-03-08T04:17:52.250Z
+Story: US-011 - Find a Time — Shared Availability View
+Agent: Claude
+
+Find a Time page complete: friend/circle picker, week view with busy block overlays, mutual free windows highlighted in green, click-to-create event, privacy indicator, responsive mobile/desktop, FreeBusy Redux slice integrated.
+---
