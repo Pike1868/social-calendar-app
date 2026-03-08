@@ -295,3 +295,10 @@ Agent: Claude
 
 Suggestions engine complete: suggestions DB table, Suggestion model with CRUD, suggestionEngine service generating 3 types (availability match, reconnect nudge, event discovery), REST routes at /suggestions with generate/dismiss/acted endpoints.
 ---
+
+## 2026-03-08T04:21:45.995Z
+Story: US-017 - Privacy Controls UI
+Agent: Claude
+
+Privacy controls complete: sharing_enabled on users, sharing_preferences table with per-friend toggles, SharingPreference model with canViewAvailability check, privacy routes, frontend Privacy & Sharing section in profile with master + per-friend switches.
+---

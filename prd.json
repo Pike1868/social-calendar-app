@@ -312,8 +312,8 @@
         "Respected by FreeBusy API endpoint"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "Privacy is a core value prop. Must be clear and trustworthy."
+      "passes": true,
+      "notes": "Privacy controls complete: sharing_enabled on users, sharing_preferences table with per-friend toggles, SharingPreference model with canViewAvailability check, privacy routes, frontend Privacy & Sharing section in profile with master + per-friend switches."
     },
     {
       "id": "US-018",
