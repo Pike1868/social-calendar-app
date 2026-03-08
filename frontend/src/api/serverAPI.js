@@ -197,6 +197,76 @@ class serverAPI {
     const response = await this.request(endpoint, {}, method);
     return response.access_token;
   }
+
+  //*************Friend Routes */
+
+  /** POST /friends/request => { friendship } */
+  static async sendFriendRequest(email) {
+    const response = await this.request("friends/request", { email }, "post");
+    return response.friendship;
+  }
+
+  /** GET /friends => { friends: [...] } */
+  static async fetchFriends() {
+    const response = await this.request("friends");
+    return response.friends;
+  }
+
+  /** GET /friends/requests => { requests: [...] } */
+  static async fetchFriendRequests() {
+    const response = await this.request("friends/requests");
+    return response.requests;
+  }
+
+  /** PATCH /friends/:id/accept => { friendship } */
+  static async acceptFriendRequest(friendshipId) {
+    const response = await this.request(`friends/${friendshipId}/accept`, {}, "patch");
+    return response.friendship;
+  }
+
+  /** PATCH /friends/:id/decline => { message } */
+  static async declineFriendRequest(friendshipId) {
+    const response = await this.request(`friends/${friendshipId}/decline`, {}, "patch");
+    return response;
+  }
+
+  /** DELETE /friends/:id => { message } */
+  static async removeFriend(friendshipId) {
+    const response = await this.request(`friends/${friendshipId}`, {}, "delete");
+    return response;
+  }
+
+  //*************Circle Routes */
+
+  /** POST /circles => { circle } */
+  static async createCircle(name) {
+    const response = await this.request("circles", { name }, "post");
+    return response.circle;
+  }
+
+  /** GET /circles => { circles: [...] } */
+  static async fetchCircles() {
+    const response = await this.request("circles");
+    return response.circles;
+  }
+
+  /** POST /circles/:id/members => { member } */
+  static async addCircleMember(circleId, userId) {
+    const response = await this.request(`circles/${circleId}/members`, { user_id: userId }, "post");
+    return response.member;
+  }
+
+  /** DELETE /circles/:id/members/:userId => { message } */
+  static async removeCircleMember(circleId, userId) {
+    const response = await this.request(`circles/${circleId}/members/${userId}`, {}, "delete");
+    return response;
+  }
+
+  /** DELETE /circles/:id => { message } */
+  static async deleteCircle(circleId) {
+    const response = await this.request(`circles/${circleId}`, {}, "delete");
+    return response;
+  }
 }
 
 export default serverAPI;

@@ -4,6 +4,7 @@ import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import HomePage from "../pages/HomePage";
 import UserProfile from "../pages/UserProfile";
+import FriendsPage from "../pages/FriendsPage";
 import AppLayout from "../components/layout/AppLayout";
 import { useSelector } from "react-redux";
 
@@ -16,7 +17,7 @@ const RouteList = () => {
         <Route element={<AppLayout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="/friends" element={<PlaceholderPage title="Friends" />} />
+          <Route path="/friends" element={<FriendsPage />} />
           <Route path="/suggestions" element={<PlaceholderPage title="Suggestions" />} />
           <Route path="/*" element={<Navigate to="/home" />} />
         </Route>
