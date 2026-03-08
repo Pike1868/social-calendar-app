@@ -343,8 +343,8 @@
         "No runtime errors from date handling"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Cleanup task. Reduces bundle size and removes confusion of having two date libraries."
+      "passes": true,
+      "notes": "Consolidated all date libraries to dayjs only. Replaced all date-fns (formatISO, format, parseISO) and date-fns-tz (utcToZonedTime, format with tz) imports with dayjs equivalents using dayjs/plugin/utc and dayjs/plugin/timezone. Removed 4 dependencies: date-fns, date-fns-tz, dayjs-plugin-utc, dayjs-timezone-iana-plugin. All 74 tests pass."
     },
     {
       "id": "US-020",

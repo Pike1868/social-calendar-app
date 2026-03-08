@@ -102,3 +102,22 @@ Files Modified:
 **Learnings for future iterations:**
 1. FullCalendar headerToolbar must be set to false (not hidden via CSS) to use a custom toolbar — otherwise it renders twice. 2. For mobile dot indicators, override .fc-daygrid-event styles to transparent and render custom dot content via eventContent callback. 3. FullCalendar's dateClick from interaction plugin is ideal for mobile day-tap behavior. 4. Swipe navigation works via touch event handlers on the container wrapping FullCalendar — use prev/next API methods. 5. FullCalendar respects height="auto" for responsive layouts — avoid fixed heights.
 ---
+
+## 2026-03-08T03:12:29.973Z
+Story: US-019 - Consolidate Date Libraries
+Agent: claude-main
+
+Consolidated all date libraries to dayjs only. Replaced all date-fns (formatISO, format, parseISO) and date-fns-tz (utcToZonedTime, format with tz) imports with dayjs equivalents using dayjs/plugin/utc and dayjs/plugin/timezone. Removed 4 dependencies: date-fns, date-fns-tz, dayjs-plugin-utc, dayjs-timezone-iana-plugin. All 74 tests pass.
+
+Files Modified:
+- frontend/src/redux/helpers/dateTimeFormats.js
+- frontend/src/redux/helpers/googleEventsHelper.js
+- frontend/src/pages/UserProfile.js
+- frontend/src/redux/eventSlice.js
+- frontend/src/redux/googleEventSlice.js
+- frontend/package.json
+- frontend/package-lock.json
+
+**Learnings for future iterations:**
+1. dayjs format tokens differ from date-fns: YYYY not yyyy, DD not dd, etc. 2. dayjs.utc(str).tz(zone) replaces date-fns-tz utcToZonedTime+format. 3. dayjs(date).format() with no args produces ISO 8601 with timezone offset, equivalent to date-fns formatISO. 4. dayjs parses ISO strings natively - no parseISO equivalent needed. 5. The third-party packages dayjs-plugin-utc and dayjs-timezone-iana-plugin were unused - the official dayjs/plugin/utc and dayjs/plugin/timezone (bundled with dayjs) are sufficient.
+---
