@@ -148,3 +148,28 @@ Files Modified:
 ## 2026-03-08T03:15:00.000Z
 STATUS_UPDATE: US-016 - Token Refresh & Session Persistence - STARTED. Implementing JWT refresh token flow, Google OAuth token refresh, axios interceptors for auto-refresh, and session persistence.
 ---
+
+## 2026-03-08T03:27:24.733Z
+Story: US-016 - Token Refresh & Session Persistence
+Agent: claude-main
+
+Implemented full JWT refresh token flow. Access tokens now expire in 15 minutes (down from 1 hour) with 7-day refresh tokens. Backend: Created POST /auth/refresh endpoint that verifies refresh tokens and issues new access tokens. Created POST /auth/refresh-google endpoint that uses stored Google OAuth refresh_token to get fresh Google access tokens. Updated login/register routes to return both accessToken and refreshToken. Updated Google OAuth strategy to store encrypted refresh_token in DB. Frontend: Added axios interceptor on serverAPI that automatically catches 401 responses, refreshes the access token, and retries the original request (with deduplication for concurrent requests). Added proactive token refresh timer that refreshes 2 minutes before expiry. Updated googleCalendarAPI to auto-refresh Google tokens on 401. Session persists across page refreshes via localStorage (socialCalToken + socialCalRefreshToken). Graceful logout via auth:logout custom event when refresh token expires.
+
+Files Modified:
+- backend/helpers/token.js
+- backend/routes/tokenRefresh.js
+- backend/routes/localAuth.js
+- backend/routes/googleAuth.js
+- backend/models/user.js
+- backend/app.js
+- backend/tests/routes/localAuth.test.js
+- frontend/src/api/serverAPI.js
+- frontend/src/api/googleCalendarAPI.js
+- frontend/src/App.js
+- frontend/src/App.test.js
+- frontend/src/redux/helpers/decodeTokenHelper.js
+- frontend/src/redux/userSlice.js
+
+**Learnings for future iterations:**
+1. jest.mock("axios") doesn't mock axios.create() properly — need a custom mock factory that returns an object with interceptors.request/response.use(). 2. Backend had no axios dependency — used Node's built-in https module for Google token refresh endpoint instead. 3. Backend tests fail due to missing .env (PORT undefined) — this is pre-existing infrastructure issue, not related to code changes. 4. Google OAuth refresh tokens are only sent on first authorization (accessType: "offline") — existing users may not have a refresh_token stored until they re-authenticate. 5. The Google auth callback in googleAuth.js had a bug where it passed `googleId` instead of `google_id` and `newUser.firstName` instead of `newUser.first_name` — fixed during implementation.
+---

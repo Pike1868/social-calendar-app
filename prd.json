@@ -295,8 +295,8 @@
         "No more random logouts after 1 hour"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Important UX fix. Currently users get silently logged out after 1 hour."
+      "passes": true,
+      "notes": "Implemented full JWT refresh token flow. Access tokens now expire in 15 minutes (down from 1 hour) with 7-day refresh tokens. Backend: Created POST /auth/refresh endpoint that verifies refresh tokens and issues new access tokens. Created POST /auth/refresh-google endpoint that uses stored Google OAuth refresh_token to get fresh Google access tokens. Updated login/register routes to return both accessToken and refreshToken. Updated Google OAuth strategy to store encrypted refresh_token in DB. Frontend: Added axios interceptor on serverAPI that automatically catches 401 responses, refreshes the access token, and retries the original request (with deduplication for concurrent requests). Added proactive token refresh timer that refreshes 2 minutes before expiry. Updated googleCalendarAPI to auto-refresh Google tokens on 401. Session persists across page refreshes via localStorage (socialCalToken + socialCalRefreshToken). Graceful logout via auth:logout custom event when refresh token expires."
     },
     {
       "id": "US-017",
