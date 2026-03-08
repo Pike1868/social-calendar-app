@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import "./assets/App.css";
 import RouteList from "./routes/RouteList";
 import { useDispatch } from "react-redux";
-import { setUser } from "./redux/userSlice"; // Import the setUser action
+import { setUser } from "./redux/userSlice";
 import { decodeToken } from "./redux/helpers/decodeTokenHelper";
 import { useNavigate } from "react-router-dom";
+import { ThemeProvider } from "./ThemeContext";
 
-function App() {
+function AppContent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,6 +37,14 @@ function App() {
     <main className="App">
       <RouteList />
     </main>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 
