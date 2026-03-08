@@ -74,3 +74,12 @@ Files Modified:
 **Learnings for future iterations:**
 1. MUI useMediaQuery with createMatchMedia mock works well for testing responsive layouts - parse min-width/max-width from query strings. 2. When text appears in multiple places (e.g. "Profile" in sidebar nav AND top bar button), use getAllByText instead of getByText in tests. 3. React Router Outlet pattern is ideal for layout shells - wrap authenticated routes in a parent Route with element={<AppLayout />} and use <Outlet /> for page content. 4. Redux store key naming matters for tests - check store.js for actual keys (e.g. 'googleEvent' not 'googleEvents'). 5. ThemeProvider must wrap any component that uses useThemeMode hook, including in tests for components rendered inside AppLayout.
 ---
+
+## 2026-03-08T03:03:50.084Z
+LEARNING: Codex and Gemini agents fail with ENOENT when spawned by nightshift-mcp on this system. CLI binaries not in PATH. Use Claude agent for all delegations going forward.
+---
+
+## 2026-03-08T03:05:22.938Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-004 - Calendar Component Replacement - STARTED. Replacing hand-rolled dayjs calendar grid with FullCalendar. Will support Month/Week/Day views, mobile dot indicators, swipe navigation, color-coded events, and Redux integration.
+---
