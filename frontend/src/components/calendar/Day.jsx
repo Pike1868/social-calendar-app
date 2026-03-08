@@ -9,7 +9,7 @@ import {
 } from "../../redux/eventSlice";
 import {
   resetCurrentGoogleEvent,
-  selectAllGoogleEvents,
+  selectVisibleGoogleEvents,
   setCurrentGoogleEvent,
   selectShowGoogleEvents,
 } from "../../redux/googleEventSlice";
@@ -37,7 +37,7 @@ export default function Day({ day, toggleModal }) {
   const showGoogleEvents = useSelector(selectShowGoogleEvents);
   const showLocalEvents = useSelector(selectShowLocalEvents);
   const localEventList = useSelector(selectEvents);
-  const googleEventList = useSelector(selectAllGoogleEvents);
+  const googleEventList = useSelector(selectVisibleGoogleEvents);
 
   // Memoized filtering of local events
   // Filters out events synced with Google if showGoogleEvents is false,

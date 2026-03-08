@@ -10,8 +10,9 @@ import {
   CircularProgress,
   Grid,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
+import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import AuthLayout from "../components/AuthLayout";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,6 +21,7 @@ import {
   selectUserError,
 } from "../redux/userSlice";
 import { tokens } from "../theme";
+import serverAPI from "../api/serverAPI";
 
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -27,6 +29,22 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const error = useSelector(selectUserError);
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const inviteCode = searchParams.get("invite");
+  const [inviteInfo, setInviteInfo] = useState(null);
+
+  // Validate invite code on mount
+  React.useEffect(() => {
+    if (inviteCode) {
+      serverAPI.validateInviteCode(inviteCode).then((result) => {
+        if (result.valid) {
+          setInviteInfo(result);
+        }
+      }).catch(() => {
+        // Silently ignore validation errors
+      });
+    }
+  }, [inviteCode]);
 
   const formFieldNames = {
     first_name: "First Name",
@@ -111,6 +129,20 @@ const SignUp = () => {
             Join Circl and reconnect with your people
           </Typography>
 
+          {inviteInfo && (
+            <Alert
+              severity="info"
+              icon={<PersonAddOutlinedIcon />}
+              sx={{
+                mb: 4,
+                borderRadius: 2,
+                "& .MuiAlert-message": { fontSize: "0.875rem" },
+              }}
+            >
+              Invited by <strong>{inviteInfo.inviter_name}</strong>
+            </Alert>
+          )}
+
           {error && (
             <Alert
               severity="error"
@@ -128,7 +160,7 @@ const SignUp = () => {
           {/* Primary CTA: Continue with Google */}
           <Button
             component="a"
-            href={`${process.env.REACT_APP_SERVER_URL}/auth/google`}
+            href={`${process.env.REACT_APP_SERVER_URL}/auth/google${inviteCode ? `?invite=${inviteCode}` : ""}`}
             fullWidth
             variant="contained"
             size="large"

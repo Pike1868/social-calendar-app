@@ -11,7 +11,6 @@ import {
   LinearProgress,
   useMediaQuery,
   useTheme,
-  Autocomplete,
   CircularProgress,
 } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
@@ -20,6 +19,9 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import CloseIcon from "@mui/icons-material/Close";
+import LinkIcon from "@mui/icons-material/Link";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
@@ -28,6 +30,7 @@ import { completeOnboarding, selectUserDetails } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../theme";
 import serverAPI from "../api/serverAPI";
+import CityAutocompleteField from "../components/CityAutocompleteField";
 
 const STEPS = [
   { label: "Profile", icon: PersonOutlineIcon },
@@ -36,59 +39,6 @@ const STEPS = [
   { label: "Privacy", icon: ShieldOutlinedIcon },
 ];
 
-// Common city suggestions for autocomplete
-const CITY_SUGGESTIONS = [
-  "New York, NY",
-  "Los Angeles, CA",
-  "Chicago, IL",
-  "Houston, TX",
-  "Phoenix, AZ",
-  "Philadelphia, PA",
-  "San Antonio, TX",
-  "San Diego, CA",
-  "Dallas, TX",
-  "San Jose, CA",
-  "Austin, TX",
-  "Jacksonville, FL",
-  "Fort Worth, TX",
-  "Columbus, OH",
-  "Charlotte, NC",
-  "San Francisco, CA",
-  "Indianapolis, IN",
-  "Seattle, WA",
-  "Denver, CO",
-  "Washington, DC",
-  "Nashville, TN",
-  "Oklahoma City, OK",
-  "El Paso, TX",
-  "Boston, MA",
-  "Portland, OR",
-  "Las Vegas, NV",
-  "Memphis, TN",
-  "Louisville, KY",
-  "Baltimore, MD",
-  "Milwaukee, WI",
-  "Albuquerque, NM",
-  "Tucson, AZ",
-  "Fresno, CA",
-  "Mesa, AZ",
-  "Sacramento, CA",
-  "Atlanta, GA",
-  "Kansas City, MO",
-  "Omaha, NE",
-  "Colorado Springs, CO",
-  "Raleigh, NC",
-  "Miami, FL",
-  "Minneapolis, MN",
-  "Tampa, FL",
-  "New Orleans, LA",
-  "Cleveland, OH",
-  "Orlando, FL",
-  "Pittsburgh, PA",
-  "Cincinnati, OH",
-  "St. Louis, MO",
-  "Detroit, MI",
-];
 
 export default function OnboardingPage() {
   const theme = useTheme();
@@ -119,6 +69,11 @@ export default function OnboardingPage() {
   const [inviteError, setInviteError] = useState("");
   const [inviteSending, setInviteSending] = useState(false);
   const [inviteResults, setInviteResults] = useState(null);
+
+  // Invite link state
+  const [inviteLink, setInviteLink] = useState("");
+  const [linkGenerating, setLinkGenerating] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const progress = ((activeStep + 1) / STEPS.length) * 100;
 
@@ -168,6 +123,29 @@ export default function OnboardingPage() {
     if (e.key === "Enter") {
       e.preventDefault();
       addEmail();
+    }
+  };
+
+  const handleGenerateLink = async () => {
+    setLinkGenerating(true);
+    try {
+      const result = await serverAPI.generateInviteLink();
+      setInviteLink(result.link);
+      setLinkCopied(false);
+    } catch (err) {
+      setInviteError("Failed to generate invite link. Try again.");
+    } finally {
+      setLinkGenerating(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setInviteError("Failed to copy link");
     }
   };
 
@@ -443,27 +421,13 @@ export default function OnboardingPage() {
           We'll use this to suggest events and activities near you.
         </Typography>
 
-        <Autocomplete
-          freeSolo
-          options={CITY_SUGGESTIONS}
+        <CityAutocompleteField
           value={homeCity}
-          onInputChange={(_, value) => setHomeCity(value)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Home City"
-              placeholder="Start typing your city..."
-              size="small"
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <LocationOnOutlinedIcon
-                    sx={{ mr: 1, color: "text.secondary", fontSize: 20 }}
-                  />
-                ),
-              }}
-            />
-          )}
+          onChange={setHomeCity}
+          label="Home City"
+          placeholder="Start typing your city..."
+          size="small"
+          showLocationButton
           sx={{ maxWidth: 360, mx: "auto" }}
         />
       </Box>
@@ -501,6 +465,69 @@ export default function OnboardingPage() {
         </Typography>
 
         <Box sx={{ maxWidth: 400, mx: "auto" }}>
+          {/* Generate Invite Link */}
+          <Box sx={{ mb: 4 }}>
+            <Button
+              variant="contained"
+              onClick={handleGenerateLink}
+              disabled={linkGenerating}
+              startIcon={linkGenerating ? undefined : <LinkIcon />}
+              sx={{
+                textTransform: "none",
+                fontWeight: 600,
+                width: "100%",
+                mb: 2,
+              }}
+            >
+              {linkGenerating ? (
+                <CircularProgress size={20} sx={{ color: "inherit" }} />
+              ) : (
+                "Generate Invite Link"
+              )}
+            </Button>
+
+            {inviteLink && (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  bgcolor: "action.hover",
+                  borderRadius: 2,
+                  px: 2,
+                  py: 1.5,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    flex: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    color: "text.secondary",
+                  }}
+                >
+                  {inviteLink}
+                </Typography>
+                <IconButton size="small" onClick={handleCopyLink}>
+                  {linkCopied ? (
+                    <CheckIcon sx={{ fontSize: 18, color: "success.main" }} />
+                  ) : (
+                    <ContentCopyIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                  )}
+                </IconButton>
+              </Box>
+            )}
+          </Box>
+
+          <Typography
+            variant="caption"
+            sx={{ display: "block", color: "text.secondary", mb: 3, textAlign: "center" }}
+          >
+            Or invite by email
+          </Typography>
+
           <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
             <TextField
               fullWidth

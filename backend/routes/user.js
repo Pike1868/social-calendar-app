@@ -59,21 +59,15 @@ router.patch(
         throw new BadRequestError(errs);
       }
 
-      const { first_name, last_name, display_name, home_city, avatar_url, birthday, time_zone, onboarding_complete, sharing_opt_in, sharing_enabled } = req.body;
+      const allowedFields = ['first_name', 'last_name', 'display_name', 'home_city', 'avatar_url', 'birthday', 'time_zone', 'onboarding_complete', 'sharing_opt_in', 'sharing_enabled'];
 
-      // Ensure only allowed fields are updated
-      const updateData = {
-        first_name,
-        last_name,
-        display_name,
-        home_city,
-        avatar_url,
-        birthday,
-        time_zone,
-        onboarding_complete,
-        sharing_opt_in,
-        sharing_enabled,
-      };
+      // Only include fields that were actually sent (not undefined)
+      const updateData = {};
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          updateData[field] = req.body[field];
+        }
+      }
       const user = await User.update(req.params.id, updateData);
 
       return res.json({ user });

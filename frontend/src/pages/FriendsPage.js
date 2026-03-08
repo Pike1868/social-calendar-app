@@ -43,6 +43,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import LinkIcon from "@mui/icons-material/Link";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import serverAPI from "../api/serverAPI";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchFriends,
@@ -378,6 +381,7 @@ export default function FriendsPage() {
   const [requestsExpanded, setRequestsExpanded] = useState(true);
   const [circlesExpanded, setCirclesExpanded] = useState(true);
   const [allFriendsExpanded, setAllFriendsExpanded] = useState(true);
+  const [inviteLinkLoading, setInviteLinkLoading] = useState(false);
 
   const showSnack = useCallback((message, severity = "success") => {
     setSnackbar({ open: true, message, severity });
@@ -400,6 +404,19 @@ export default function FriendsPage() {
   }, [error, dispatch, showSnack]);
 
   // ── Handlers ──
+
+  const handleShareInviteLink = async () => {
+    setInviteLinkLoading(true);
+    try {
+      const result = await serverAPI.generateInviteLink();
+      await navigator.clipboard.writeText(result.link);
+      showSnack("Invite link copied to clipboard!");
+    } catch (err) {
+      showSnack("Failed to generate invite link", "error");
+    } finally {
+      setInviteLinkLoading(false);
+    }
+  };
 
   const handleSendRequest = async (e) => {
     e.preventDefault();
@@ -518,16 +535,35 @@ export default function FriendsPage() {
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
             Friends
           </Typography>
-          <Chip
-            label={`${friends.length} friend${friends.length !== 1 ? "s" : ""}`}
-            size="small"
-            sx={{
-              bgcolor: "primary.main",
-              color: "primary.contrastText",
-              fontWeight: 600,
-              fontSize: "0.75rem",
-            }}
-          />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={inviteLinkLoading ? <CircularProgress size={16} /> : <LinkIcon />}
+              onClick={handleShareInviteLink}
+              disabled={inviteLinkLoading}
+              sx={{
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "0.8rem",
+                borderColor: "divider",
+                color: "text.primary",
+                "&:hover": { borderColor: "primary.main" },
+              }}
+            >
+              Share Invite Link
+            </Button>
+            <Chip
+              label={`${friends.length} friend${friends.length !== 1 ? "s" : ""}`}
+              size="small"
+              sx={{
+                bgcolor: "primary.main",
+                color: "primary.contrastText",
+                fontWeight: 600,
+                fontSize: "0.75rem",
+              }}
+            />
+          </Box>
         </Box>
 
         <Box

@@ -29,6 +29,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import serverAPI from "../api/serverAPI";
+import CityAutocompleteField from "../components/CityAutocompleteField";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUserDetails, setUserDetails } from "../redux/userSlice";
 import { tokens } from "../theme";
@@ -420,21 +421,15 @@ export default function UserProfile() {
                 }}
               />
 
-              <TextField
-                fullWidth
-                name="home_city"
-                label="Home City"
+              <CityAutocompleteField
                 value={formData.home_city}
-                onChange={handleChange}
+                onChange={(newCity) =>
+                  setFormData((prev) => ({ ...prev, home_city: newCity }))
+                }
+                label="Home City"
                 placeholder="Used for event suggestions near you"
                 size="small"
-                InputProps={{
-                  startAdornment: (
-                    <LocationOnOutlinedIcon
-                      sx={{ mr: 2, color: "text.secondary", fontSize: 20 }}
-                    />
-                  ),
-                }}
+                showLocationButton
               />
             </CardContent>
           </Card>

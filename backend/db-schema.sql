@@ -152,6 +152,17 @@ CREATE TABLE notifications (
 );
 CREATE INDEX idx_notifications_user ON notifications(user_id, read);
 
+-- Invite codes table
+CREATE TABLE invite_codes (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    inviter_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    used_by VARCHAR(36) REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '30 days'
+);
+CREATE INDEX idx_invite_codes_code ON invite_codes(code);
+
 -- Function to update 'updated_at' columns
 CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now();
 RETURN NEW;

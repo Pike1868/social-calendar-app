@@ -47,6 +47,37 @@ class googleCalendarAPI {
     }
   }
 
+  /** GET https://www.googleapis.com/calendar/v3/users/me/calendarList
+   *
+   * Fetches all calendars the user has access to.
+   * Returns array of calendar objects with id, summary, backgroundColor, etc.
+   */
+  static async fetchCalendarList(_retried = false) {
+    console.debug("Google API Call: fetchCalendarList");
+
+    const url = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
+    const headers = {
+      Authorization: `Bearer ${this.accessToken}`,
+      "Content-Type": "application/json",
+    };
+    try {
+      const response = await axios({ url, method: "get", headers });
+      return response.data.items || [];
+    } catch (err) {
+      if (err.response && err.response.status === 401 && !_retried) {
+        try {
+          const newToken = await serverAPI.refreshGoogleToken();
+          this.setAccessToken(newToken);
+          return this.fetchCalendarList(true);
+        } catch (refreshErr) {
+          console.error("Google token refresh failed:", refreshErr);
+        }
+      }
+      console.error("Error fetching calendar list:", err);
+      throw err;
+    }
+  }
+
   /** GET "https://www.googleapis.com/calendar/v3/calendars/calendarId/events"
    *
    * Requests list of events from by calendar id

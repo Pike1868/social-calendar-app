@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 import { resetState } from "./helpers/globalActions";
 import googleCalendarAPI from "../api/googleCalendarAPI";
 import {
@@ -27,27 +27,73 @@ const initialState = {
   events: [],
   currentGoogleEvent: null,
   showGoogleEvents: false,
+  calendarList: [],
+  calendarVisibility: {},
   status: "idle",
   error: null,
 };
 
 export const fetchGoogleEvents = createAsyncThunk(
   /**
-   * Fetch google events with user access token
-   * Uses a helper function to modify data structure
-   * to match local events for easier integration with UI
+   * Fetch google events from ALL calendars the user has access to.
+   * First fetches the calendar list, then fetches events from each calendar.
+   * Tags each event with the source calendar name and color.
    */
   "googleEvents/fetchGoogleEvents",
   async (accessToken, { rejectWithValue }) => {
     try {
-      //Pass token to set on api
-      const response = await googleCalendarAPI.fetchGoogleEvents(accessToken);
-      const googleEvents = filterEventsByTimeRange(response.items).map((e) =>
-        normalizeGoogleEventStructure(e)
+      // Set token on the API
+      googleCalendarAPI.setAccessToken(accessToken);
+
+      // Fetch all calendars
+      let calendars;
+      try {
+        calendars = await googleCalendarAPI.fetchCalendarList();
+      } catch {
+        // Fallback to primary only if calendarList fails
+        calendars = [{ id: "primary", summary: "Primary", backgroundColor: "#4285f4" }];
+      }
+
+      // Fetch events from each calendar in parallel
+      const allEvents = [];
+      const results = await Promise.allSettled(
+        calendars.map(async (cal) => {
+          const response = await googleCalendarAPI.request(`${encodeURIComponent(cal.id)}/events`);
+          const items = response.items || [];
+          return items.map((event) => ({
+            ...event,
+            _calendarId: cal.id,
+            _calendarName: cal.summary || cal.id,
+            _calendarColor: cal.backgroundColor || "#4285f4",
+          }));
+        })
       );
-      return googleEvents;
+
+      for (const result of results) {
+        if (result.status === "fulfilled") {
+          allEvents.push(...result.value);
+        }
+      }
+
+      // Deduplicate events by ID (same event can appear in multiple calendars)
+      const seen = new Set();
+      const uniqueEvents = allEvents.filter((e) => {
+        if (seen.has(e.id)) return false;
+        seen.add(e.id);
+        return true;
+      });
+
+      const googleEvents = filterEventsByTimeRange(uniqueEvents).map((e) => ({
+        ...normalizeGoogleEventStructure(e),
+        calendar_name: e._calendarName,
+        calendar_color: e._calendarColor,
+        source_calendar_id: e._calendarId,
+      }));
+
+      // Return both events and calendar list
+      return { events: googleEvents, calendars };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -158,6 +204,10 @@ const googleEventSlice = createSlice({
     toggleGoogleEventsVisibility(state) {
       state.showGoogleEvents = !state.showGoogleEvents;
     },
+    toggleCalendarVisibility(state, action) {
+      const calendarId = action.payload;
+      state.calendarVisibility[calendarId] = !state.calendarVisibility[calendarId];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -166,7 +216,18 @@ const googleEventSlice = createSlice({
       })
       .addCase(fetchGoogleEvents.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.events = action.payload;
+        state.events = action.payload.events;
+        state.calendarList = action.payload.calendars.map((cal) => ({
+          id: cal.id,
+          name: cal.summary || cal.id,
+          color: cal.backgroundColor || "#4285f4",
+        }));
+        // Initialize visibility for new calendars (default visible)
+        action.payload.calendars.forEach((cal) => {
+          if (state.calendarVisibility[cal.id] === undefined) {
+            state.calendarVisibility[cal.id] = true;
+          }
+        });
       })
       .addCase(fetchGoogleEvents.rejected, (state, action) => {
         state.status = "failed";
@@ -220,8 +281,20 @@ export const {
   setCurrentGoogleEvent,
   resetCurrentGoogleEvent,
   toggleGoogleEventsVisibility,
+  toggleCalendarVisibility,
 } = googleEventSlice.actions;
 
 export const selectAllGoogleEvents = (state) => state.googleEvent.events;
 export const selectShowGoogleEvents = (state) =>
   state.googleEvent.showGoogleEvents;
+export const selectCalendarList = (state) => state.googleEvent.calendarList;
+export const selectCalendarVisibility = (state) =>
+  state.googleEvent.calendarVisibility;
+export const selectVisibleGoogleEvents = createSelector(
+  [(state) => state.googleEvent.events, (state) => state.googleEvent.calendarVisibility],
+  (events, calendarVisibility) =>
+    events.filter((e) => {
+      const calId = e.source_calendar_id || "primary";
+      return calendarVisibility[calId] !== false;
+    })
+);

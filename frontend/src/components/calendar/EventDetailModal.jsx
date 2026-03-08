@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -9,18 +9,166 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
+  Skeleton,
+  Card,
+  CardContent,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import NotesIcon from "@mui/icons-material/Notes";
 import EditIcon from "@mui/icons-material/Edit";
+import StarIcon from "@mui/icons-material/Star";
+import ExploreIcon from "@mui/icons-material/Explore";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
+import ParkIcon from "@mui/icons-material/Park";
+import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
+import LocalBarIcon from "@mui/icons-material/LocalBar";
+import PlaceIcon from "@mui/icons-material/Place";
 import dayjs from "dayjs";
+import serverAPI from "../../api/serverAPI";
+import { tokens } from "../../theme";
+function getCategoryIcon(category) {
+  if (!category) return PlaceIcon;
+  const lower = category.toLowerCase();
+  if (lower.includes("restaurant") || lower.includes("food")) return RestaurantIcon;
+  if (lower.includes("bar") || lower.includes("nightlife") || lower.includes("pub")) return LocalBarIcon;
+  if (lower.includes("park") || lower.includes("garden") || lower.includes("outdoor")) return ParkIcon;
+  if (
+    lower.includes("cinema") ||
+    lower.includes("theatre") ||
+    lower.includes("theater") ||
+    lower.includes("museum") ||
+    lower.includes("entertainment")
+  )
+    return TheaterComedyIcon;
+  return PlaceIcon;
+}
+
 const EVENT_COLORS = {
   local: { bg: "#1B5E20", label: "Local" },
   google: { bg: "#C6993A", label: "Google" },
   friend: { bg: "#333333", label: "Friend" },
 };
+
+function NearbyPlaces({ location }) {
+  const [places, setPlaces] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!location) return;
+
+    let cancelled = false;
+    const fetchPlaces = async () => {
+      setLoading(true);
+      try {
+        // Use the location string as the city/area for nearby search
+        const results = await serverAPI.fetchNearbyPlaces(location, "restaurants");
+        if (!cancelled) {
+          setPlaces(results.slice(0, 4));
+        }
+      } catch (err) {
+        console.error("Error fetching nearby places:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchPlaces();
+    return () => { cancelled = true; };
+  }, [location]);
+
+  if (loading) {
+    return (
+      <Box sx={{ mt: 1 }}>
+        <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary", mb: 1, display: "block" }}>
+          Nearby
+        </Typography>
+        {[1, 2].map((i) => (
+          <Skeleton key={i} variant="rounded" height={44} sx={{ mb: 1, borderRadius: 2 }} />
+        ))}
+      </Box>
+    );
+  }
+
+  if (places.length === 0) return null;
+
+  return (
+    <Box sx={{ mt: 1 }}>
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 600,
+          color: "text.secondary",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          fontSize: "0.65rem",
+          display: "block",
+          mb: 1,
+        }}
+      >
+        Nearby
+      </Typography>
+      {places.map((place) => (
+        <Card
+          key={`${place.source}-${place.id}`}
+          component="a"
+          href={place.url || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mb: 1,
+            textDecoration: "none",
+            color: "inherit",
+            borderRadius: 2,
+            border: "1px solid",
+            borderColor: "divider",
+            boxShadow: "none",
+            transition: "background 0.15s",
+            "&:hover": { bgcolor: "action.hover" },
+          }}
+        >
+          <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 }, flex: 1, display: "flex", alignItems: "center", gap: 1.5 }}>
+            {(() => {
+              const IconComp = getCategoryIcon(place.category);
+              return <IconComp sx={{ fontSize: 18, color: "text.disabled", flexShrink: 0 }} />;
+            })()}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 500,
+                  fontSize: "0.8rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {place.name}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                {place.rating && (
+                  <>
+                    <StarIcon sx={{ fontSize: 12, color: tokens.colors.accent }} />
+                    <Typography variant="caption" sx={{ color: "text.secondary", fontSize: "0.65rem" }}>
+                      {place.rating.toFixed(1)}
+                    </Typography>
+                  </>
+                )}
+                {place.category && (
+                  <Typography variant="caption" sx={{ color: "text.secondary", fontSize: "0.65rem", ml: 0.5 }}>
+                    {place.category}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      ))}
+    </Box>
+  );
+}
 
 export default function EventDetailModal({ open, event, onClose, onEdit }) {
   const theme = useTheme();
@@ -92,12 +240,20 @@ export default function EventDetailModal({ open, event, onClose, onEdit }) {
 
       {/* Description */}
       {event.description && (
-        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 2 }}>
           <NotesIcon sx={{ color: "text.secondary", fontSize: 20, mt: 0.25 }} />
           <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "pre-wrap" }}>
             {event.description}
           </Typography>
         </Box>
+      )}
+
+      {/* Nearby places when event has a location */}
+      {event.location && (
+        <>
+          <Divider sx={{ mb: 2 }} />
+          <NearbyPlaces location={event.location} />
+        </>
       )}
     </Box>
   );

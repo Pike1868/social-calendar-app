@@ -12,6 +12,7 @@ const {
   createDefaultCalendarForUser,
 } = require("../helpers/createDefaultCalendar");
 const { encrypt } = require("../helpers/cryptoHelper");
+const db = require("../db");
 
 passport.use(
   new GoogleStrategy(
@@ -67,15 +68,19 @@ passport.use(
 );
 
 // Google authentication route
-router.get(
-  "/google",
-  passport.authenticate("google", {
+router.get("/google", (req, res, next) => {
+  const options = {
     scope: ["profile", "email", "https://www.googleapis.com/auth/calendar"],
     accessType: "offline",
     prompt: "select_account",
     session: false,
-  })
-);
+  };
+  // Pass invite code through OAuth state parameter
+  if (req.query.invite) {
+    options.state = req.query.invite;
+  }
+  passport.authenticate("google", options)(req, res, next);
+});
 
 router.get(
   "/google/callback",
@@ -83,9 +88,57 @@ router.get(
     failureRedirect: "/login",
     session: false,
   }),
-  function (req, res) {
+  async function (req, res) {
     // Generate JWT token pair
     const { accessToken, refreshToken } = createTokenPair(req.user);
+
+    // Check for invite code in the state parameter or original query
+    const inviteCode = req.query.invite || req.query.state;
+    if (inviteCode && req.user) {
+      try {
+        // Look up the invite code
+        const inviteResult = await db.query(
+          `SELECT id, inviter_id, used_by FROM invite_codes
+           WHERE code = $1 AND used_by IS NULL AND expires_at > NOW()`,
+          [inviteCode]
+        );
+
+        if (inviteResult.rows.length > 0) {
+          const invite = inviteResult.rows[0];
+          const inviterId = invite.inviter_id;
+          const newUserId = req.user.id;
+
+          // Only create friendship if inviter and new user are different
+          if (inviterId !== newUserId) {
+            // Check if friendship already exists
+            const existingFriendship = await db.query(
+              `SELECT id FROM friendships
+               WHERE (requester_id = $1 AND addressee_id = $2)
+                  OR (requester_id = $2 AND addressee_id = $1)`,
+              [inviterId, newUserId]
+            );
+
+            if (existingFriendship.rows.length === 0) {
+              // Auto-create accepted friendship
+              await db.query(
+                `INSERT INTO friendships (requester_id, addressee_id, status)
+                 VALUES ($1, $2, 'accepted')`,
+                [inviterId, newUserId]
+              );
+            }
+
+            // Mark invite code as used
+            await db.query(
+              `UPDATE invite_codes SET used_by = $1 WHERE id = $2`,
+              [newUserId, invite.id]
+            );
+          }
+        }
+      } catch (err) {
+        console.error("Error processing invite code during OAuth:", err);
+        // Don't block login if invite processing fails
+      }
+    }
 
     // Send response back to signup page with both tokens
     res.redirect(

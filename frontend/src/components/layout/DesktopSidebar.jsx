@@ -25,6 +25,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   toggleGoogleEventsVisibility,
   selectShowGoogleEvents,
+  selectCalendarList,
+  selectCalendarVisibility,
+  toggleCalendarVisibility,
 } from "../../redux/googleEventSlice";
 import {
   toggleLocalEventsVisibility,
@@ -53,6 +56,8 @@ const DesktopSidebar = ({ open }) => {
   const showLocalEvents = useSelector(selectShowLocalEvents);
   const showGoogleEvents = useSelector(selectShowGoogleEvents);
   const userDetails = useSelector(selectUserDetails);
+  const calendarList = useSelector(selectCalendarList);
+  const calendarVisibility = useSelector(selectCalendarVisibility);
 
   const drawerWidth = open ? layout.sidebarWidth : layout.sidebarCollapsedWidth;
 
@@ -167,20 +172,62 @@ const DesktopSidebar = ({ open }) => {
               sx={{ mt: 1, ml: -0.5 }}
             />
             {userDetails && userDetails.access_token && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showGoogleEvents}
-                    onChange={() => dispatch(toggleGoogleEventsVisibility())}
-                    size="small"
-                    color="primary"
-                  />
-                }
-                label={
-                  <Typography variant="body2">Google Calendar</Typography>
-                }
-                sx={{ ml: -0.5 }}
-              />
+              <>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={showGoogleEvents}
+                      onChange={() => dispatch(toggleGoogleEventsVisibility())}
+                      size="small"
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Google Calendar
+                    </Typography>
+                  }
+                  sx={{ ml: -0.5 }}
+                />
+                {showGoogleEvents && calendarList.length > 0 && (
+                  <Box sx={{ pl: 3 }}>
+                    {calendarList.map((cal) => (
+                      <FormControlLabel
+                        key={cal.id}
+                        control={
+                          <Checkbox
+                            checked={calendarVisibility[cal.id] !== false}
+                            onChange={() => dispatch(toggleCalendarVisibility(cal.id))}
+                            size="small"
+                            sx={{
+                              color: cal.color,
+                              "&.Mui-checked": {
+                                color: cal.color,
+                              },
+                            }}
+                          />
+                        }
+                        label={
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontSize: "0.8rem",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxWidth: 140,
+                              display: "block",
+                            }}
+                          >
+                            {cal.name}
+                          </Typography>
+                        }
+                        sx={{ ml: -0.5, mr: 0, display: "flex" }}
+                      />
+                    ))}
+                  </Box>
+                )}
+              </>
             )}
           </Box>
         </>

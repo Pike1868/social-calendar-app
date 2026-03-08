@@ -242,6 +242,26 @@ class serverAPI {
     return response;
   }
 
+  //*************Invite Routes */
+
+  /** POST /invites/generate => { link, code } */
+  static async generateInviteLink() {
+    const response = await this.request("invites/generate", {}, "post");
+    return response;
+  }
+
+  /** GET /invites/my-links => { invites: [...] } */
+  static async getMyInviteLinks() {
+    const response = await this.request("invites/my-links");
+    return response.invites;
+  }
+
+  /** GET /invites/validate/:code => { valid, inviter_name } */
+  static async validateInviteCode(code) {
+    const response = await this.request(`invites/validate/${code}`);
+    return response;
+  }
+
   //*************Circle Routes */
 
   /** POST /circles => { circle } */
@@ -328,6 +348,20 @@ class serverAPI {
   static async generateSuggestions() {
     const response = await this.request("suggestions/generate", {}, "post");
     return response.suggestions;
+  }
+
+  //*************Places Routes */
+
+  /** GET /places/nearby?city=...&type=... => { places: [...] } */
+  static async fetchNearbyPlaces(city, type = "restaurants") {
+    const response = await this.request("places/nearby", { city, type });
+    return response.places;
+  }
+
+  /** GET /places/things-to-do?city=... => { restaurants, entertainment, parks, bars } */
+  static async fetchThingsToDo(city) {
+    const response = await this.request("places/things-to-do", { city });
+    return response;
   }
 
   //*************Notification Routes */

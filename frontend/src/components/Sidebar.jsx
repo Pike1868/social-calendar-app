@@ -19,6 +19,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   toggleGoogleEventsVisibility,
   selectShowGoogleEvents,
+  selectCalendarList,
+  selectCalendarVisibility,
+  toggleCalendarVisibility,
 } from "../redux/googleEventSlice";
 import {
   toggleLocalEventsVisibility,
@@ -32,6 +35,8 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
   const showLocalEvents = useSelector(selectShowLocalEvents);
   const showGoogleEvents = useSelector(selectShowGoogleEvents);
   const userDetails = useSelector(selectUserDetails);
+  const calendarList = useSelector(selectCalendarList);
+  const calendarVisibility = useSelector(selectCalendarVisibility);
   const [searchQuery, setSearchQuery] = useState("");
   const [tmEvents, setTmEvents] = useState([]);
 
@@ -116,15 +121,42 @@ function Sidebar({ open, toggleDrawer, drawerWidth }) {
               />
               <br></br>
               {userDetails && userDetails.access_token && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={showGoogleEvents}
-                      onChange={() => dispatch(toggleGoogleEventsVisibility())}
-                    />
-                  }
-                  label="Google Calendar"
-                />
+                <>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showGoogleEvents}
+                        onChange={() => dispatch(toggleGoogleEventsVisibility())}
+                      />
+                    }
+                    label="Google Calendar"
+                  />
+                  {showGoogleEvents && calendarList.length > 0 && (
+                    <Box sx={{ pl: 3 }}>
+                      {calendarList.map((cal) => (
+                        <FormControlLabel
+                          key={cal.id}
+                          control={
+                            <Checkbox
+                              checked={calendarVisibility[cal.id] !== false}
+                              onChange={() => dispatch(toggleCalendarVisibility(cal.id))}
+                              size="small"
+                              sx={{
+                                color: cal.color,
+                                "&.Mui-checked": { color: cal.color },
+                              }}
+                            />
+                          }
+                          label={
+                            <Typography variant="body2" noWrap>
+                              {cal.name}
+                            </Typography>
+                          }
+                        />
+                      ))}
+                    </Box>
+                  )}
+                </>
               )}
             </Box>
           <Divider/>

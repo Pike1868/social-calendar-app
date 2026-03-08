@@ -18,6 +18,8 @@ const discoverRoutes = require("./routes/discover");
 const suggestionRoutes = require("./routes/suggestions");
 const privacyRoutes = require("./routes/privacy");
 const notificationRoutes = require("./routes/notifications");
+const inviteRoutes = require("./routes/invites");
+const placesRoutes = require("./routes/places");
 const app = express();
 
 // Initialize Passport
@@ -42,6 +44,8 @@ app.use("/discover", discoverRoutes);
 app.use("/suggestions", suggestionRoutes);
 app.use("/privacy", privacyRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/invites", inviteRoutes);
+app.use("/places", placesRoutes);
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 

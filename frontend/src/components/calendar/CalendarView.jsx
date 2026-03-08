@@ -17,7 +17,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useSelector, useDispatch } from "react-redux";
 import { selectEvents, selectShowLocalEvents, setCurrentEvent, resetCurrentEvent } from "../../redux/eventSlice";
-import { selectAllGoogleEvents, selectShowGoogleEvents, setCurrentGoogleEvent, resetCurrentGoogleEvent } from "../../redux/googleEventSlice";
+import { selectVisibleGoogleEvents, selectShowGoogleEvents, setCurrentGoogleEvent, resetCurrentGoogleEvent } from "../../redux/googleEventSlice";
 import EventDetailModal from "./EventDetailModal";
 import EventManagerModal from "../EventManagerModal";
 import MobileDayDrawer from "./MobileDayDrawer";
@@ -50,7 +50,7 @@ export default function CalendarView() {
 
   // Redux selectors
   const localEvents = useSelector(selectEvents);
-  const googleEvents = useSelector(selectAllGoogleEvents);
+  const googleEvents = useSelector(selectVisibleGoogleEvents);
   const showLocal = useSelector(selectShowLocalEvents);
   const showGoogle = useSelector(selectShowGoogleEvents);
 
