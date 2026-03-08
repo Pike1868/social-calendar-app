@@ -274,6 +274,24 @@ class serverAPI {
     return response;
   }
 
+  //*************Privacy Routes */
+
+  /** GET /privacy/preferences => { sharing_enabled, preferences: [...] } */
+  static async fetchPrivacyPreferences() {
+    const response = await this.request("privacy/preferences");
+    return response;
+  }
+
+  /** PUT /privacy/preferences/:friendId => { preference } */
+  static async setFriendSharingPreference(friendId, shareAvailability) {
+    const response = await this.request(
+      `privacy/preferences/${friendId}`,
+      { share_availability: shareAvailability },
+      "put"
+    );
+    return response.preference;
+  }
+
   //*************FreeBusy Routes */
 
   /** POST /freebusy => { availability: { [friendId]: { busy, displayName } } } */

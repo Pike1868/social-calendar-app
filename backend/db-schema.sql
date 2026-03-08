@@ -1,6 +1,7 @@
 -- Drop existing tables and triggers if they exist
 DROP TRIGGER IF EXISTS update_calendars_update_time ON calendars CASCADE;
 DROP TRIGGER IF EXISTS update_events_update_time ON events CASCADE;
+DROP TABLE IF EXISTS suggestions CASCADE;
 DROP TABLE IF EXISTS circle_members CASCADE;
 DROP TABLE IF EXISTS circles CASCADE;
 DROP TABLE IF EXISTS friendships CASCADE;
@@ -27,7 +28,8 @@ CREATE TABLE users (
     access_token TEXT,
     refresh_token TEXT,
     onboarding_complete BOOLEAN NOT NULL DEFAULT FALSE,
-    sharing_opt_in BOOLEAN NOT NULL DEFAULT FALSE
+    sharing_opt_in BOOLEAN NOT NULL DEFAULT FALSE,
+    sharing_enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 CREATE TABLE calendars (
     id VARCHAR(100) PRIMARY KEY,
@@ -111,6 +113,30 @@ CREATE TABLE circle_members (
     FOREIGN KEY (circle_id) REFERENCES circles(id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Sharing preferences table (per-friend privacy controls)
+CREATE TABLE sharing_preferences (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    friend_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    share_availability BOOLEAN NOT NULL DEFAULT TRUE,
+    UNIQUE(user_id, friend_id)
+);
+CREATE INDEX idx_sharing_preferences_user ON sharing_preferences(user_id);
+
+-- Suggestions table
+CREATE TABLE suggestions (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT,
+    metadata JSONB,
+    status TEXT DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP
+);
+CREATE INDEX idx_suggestions_user ON suggestions(user_id, status);
 
 -- Function to update 'updated_at' columns
 CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now();

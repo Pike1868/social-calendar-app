@@ -242,8 +242,8 @@
         "Suggestions expire automatically"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "Depends on US-010 (FreeBusy), US-012 (event discovery). This is the 'magic' of the app."
+      "passes": true,
+      "notes": "Suggestions engine complete: suggestions DB table, Suggestion model with CRUD, suggestionEngine service generating 3 types (availability match, reconnect nudge, event discovery), REST routes at /suggestions with generate/dismiss/acted endpoints."
     },
     {
       "id": "US-014",

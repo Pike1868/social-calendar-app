@@ -288,3 +288,10 @@ Agent: Claude
 
 Multi-source event discovery backend complete: Ticketmaster + SeatGeek + Eventbrite services with parallel fetching, common schema normalization, token-overlap deduplication, graceful per-source error handling, GET /discover/events endpoint mounted.
 ---
+
+## 2026-03-08T04:21:44.198Z
+Story: US-013 - Smart Suggestions Engine
+Agent: Claude
+
+Suggestions engine complete: suggestions DB table, Suggestion model with CRUD, suggestionEngine service generating 3 types (availability match, reconnect nudge, event discovery), REST routes at /suggestions with generate/dismiss/acted endpoints.
+---

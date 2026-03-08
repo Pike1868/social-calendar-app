@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -14,9 +14,13 @@ import {
   Divider,
   Fade,
   CircularProgress,
+  Switch,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
@@ -74,6 +78,74 @@ export default function UserProfile() {
   const [error, setError] = useState("");
 
   const isGoogleLinked = Boolean(userDetails.google_id);
+
+  // Privacy state
+  const [sharingEnabled, setSharingEnabled] = useState(
+    userDetails.sharing_enabled !== false
+  );
+  const [friendPreferences, setFriendPreferences] = useState([]);
+  const [privacyLoading, setPrivacyLoading] = useState(false);
+
+  const loadPrivacyPreferences = useCallback(async () => {
+    try {
+      setPrivacyLoading(true);
+      const data = await serverAPI.fetchPrivacyPreferences();
+      setSharingEnabled(data.sharing_enabled);
+      setFriendPreferences(data.preferences);
+    } catch (err) {
+      console.error("Error loading privacy preferences:", err);
+    } finally {
+      setPrivacyLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPrivacyPreferences();
+  }, [loadPrivacyPreferences]);
+
+  const handleMasterToggle = async (e) => {
+    const newValue = e.target.checked;
+    setSharingEnabled(newValue);
+    try {
+      const updatedUser = await serverAPI.updateUser(userDetails.id, {
+        sharing_enabled: newValue,
+      });
+      dispatch(setUserDetails(updatedUser));
+      setSnackbar({
+        open: true,
+        message: newValue
+          ? "Availability sharing enabled"
+          : "Availability sharing disabled",
+        severity: "success",
+      });
+    } catch (err) {
+      setSharingEnabled(!newValue);
+      console.error("Error toggling sharing:", err);
+    }
+  };
+
+  const handleFriendToggle = async (friendId, currentValue) => {
+    const newValue = !currentValue;
+    // Optimistic update
+    setFriendPreferences((prev) =>
+      prev.map((p) =>
+        p.friend_id === friendId ? { ...p, share_availability: newValue } : p
+      )
+    );
+    try {
+      await serverAPI.setFriendSharingPreference(friendId, newValue);
+    } catch (err) {
+      // Revert on error
+      setFriendPreferences((prev) =>
+        prev.map((p) =>
+          p.friend_id === friendId
+            ? { ...p, share_availability: currentValue }
+            : p
+        )
+      );
+      console.error("Error updating friend preference:", err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -485,6 +557,137 @@ export default function UserProfile() {
                   >
                     Connect Google Calendar
                   </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Privacy & Sharing Card */}
+          <Card sx={cardSx}>
+            <CardContent sx={{ p: { xs: 4, sm: 5 }, "&:last-child": { pb: { xs: 4, sm: 5 } } }}>
+              {sectionTitle("Privacy & Sharing")}
+
+              {/* Master toggle */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 2,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <LockOutlinedIcon sx={{ fontSize: 20, color: "text.secondary" }} />
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Share availability with friends
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                      {sharingEnabled
+                        ? "Friends can see when you're free or busy"
+                        : "No one can see your availability"}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Switch
+                  checked={sharingEnabled}
+                  onChange={handleMasterToggle}
+                  color="primary"
+                />
+              </Box>
+
+              {/* Visual indicator */}
+              <Box
+                sx={{
+                  bgcolor: sharingEnabled ? "success.main" : "action.disabledBackground",
+                  color: sharingEnabled ? "success.contrastText" : "text.secondary",
+                  borderRadius: 2,
+                  px: 3,
+                  py: 1.5,
+                  mb: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  transition: "all 0.2s",
+                  opacity: 0.85,
+                }}
+              >
+                {sharingEnabled ? (
+                  <VisibilityIcon sx={{ fontSize: 16 }} />
+                ) : (
+                  <VisibilityOffIcon sx={{ fontSize: 16 }} />
+                )}
+                <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                  {sharingEnabled
+                    ? "Friends see your free/busy times (never event details)"
+                    : "Your availability is hidden from all friends"}
+                </Typography>
+              </Box>
+
+              {/* Per-friend toggles */}
+              {sharingEnabled && (
+                <>
+                  <Divider sx={{ mb: 3 }} />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", display: "block", mb: 3 }}
+                  >
+                    Fine-tune which friends can see your availability:
+                  </Typography>
+
+                  {privacyLoading ? (
+                    <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                      <CircularProgress size={24} />
+                    </Box>
+                  ) : friendPreferences.length === 0 ? (
+                    <Typography variant="body2" sx={{ color: "text.secondary", py: 2 }}>
+                      No friends yet. Add friends to manage sharing preferences.
+                    </Typography>
+                  ) : (
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      {friendPreferences.map((friend) => (
+                        <Box
+                          key={friend.friend_id}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            py: 1,
+                          }}
+                        >
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <Avatar
+                              src={friend.avatar_url || undefined}
+                              sx={{
+                                width: 32,
+                                height: 32,
+                                fontSize: "0.8rem",
+                                bgcolor: "primary.light",
+                              }}
+                            >
+                              {(friend.first_name?.[0] || "?").toUpperCase()}
+                            </Avatar>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {friend.display_name ||
+                                `${friend.first_name || ""} ${friend.last_name || ""}`.trim() ||
+                                "Friend"}
+                            </Typography>
+                          </Box>
+                          <Switch
+                            size="small"
+                            checked={friend.share_availability}
+                            onChange={() =>
+                              handleFriendToggle(
+                                friend.friend_id,
+                                friend.share_availability
+                              )
+                            }
+                            color="primary"
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
                 </>
               )}
             </CardContent>

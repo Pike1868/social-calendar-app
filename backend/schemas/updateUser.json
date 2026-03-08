@@ -38,6 +38,9 @@
       },
       "sharing_opt_in": {
         "type": "boolean"
+      },
+      "sharing_enabled": {
+        "type": "boolean"
       }
     },
     "additionalProperties": false
