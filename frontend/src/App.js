@@ -36,16 +36,15 @@ function AppContent() {
       const decoded = decodeToken(authToken);
       if (decoded && decoded.id) {
         dispatch(setUser({ id: decoded.id }));
+        // Clean up URL and navigate after Redux state is set
+        window.history.replaceState(null, "", "/");
       } else {
         console.error("Token is invalid or expired.");
         localStorage.removeItem("socialCalToken");
         localStorage.removeItem("socialCalRefreshToken");
       }
-      // Clean up the URL
-      window.history.replaceState(null, "", window.location.pathname);
-      navigate("/");
     }
-  }, [dispatch, navigate]);
+  }, [dispatch]);
 
   // Listen for forced logout from interceptor (when refresh token expires)
   useEffect(() => {
