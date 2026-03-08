@@ -13,8 +13,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import serverAPI from "../api/serverAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUserDetails, setUserDetails } from "../redux/userSlice";
-import { format, parseISO } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /** UserProfile component
  *
@@ -35,10 +39,7 @@ export default function UserProfile() {
 
   // Convert and format birthday for display
   const displayBirthday = userDetails.birthday
-    ? format(
-        utcToZonedTime(parseISO(userDetails.birthday), userTimezone),
-        "yyyy-MM-dd"
-      )
+    ? dayjs.utc(userDetails.birthday).tz(userTimezone).format("YYYY-MM-DD")
     : "";
   const [formData, setFormData] = useState({
     first_name: userDetails.first_name || "",

@@ -1,20 +1,21 @@
-import { format, parseISO, formatISO } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const formatDateTimeForDisplay = (dateTimeString, userTimezone) => {
   const formattedDateTime = dateTimeString
-    ? format(
-        utcToZonedTime(parseISO(dateTimeString), userTimezone),
-        "yyyy-MM-dd'T'HH:mm"
-      )
+    ? dayjs.utc(dateTimeString).tz(userTimezone).format("YYYY-MM-DDTHH:mm")
     : "";
   return formattedDateTime;
 };
 
 export const formatToISO = (dateString) => {
-  const date = dateString ? new Date(dateString) : new Date();
-  return formatISO(date);
+  const date = dateString ? dayjs(dateString) : dayjs();
+  return date.format();
 };
 
-export const ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
-export const CUSTOM_DATE_FORMAT = "dd/MM/yyyy";
+export const ISO_DATE_TIME_FORMAT = "YYYY-MM-DDTHH:mm:ssZ";
+export const CUSTOM_DATE_FORMAT = "DD/MM/YYYY";

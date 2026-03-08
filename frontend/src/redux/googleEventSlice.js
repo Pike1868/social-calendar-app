@@ -8,7 +8,7 @@ import {
 } from "./helpers/googleEventsHelper";
 import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
 import { createEvent, removeEvent, updateEvent } from "./eventSlice";
-import { formatISO } from "date-fns";
+import dayjs from "dayjs";
 import serverAPI from "../api/serverAPI";
 
 /**
@@ -76,8 +76,8 @@ export const createGoogleEvent = createAsyncThunk(
         createEvent({
           ...eventData,
           calendar_id: userCalendar.id,
-          start_time: formatISO(new Date(eventData.start_time)),
-          end_time: formatISO(new Date(eventData.end_time)),
+          start_time: dayjs(eventData.start_time).format(),
+          end_time: dayjs(eventData.end_time).format(),
           google_id: response.id,
         })
       );

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { resetState } from "./helpers/globalActions";
 import serverAPI from "../api/serverAPI";
 import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
-import { formatISO } from "date-fns";
+import dayjs from "dayjs";
 
 /**
  * eventSlice contains all user state for local application
@@ -105,8 +105,8 @@ export const createEvent = createAsyncThunk(
         ...eventData,
         calendar_id: userCalendar.id,
         title: eventData.title,
-        start_time: formatISO(new Date(eventData.start_time)),
-        end_time: formatISO(new Date(eventData.end_time)),
+        start_time: dayjs(eventData.start_time).format(),
+        end_time: dayjs(eventData.end_time).format(),
         owner_id: userDetails.id,
         time_zone: userDetails.time_zone,
       };

@@ -1,6 +1,10 @@
-import { parseISO } from "date-fns";
-import { format } from "date-fns-tz";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { ISO_DATE_TIME_FORMAT } from "./dateTimeFormats";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // set local timezone from browser, or default
 const userTimeZone =
@@ -46,15 +50,11 @@ export const normalizeGoogleEventStructure = (googleEvent) => {
  * fields to update based on the specific event object passed in.
  */
 export const revertGoogleEventStructure = (localEvent) => {
-  const startDateTime = parseISO(localEvent.start_time);
-  const endDateTime = parseISO(localEvent.end_time);
+  const startDateTime = dayjs(localEvent.start_time).tz(userTimeZone);
+  const endDateTime = dayjs(localEvent.end_time).tz(userTimeZone);
   // Format dates with timezone offset
-  const formattedStartDateTime = format(startDateTime, ISO_DATE_TIME_FORMAT, {
-    userTimeZone,
-  });
-  const formattedEndDateTime = format(endDateTime, ISO_DATE_TIME_FORMAT, {
-    userTimeZone,
-  });
+  const formattedStartDateTime = startDateTime.format(ISO_DATE_TIME_FORMAT);
+  const formattedEndDateTime = endDateTime.format(ISO_DATE_TIME_FORMAT);
   return {
     summary: localEvent.title,
     start: {
