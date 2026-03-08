@@ -1,0 +1,368 @@
+{
+  "project": "Circl",
+  "description": "Social calendar app that helps friends and family stay connected by surfacing mutual availability and suggesting meetups. White/gold/dark-green/black design, macOS font, mobile-first responsive UI.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Design System & MUI Theme Setup",
+      "description": "Create a custom MUI theme with Circl design tokens: white/gold (#C6993A)/dark-green (#1B5E20)/black palette, SF Pro / -apple-system font stack, consistent spacing (4px base), border radius (8/12/16px), and subtle shadows. Add dark mode support. All existing components must inherit the theme.",
+      "acceptanceCriteria": [
+        "MUI theme created with all design tokens from PRD section 6.1",
+        "Font family set to -apple-system, BlinkMacSystemFont, SF Pro Display, SF Pro Text, Helvetica Neue, sans-serif",
+        "Color palette: dark green primary, gold accent, white background, black text",
+        "Dark mode theme variant defined",
+        "Theme applied globally via ThemeProvider in App.js"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Foundation for all other UI work. Must be done first."
+    },
+    {
+      "id": "US-002",
+      "title": "Auth Pages Redesign (Sign In / Sign Up)",
+      "description": "Redesign the sign-in and sign-up pages with modern, clean aesthetic. White background with subtle gold/green accents. Prominent 'Continue with Google' CTA (dark green button with gold icon). Minimal email/password as secondary option. Add trust messaging about privacy. Fully responsive mobile-first layout.",
+      "acceptanceCriteria": [
+        "Clean white background with subtle geometric or line-art accents in gold/green",
+        "Continue with Google button is primary CTA (dark green, large, gold icon)",
+        "Email/password is secondary (outlined, minimal style)",
+        "Privacy trust line displayed: 'We only see when you're free — never your event details'",
+        "Responsive: looks great on 320px through 1440px+",
+        "Smooth transition between sign-in and sign-up views",
+        "Error states styled consistently with design system"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "First screen users see. Sets the tone for the whole app."
+    },
+    {
+      "id": "US-003",
+      "title": "Responsive Layout Shell (Mobile Nav + Desktop Sidebar)",
+      "description": "Rebuild the app layout shell. Mobile: bottom tab bar (Calendar, Friends, Suggestions, Profile) + top app bar. Desktop: collapsible left sidebar (not fixed 340px) + top app bar. Remove the current fixed-width Drawer approach. Add proper responsive breakpoints (xs/sm/md/lg/xl).",
+      "acceptanceCriteria": [
+        "Mobile (< 900px): bottom tab navigation with 4 tabs — Calendar, Friends, Suggestions, Profile",
+        "Mobile: top app bar with notification bell and hamburger for secondary actions",
+        "Desktop (>= 900px): collapsible left sidebar with navigation links and calendar filters",
+        "Desktop: top app bar with search, notifications",
+        "Old fixed 340px Sidebar component replaced",
+        "Smooth transitions on sidebar collapse/expand",
+        "All breakpoints render correctly: 320px, 600px, 900px, 1200px, 1536px"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Layout shell that all pages render inside."
+    },
+    {
+      "id": "US-004",
+      "title": "Calendar Component Replacement",
+      "description": "Replace the hand-rolled dayjs calendar grid with FullCalendar (@fullcalendar/react) or Schedule-X. Support Month, Week, and Day views. Mobile: month view shows dots for events (tap to expand), swipe to navigate. Events color-coded: local=dark green, Google=gold, friend availability=charcoal. Integrate with existing Redux event state.",
+      "acceptanceCriteria": [
+        "Calendar library integrated (FullCalendar or Schedule-X)",
+        "Month, Week, and Day views available with view toggle",
+        "Events render as color-coded chips/dots matching design tokens",
+        "Mobile: month view compact with dot indicators, tap day to see events",
+        "Mobile: swipe left/right to navigate periods",
+        "Existing local events from eventSlice display correctly",
+        "Existing Google events from googleEventSlice display correctly",
+        "Event click opens event detail modal/bottom sheet",
+        "Calendar is fully responsive across all breakpoints"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Core calendar experience. Evaluate FullCalendar vs Schedule-X — pick whichever integrates better with MUI theme."
+    },
+    {
+      "id": "US-005",
+      "title": "Event Modals Redesign (Create + Manage)",
+      "description": "Redesign EventCreatorModal and EventManagerModal. Mobile: bottom sheet (slides up from bottom). Desktop: centered modal. Replace raw datetime-local inputs with proper MUI date/time pickers. Style with design system tokens. Keep Google Calendar sync checkbox.",
+      "acceptanceCriteria": [
+        "Mobile: modals render as bottom sheets (slide up animation)",
+        "Desktop: modals render as centered dialogs",
+        "MUI DateTimePicker replaces raw datetime-local inputs",
+        "All form fields styled with design tokens (green/gold/white/black)",
+        "Google Calendar sync checkbox retained and styled",
+        "Create and edit flows both work correctly",
+        "Delete confirmation dialog styled consistently",
+        "Form validation with clear error states"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Profile Page Redesign",
+      "description": "Redesign UserProfile page. Add avatar upload/display, display name field, home city field (new). Clean card-based layout. Connected accounts section showing Google Calendar status. Responsive design.",
+      "acceptanceCriteria": [
+        "Avatar display with upload capability (or initials fallback)",
+        "Display name, first name, last name, email fields",
+        "Home city field (new — needed for location features)",
+        "Birthday and timezone fields retained",
+        "Connected accounts section showing Google Calendar link status",
+        "Save changes with success feedback",
+        "Fully responsive card-based layout",
+        "Styled with design system tokens"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Depends on US-001 theme being in place. New city field requires backend user model update."
+    },
+    {
+      "id": "US-007",
+      "title": "Onboarding Flow (Post First Login)",
+      "description": "Add a multi-step onboarding flow after first Google OAuth login. Step 1: Set display name + avatar. Step 2: Set home city. Step 3: Invite friends (email input). Step 4: Privacy explainer. Store onboarding_complete flag on user.",
+      "acceptanceCriteria": [
+        "Onboarding triggers on first login (onboarding_complete = false)",
+        "4-step wizard with progress indicator",
+        "Step 1: display name + avatar upload",
+        "Step 2: city input with autocomplete",
+        "Step 3: invite friends by email",
+        "Step 4: brief privacy explainer with 'Get Started' CTA",
+        "onboarding_complete flag saved to user record",
+        "Can be skipped but encouraged",
+        "Responsive and styled with design tokens"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Requires new DB columns: display_name, city, avatar_url, onboarding_complete on users table."
+    },
+    {
+      "id": "US-008",
+      "title": "Friend System Backend (DB + API)",
+      "description": "Implement the friendship and circles backend. Create friendships table (requester, addressee, status: pending/accepted/blocked). Create circles and circle_members tables. Build REST API endpoints for friend requests, accept/decline, list friends, CRUD circles, add/remove circle members. Add auth middleware protection.",
+      "acceptanceCriteria": [
+        "friendships table created with proper constraints and indexes",
+        "circles and circle_members tables created",
+        "POST /friends/request — send friend request by email",
+        "PATCH /friends/:id/accept — accept request",
+        "PATCH /friends/:id/decline — decline request",
+        "DELETE /friends/:id — remove friend",
+        "GET /friends — list all accepted friends",
+        "GET /friends/requests — list pending incoming requests",
+        "POST /circles — create a named circle",
+        "POST /circles/:id/members — add friend to circle",
+        "DELETE /circles/:id/members/:userId — remove from circle",
+        "GET /circles — list user's circles with members",
+        "All endpoints protected by ensureLoggedIn middleware",
+        "Input validation with JSON schemas",
+        "Unit tests for models, integration tests for routes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Core social feature. No frontend dependency — can be built in parallel with UI work."
+    },
+    {
+      "id": "US-009",
+      "title": "Friend System Frontend (UI + Redux)",
+      "description": "Build the Friends page and friend management UI. Friends list grouped by circles. Friend cards with avatar, name, city. Add Friend flow (search by email). Pending requests section. Create/manage circles. Redux friendSlice for state management.",
+      "acceptanceCriteria": [
+        "Friends page accessible via bottom tab (mobile) and sidebar (desktop)",
+        "Search bar to find and add friends by email",
+        "Pending requests section with accept/decline buttons",
+        "Friends list grouped by circles",
+        "Friend card: avatar, name, city, friendship status",
+        "Create circle dialog with name input",
+        "Add/remove friends from circles",
+        "Redux friendSlice with async thunks for all API calls",
+        "Loading and error states handled",
+        "Empty states with helpful messaging",
+        "Fully responsive, styled with design tokens"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Depends on US-008 backend being ready."
+    },
+    {
+      "id": "US-010",
+      "title": "FreeBusy API Integration (Backend)",
+      "description": "Build a backend proxy for Google Calendar FreeBusy API. Accepts a list of friend user IDs, fetches their Google Calendar free/busy data (using their stored encrypted access tokens), and returns merged availability windows. Privacy: only returns free/busy blocks, never event details. Friends must have accepted friendship + opted in to sharing.",
+      "acceptanceCriteria": [
+        "GET /freebusy endpoint accepts friend IDs and date range",
+        "Fetches FreeBusy data from Google Calendar API for each friend",
+        "Uses stored encrypted access tokens (decrypted server-side)",
+        "Only returns free/busy time blocks — never event titles or details",
+        "Checks friendship status (must be accepted)",
+        "Checks sharing opt-in preference",
+        "Handles token refresh for expired access tokens",
+        "Returns normalized time blocks per friend",
+        "Error handling for invalid tokens, API failures"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Depends on US-008 friendships. Requires Google Calendar FreeBusy scope."
+    },
+    {
+      "id": "US-011",
+      "title": "Find a Time — Shared Availability View",
+      "description": "Build the 'Find a Time' UI. User selects friend(s) or circle, sees a week/day view with overlaid free/busy blocks. Mutual free windows highlighted in green. Tap a free window to create a hangout event pre-filled with time + friend as invitee.",
+      "acceptanceCriteria": [
+        "Friend/circle picker to select who to compare availability with",
+        "Week view showing overlaid free/busy blocks per person",
+        "Mutual free windows highlighted with green overlay",
+        "Tap/click a free window opens event creator pre-filled with date/time",
+        "Loading state while fetching FreeBusy data",
+        "Privacy indicator showing 'Only free/busy times are shared'",
+        "Responsive — works on mobile and desktop",
+        "Styled with design tokens"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Depends on US-010 FreeBusy backend."
+    },
+    {
+      "id": "US-012",
+      "title": "Multi-Source Event Discovery (Backend)",
+      "description": "Build a backend event aggregation service that fetches events from multiple free APIs: Ticketmaster (already integrated), SeatGeek, and Eventbrite. Normalize all events into a common schema. Deduplicate by name+venue+date. Support location-based queries (by city or lat/lng).",
+      "acceptanceCriteria": [
+        "SeatGeek API integration (free client_id signup)",
+        "Eventbrite API integration (free OAuth token)",
+        "Common event schema: id, source, title, description, venue, city, start_time, end_time, url, image_url",
+        "Deduplication logic for events appearing in multiple sources",
+        "GET /events/discover?city=Austin&date=2026-03-15 endpoint",
+        "Results sorted by relevance/date",
+        "Error handling per source (one failing doesn't break others)",
+        "Rate limiting awareness per API"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Extends existing Ticketmaster integration. SeatGeek and Eventbrite both have free, easy signups."
+    },
+    {
+      "id": "US-013",
+      "title": "Smart Suggestions Engine",
+      "description": "Build backend suggestion generation that runs on-demand or via scheduled job. Suggestion types: availability match ('You and Sarah are both free Saturday'), proximity alert ('You'll be in Austin — 3 friends live there'), event discovery ('Food festival near you both this weekend'), reconnect nudge ('Haven't seen College Friends in 6 weeks'). Store suggestions in DB, surface via API.",
+      "acceptanceCriteria": [
+        "suggestions table in DB (id, user_id, type, title, body, metadata JSONB, status, created_at, expires_at)",
+        "Availability match: checks FreeBusy for mutual free windows in next 7 days",
+        "Proximity alert: detects when user's calendar has travel to a friend's city",
+        "Event discovery: cross-references free windows + nearby events from discovery service",
+        "Reconnect nudge: tracks last interaction per circle, nudges after configurable period",
+        "GET /suggestions endpoint returns user's active suggestions",
+        "PATCH /suggestions/:id/dismiss — mark as dismissed",
+        "PATCH /suggestions/:id/acted — mark as acted on",
+        "Suggestions expire automatically"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Depends on US-010 (FreeBusy), US-012 (event discovery). This is the 'magic' of the app."
+    },
+    {
+      "id": "US-014",
+      "title": "Suggestions Feed Frontend",
+      "description": "Build the Suggestions tab/page. Card-based feed showing smart suggestions. Each card has icon, title, body, and CTA button. Swipe to dismiss. Tap to act (opens event creator, friend profile, or event detail). Empty state with friendly messaging.",
+      "acceptanceCriteria": [
+        "Suggestions page accessible via bottom tab (mobile) and sidebar (desktop)",
+        "Card-based feed layout",
+        "Each card shows type icon, title, description, and action button",
+        "Swipe to dismiss on mobile",
+        "Tap CTA navigates to appropriate action (create event, view friend, view event)",
+        "Redux suggestionSlice with async thunks",
+        "Loading, error, and empty states",
+        "Styled with design tokens (gold accents for suggestion highlights)"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Depends on US-013 backend."
+    },
+    {
+      "id": "US-015",
+      "title": "Notification System",
+      "description": "Build in-app notification system. Notification bell in top bar with unread badge count. Notification types: friend requests, suggestion alerts, event invitations. Notification preferences in profile settings. Optional: web push notifications via service worker.",
+      "acceptanceCriteria": [
+        "notifications table in DB",
+        "Notification bell icon in top app bar with unread badge count",
+        "Dropdown/panel showing recent notifications",
+        "Mark as read on click",
+        "Mark all as read action",
+        "Notification preferences page in profile",
+        "Real-time badge count update (polling or WebSocket)",
+        "Redux notificationSlice",
+        "Styled with design tokens"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Phase 3 feature. Web push is stretch goal."
+    },
+    {
+      "id": "US-016",
+      "title": "Token Refresh & Session Persistence",
+      "description": "Fix JWT token management. Currently tokens expire in 1 hour with no refresh logic. Implement token refresh flow so users don't get logged out. Handle Google OAuth token refresh using stored refresh_token. Persist session across page refreshes.",
+      "acceptanceCriteria": [
+        "JWT refresh token flow implemented (issue refresh token on login)",
+        "Access token auto-refreshes before expiry",
+        "Google OAuth access_token refreshes using stored refresh_token",
+        "Session persists across page refreshes and browser restarts",
+        "Graceful handling of expired/invalid tokens (redirect to login)",
+        "No more random logouts after 1 hour"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Important UX fix. Currently users get silently logged out after 1 hour."
+    },
+    {
+      "id": "US-017",
+      "title": "Privacy Controls UI",
+      "description": "Build privacy settings that let users control who sees their availability. Per-friend and per-circle sharing toggles. Option to block specific time ranges from being shared. Clear UI showing exactly what is shared with whom.",
+      "acceptanceCriteria": [
+        "Privacy settings section in profile page",
+        "Master toggle: share availability with friends (on/off)",
+        "Per-friend sharing toggle",
+        "Per-circle sharing toggle",
+        "Visual indicator of what friends can see (free/busy only)",
+        "Settings persisted in DB",
+        "Respected by FreeBusy API endpoint"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Privacy is a core value prop. Must be clear and trustworthy."
+    },
+    {
+      "id": "US-018",
+      "title": "Location Awareness (User City + Travel Detection)",
+      "description": "Add city field to user profiles. Detect travel from Google Calendar events (flights, hotels, 'Trip to X'). When a user will be in a friend's city, flag it for the suggestions engine. Simple keyword matching on event locations.",
+      "acceptanceCriteria": [
+        "city column on users table (added in US-007)",
+        "Travel detection: scan Google Calendar events for travel keywords (flight, hotel, trip, travel, visiting)",
+        "Extract destination city from event title/location",
+        "Cross-reference with friends' home cities",
+        "Feed proximity data into suggestions engine",
+        "User can manually set 'I'll be in [city]' as override"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Depends on friends system + suggestions engine."
+    },
+    {
+      "id": "US-019",
+      "title": "Consolidate Date Libraries",
+      "description": "The frontend uses both dayjs AND date-fns. Consolidate to dayjs only (lighter weight, already used for calendar logic). Remove date-fns and date-fns-tz dependencies. Update all imports and usages.",
+      "acceptanceCriteria": [
+        "All date-fns and date-fns-tz imports replaced with dayjs equivalents",
+        "dayjs timezone plugin used instead of date-fns-tz",
+        "date-fns and date-fns-tz removed from package.json",
+        "All existing date formatting and manipulation still works correctly",
+        "No runtime errors from date handling"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Cleanup task. Reduces bundle size and removes confusion of having two date libraries."
+    },
+    {
+      "id": "US-020",
+      "title": "End-to-End Testing & QA",
+      "description": "Comprehensive testing pass across the entire application. Unit tests for all new models and helpers. Integration tests for all API routes. Frontend component tests for key flows (auth, calendar, friends, suggestions). Fix any bugs found during testing.",
+      "acceptanceCriteria": [
+        "Backend model tests: friendship, circle, suggestion models",
+        "Backend route tests: friends, circles, freebusy, suggestions, events, auth",
+        "Frontend tests: auth flow, calendar rendering, friend management, suggestion feed",
+        "All existing tests still pass",
+        "No console errors in browser",
+        "Mobile responsive testing at 320px, 375px, 768px, 1024px, 1440px",
+        "Cross-browser: Chrome, Firefox, Safari",
+        "Accessibility: keyboard navigation, screen reader basics"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Final phase. Run after all features are built."
+    }
+  ]
+}
