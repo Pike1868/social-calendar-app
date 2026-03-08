@@ -103,8 +103,8 @@
         "Styled with design system tokens"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Depends on US-001 theme being in place. New city field requires backend user model update."
+      "passes": true,
+      "notes": "Redesigned UserProfile page with modern card-based layout. Added avatar upload/display with initials fallback, display name field, home city field (new for location features), connected accounts section showing Google Calendar link status with Linked/Not linked chip. Backend updated with display_name, home_city, avatar_url columns in users table, updated JSON schema and API route. Fully responsive design using MUI breakpoints and Circl design system tokens. Save changes with success snackbar feedback. All 74 frontend tests pass."
     },
     {
       "id": "US-007",

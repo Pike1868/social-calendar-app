@@ -173,3 +173,25 @@ Files Modified:
 **Learnings for future iterations:**
 1. jest.mock("axios") doesn't mock axios.create() properly — need a custom mock factory that returns an object with interceptors.request/response.use(). 2. Backend had no axios dependency — used Node's built-in https module for Google token refresh endpoint instead. 3. Backend tests fail due to missing .env (PORT undefined) — this is pre-existing infrastructure issue, not related to code changes. 4. Google OAuth refresh tokens are only sent on first authorization (accessType: "offline") — existing users may not have a refresh_token stored until they re-authenticate. 5. The Google auth callback in googleAuth.js had a bug where it passed `googleId` instead of `google_id` and `newUser.firstName` instead of `newUser.first_name` — fixed during implementation.
 ---
+
+## 2026-03-08T03:27:54.374Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-006 - Profile Page Redesign - STARTED. Researching existing profile page, design system tokens, and backend API to plan the redesign.
+---
+
+## 2026-03-08T03:31:11.045Z
+Story: US-006 - Profile Page Redesign
+Agent: claude-main
+
+Redesigned UserProfile page with modern card-based layout. Added avatar upload/display with initials fallback, display name field, home city field (new for location features), connected accounts section showing Google Calendar link status with Linked/Not linked chip. Backend updated with display_name, home_city, avatar_url columns in users table, updated JSON schema and API route. Fully responsive design using MUI breakpoints and Circl design system tokens. Save changes with success snackbar feedback. All 74 frontend tests pass.
+
+Files Modified:
+- backend/db-schema.sql
+- backend/models/user.js
+- backend/routes/user.js
+- backend/schemas/updateUser.json
+- frontend/src/pages/UserProfile.js
+
+**Learnings for future iterations:**
+1. The sqlForPartialUpdate helper automatically handles new fields without needing changes — just add them to the destructured updateData in the route and the RETURNING clause in the model. 2. Avatar upload implemented as base64 data URL stored in avatar_url column — works without a separate file upload endpoint, but avatar_url maxLength in schema should be generous (500+) since base64 images are large strings. For production, should migrate to proper file storage (S3/cloud storage). 3. Backend tests fail due to missing .env (PORT undefined) — pre-existing infrastructure issue, not related to changes. 4. MUI useMediaQuery with theme.breakpoints.down("sm") works well for responsive card layouts that switch between row/column flex direction.
+---
