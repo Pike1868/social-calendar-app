@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "installCommand": "cd backend && npm install && cd ../frontend && npm install",
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/build",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/[...path].js": {
+      "includeFiles": "backend/**",
+      "maxDuration": 30
+    }
+  }
+}

@@ -27,7 +27,7 @@ app.use(passport.initialize());
 //Allow requests from front end
 app.use(cors());
 app.use(express.json());
-app.use(morgan("tiny"));
+if (process.env.NODE_ENV !== "production") app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
 //Route Prefixes
