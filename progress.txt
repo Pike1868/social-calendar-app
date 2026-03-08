@@ -207,3 +207,25 @@ Agent: Claude
 
 Friend system backend complete: friendships/circles/circle_members DB tables, Friendship+Circle models with full CRUD, REST routes mounted at /friends and /circles, JSON validation schemas, all protected with ensureLoggedIn.
 ---
+
+## 2026-03-08T03:44:52.996Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-009 - Friend System Frontend (UI + Redux) - STARTED. Building friendSlice, API methods, and Friends page with circles, pending requests, and add friend flow.
+---
+
+## 2026-03-08T03:48:22.029Z
+Story: US-009 - Friend System Frontend (UI + Redux)
+Agent: claude-main
+
+Friend System Frontend complete: Redux friendSlice with 11 async thunks for all friend/circle operations, serverAPI extended with friend and circle API methods, and full FriendsPage UI. Page includes email search to add friends, pending requests section with accept/decline, circles management (create/delete/add-remove members), friend cards with avatar/name/city/circle chips and action menus, create circle dialog, collapsible sections, loading skeletons, empty states with helpful messaging, and snackbar notifications. Fully responsive, styled with design tokens. Build passes, all 74 existing tests pass.
+
+Files Modified:
+- frontend/src/api/serverAPI.js
+- frontend/src/redux/friendSlice.js
+- frontend/src/redux/store.js
+- frontend/src/pages/FriendsPage.js
+- frontend/src/routes/RouteList.js
+
+**Learnings for future iterations:**
+1. The backend friend list query does NOT return home_city — the FriendCard supports it but the field will be empty until the backend query is updated to include home_city from the users table. 2. Circle member addition requires re-fetching circles since the API only returns the member record, not the full user details needed for display. 3. The PlaceholderPage component in RouteList is still used by /suggestions route — don't remove it yet.
+---

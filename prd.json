@@ -168,8 +168,8 @@
         "Fully responsive, styled with design tokens"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Depends on US-008 backend being ready."
+      "passes": true,
+      "notes": "Friend System Frontend complete: Redux friendSlice with 11 async thunks for all friend/circle operations, serverAPI extended with friend and circle API methods, and full FriendsPage UI. Page includes email search to add friends, pending requests section with accept/decline, circles management (create/delete/add-remove members), friend cards with avatar/name/city/circle chips and action menus, create circle dialog, collapsible sections, loading skeletons, empty states with helpful messaging, and snackbar notifications. Fully responsive, styled with design tokens. Build passes, all 74 existing tests pass."
     },
     {
       "id": "US-010",
