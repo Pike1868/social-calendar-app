@@ -122,8 +122,8 @@
         "Responsive and styled with design tokens"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "Requires new DB columns: display_name, city, avatar_url, onboarding_complete on users table."
+      "passes": true,
+      "notes": "Onboarding Flow complete: 4-step wizard with progress indicator (profile setup, city autocomplete, friend invites, privacy explainer). Backend: added onboarding_complete boolean to users table with migration, updated user model/schema/routes to support the flag, added batch friend invite endpoint. Frontend: OnboardingPage component with step navigation, avatar upload, city autocomplete with 50 US cities, email chip input for friend invites, privacy explainer with Get Started CTA. OnboardingGate wrapper in routing redirects users to /onboarding when onboarding_complete is false. Skippable via \"Skip for now\" button. Fully responsive, styled with Circl design tokens. All 74 tests pass."
     },
     {
       "id": "US-008",

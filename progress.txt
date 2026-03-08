@@ -229,3 +229,31 @@ Files Modified:
 **Learnings for future iterations:**
 1. The backend friend list query does NOT return home_city — the FriendCard supports it but the field will be empty until the backend query is updated to include home_city from the users table. 2. Circle member addition requires re-fetching circles since the API only returns the member record, not the full user details needed for display. 3. The PlaceholderPage component in RouteList is still used by /suggestions route — don't remove it yet.
 ---
+
+## 2026-03-08T03:50:06.021Z
+## 2026-03-08T03:15:00.000Z
+STATUS_UPDATE: US-007 - Onboarding Flow (Post First Login) - STARTED. Implementing 4-step onboarding wizard with progress indicator, profile setup, city autocomplete, friend invites, and privacy explainer.
+---
+
+## 2026-03-08T03:54:19.384Z
+Story: US-007 - Onboarding Flow (Post First Login)
+Agent: claude-main
+
+Onboarding Flow complete: 4-step wizard with progress indicator (profile setup, city autocomplete, friend invites, privacy explainer). Backend: added onboarding_complete boolean to users table with migration, updated user model/schema/routes to support the flag, added batch friend invite endpoint. Frontend: OnboardingPage component with step navigation, avatar upload, city autocomplete with 50 US cities, email chip input for friend invites, privacy explainer with Get Started CTA. OnboardingGate wrapper in routing redirects users to /onboarding when onboarding_complete is false. Skippable via "Skip for now" button. Fully responsive, styled with Circl design tokens. All 74 tests pass.
+
+Files Modified:
+- backend/db-schema.sql
+- backend/models/user.js
+- backend/routes/friends.js
+- backend/routes/user.js
+- backend/schemas/updateUser.json
+- backend/migrations/001_add_onboarding_complete.sql
+- frontend/src/api/serverAPI.js
+- frontend/src/redux/userSlice.js
+- frontend/src/routes/RouteList.js
+- frontend/src/routes/RouteList.test.js
+- frontend/src/pages/OnboardingPage.js
+
+**Learnings for future iterations:**
+1. OnboardingGate pattern works well for intercepting routes - fetch user details at the gate level, redirect to /onboarding if onboarding_complete is false, render children only when complete. 2. The existing updateUser thunk in userSlice has a bug - it passes {id: user.id, ...userData} as a single object to serverAPI.updateUser which expects (userId, updateData) as separate args. The completeOnboarding thunk was written correctly with separate args. 3. RouteList tests need userDetails with onboarding_complete: true in preloadedState since the OnboardingGate returns null while waiting for details to load. 4. MUI Autocomplete with freeSolo works well for city input - allows both selecting from suggestions and typing custom values.
+---
