@@ -30,6 +30,39 @@ router.post("/request", ensureLoggedIn, async (req, res, next) => {
   }
 });
 
+/** POST /friends/invite-batch
+ * Send friend requests to multiple emails (onboarding).
+ * Body: { emails: [string] }
+ * Returns { results: [{ email, status, friendship? }] }
+ */
+router.post("/invite-batch", ensureLoggedIn, async (req, res, next) => {
+  try {
+    const { emails } = req.body;
+    if (!Array.isArray(emails) || emails.length === 0) {
+      throw new BadRequestError("emails must be a non-empty array");
+    }
+    if (emails.length > 10) {
+      throw new BadRequestError("Maximum 10 invites at once");
+    }
+
+    const results = [];
+    for (const email of emails) {
+      try {
+        const friendship = await Friendship.sendRequest(
+          res.locals.user.id,
+          email
+        );
+        results.push({ email, status: "sent", friendship });
+      } catch (err) {
+        results.push({ email, status: "failed", error: err.message });
+      }
+    }
+    return res.status(201).json({ results });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 /** GET /friends
  * List all accepted friends.
  * Returns { friends: [...] }

@@ -42,6 +42,7 @@ test("renders HomePage for authenticated user", () => {
     preloadedState: {
       user: {
         user: { id: "user-id" },
+        userDetails: { id: "user-id", onboarding_complete: true },
       },
       events: {
         eventList: [],

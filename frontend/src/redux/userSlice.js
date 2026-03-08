@@ -100,6 +100,14 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
+      .addCase(completeOnboarding.fulfilled, (state, action) => {
+        state.userDetails = action.payload;
+        state.loading = false;
+      })
+      .addCase(completeOnboarding.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
       .addCase(resetState, () => initialState)
       .addMatcher(
         (action) => action.type.endsWith("./pending"),
@@ -196,6 +204,24 @@ export const updateUser = createAsyncThunk(
       return response;
     } catch (err) {
       console.error("Error updating user:", err);
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const completeOnboarding = createAsyncThunk(
+  "user/completeOnboarding",
+  async (profileData, { getState, rejectWithValue }) => {
+    try {
+      const { user } = getState();
+      const userId = user.user.id;
+      const response = await serverAPI.updateUser(userId, {
+        ...profileData,
+        onboarding_complete: true,
+      });
+      return response;
+    } catch (err) {
+      console.error("Error completing onboarding:", err);
       return rejectWithValue(err);
     }
   }

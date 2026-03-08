@@ -200,6 +200,12 @@ class serverAPI {
 
   //*************Friend Routes */
 
+  /** POST /friends/invite-batch => { results } */
+  static async inviteFriendsBatch(emails) {
+    const response = await this.request("friends/invite-batch", { emails }, "post");
+    return response.results;
+  }
+
   /** POST /friends/request => { friendship } */
   static async sendFriendRequest(email) {
     const response = await this.request("friends/request", { email }, "post");
