@@ -153,6 +153,9 @@ class User {
       `SELECT id,
               first_name,
               last_name,
+              display_name,
+              home_city,
+              avatar_url,
               email,
               time_zone,
               birthday,
@@ -192,10 +195,10 @@ class User {
     const { setCols, values } = sqlForPartialUpdate(data, {});
     const idVarIdx = "$" + (values.length + 1);
 
-    const querySql = `UPDATE users 
-                        SET ${setCols} 
-                        WHERE id = ${idVarIdx} 
-                        RETURNING id,first_name, last_name, email,birthday, time_zone, access_token, refresh_token`;
+    const querySql = `UPDATE users
+                        SET ${setCols}
+                        WHERE id = ${idVarIdx}
+                        RETURNING id, first_name, last_name, display_name, home_city, avatar_url, email, birthday, time_zone, access_token, refresh_token`;
     const result = await db.query(querySql, [...values, id]);
     const user = result.rows[0];
 

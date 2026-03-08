@@ -13,6 +13,18 @@
         "minLength": 1,
         "maxLength": 30
       },
+      "display_name": {
+        "type": "string",
+        "maxLength": 50
+      },
+      "home_city": {
+        "type": "string",
+        "maxLength": 100
+      },
+      "avatar_url": {
+        "type": "string",
+        "maxLength": 500
+      },
       "birthday": {
         "type": "string",
         "format": "date"
@@ -24,4 +36,3 @@
     },
     "additionalProperties": false
   }
-  

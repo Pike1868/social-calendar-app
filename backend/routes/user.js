@@ -59,12 +59,15 @@ router.patch(
         throw new BadRequestError(errs);
       }
 
-      const { first_name, last_name, birthday, time_zone } = req.body;
+      const { first_name, last_name, display_name, home_city, avatar_url, birthday, time_zone } = req.body;
 
       // Ensure only allowed fields are updated
       const updateData = {
         first_name,
         last_name,
+        display_name,
+        home_city,
+        avatar_url,
         birthday,
         time_zone,
       };
