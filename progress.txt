@@ -281,3 +281,10 @@ Agent: Claude
 
 Find a Time page complete: friend/circle picker, week view with busy block overlays, mutual free windows highlighted in green, click-to-create event, privacy indicator, responsive mobile/desktop, FreeBusy Redux slice integrated.
 ---
+
+## 2026-03-08T04:17:53.458Z
+Story: US-012 - Multi-Source Event Discovery (Backend)
+Agent: Claude
+
+Multi-source event discovery backend complete: Ticketmaster + SeatGeek + Eventbrite services with parallel fetching, common schema normalization, token-overlap deduplication, graceful per-source error handling, GET /discover/events endpoint mounted.
+---

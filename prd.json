@@ -223,8 +223,8 @@
         "Rate limiting awareness per API"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": "Extends existing Ticketmaster integration. SeatGeek and Eventbrite both have free, easy signups."
+      "passes": true,
+      "notes": "Multi-source event discovery backend complete: Ticketmaster + SeatGeek + Eventbrite services with parallel fetching, common schema normalization, token-overlap deduplication, graceful per-source error handling, GET /discover/events endpoint mounted."
     },
     {
       "id": "US-013",
