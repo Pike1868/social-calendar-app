@@ -42,9 +42,7 @@ import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LinkIcon from "@mui/icons-material/Link";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import serverAPI from "../api/serverAPI";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -508,13 +506,6 @@ export default function FriendsPage() {
       showSnack(msg, "error");
     }
   };
-
-  // ── Build grouped view: friends by circle, plus uncategorized ──
-  const categorizedUserIds = new Set();
-  circles.forEach((c) => c.members.forEach((m) => categorizedUserIds.add(m.user_id)));
-  const uncategorizedFriends = friends.filter(
-    (f) => !categorizedUserIds.has(f.user_id)
-  );
 
   return (
     <Fade in timeout={350}>

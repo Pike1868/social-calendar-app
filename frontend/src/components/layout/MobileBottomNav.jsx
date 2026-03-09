@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { Paper, BottomNavigation } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";

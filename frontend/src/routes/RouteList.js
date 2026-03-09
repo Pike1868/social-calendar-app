@@ -77,14 +77,4 @@ const RouteList = () => {
   );
 };
 
-// Placeholder for pages not yet built
-function PlaceholderPage({ title }) {
-  return (
-    <div style={{ padding: "24px" }}>
-      <h2>{title}</h2>
-      <p>Coming soon.</p>
-    </div>
-  );
-}
-
 export default RouteList;

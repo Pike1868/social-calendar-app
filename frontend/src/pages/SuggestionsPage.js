@@ -12,8 +12,6 @@ import {
   Chip,
   Fade,
   Skeleton,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
@@ -138,7 +136,6 @@ function EmptyState({ onGenerate, loading }) {
 
 // ── Suggestion Card ──
 function SuggestionCard({ suggestion, onDismiss, onAct }) {
-  const theme = useTheme();
   const navigate = useNavigate();
   const type = suggestion.type || "reconnect";
   const Icon = typeIconMap[type] || PeopleOutlineIcon;
@@ -249,9 +246,6 @@ function SuggestionCard({ suggestion, onDismiss, onAct }) {
 // ── Main Page ──
 export default function SuggestionsPage() {
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const suggestions = useSelector(selectSuggestions);
   const loading = useSelector(selectSuggestionsLoading);
   const error = useSelector(selectSuggestionError);

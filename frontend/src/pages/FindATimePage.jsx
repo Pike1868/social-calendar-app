@@ -221,7 +221,8 @@ export default function FindATimePage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const friends = useSelector(selectFriends) || [];
+  const rawFriends = useSelector(selectFriends);
+  const friends = useMemo(() => rawFriends || [], [rawFriends]);
   const circles = useSelector(selectCircles) || [];
   const friendsLoading = useSelector(selectFriendsLoading);
   const availability = useSelector(selectFreeBusyAvailability);
@@ -270,15 +271,6 @@ export default function FindATimePage() {
       friend: f,
     }));
   }, [friends]);
-
-  const handleAddFriend = useCallback(
-    (friendId) => {
-      if (!selectedFriendIds.includes(friendId)) {
-        setSelectedFriendIds((prev) => [...prev, friendId]);
-      }
-    },
-    [selectedFriendIds]
-  );
 
   const handleRemoveFriend = useCallback((friendId) => {
     setSelectedFriendIds((prev) => prev.filter((id) => id !== friendId));
