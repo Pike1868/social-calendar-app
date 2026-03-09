@@ -1,7 +1,7 @@
 "use strict";
 const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sqlPartialUpdate");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const {
   NotFoundError,
   BadRequestError,
