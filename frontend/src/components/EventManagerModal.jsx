@@ -24,7 +24,7 @@ import NotesIcon from "@mui/icons-material/Notes";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
-import { formatToISO } from "../redux/helpers/dateTimeFormats";
+
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserDetails, selectUserCalendar } from "../redux/userSlice";
 import {

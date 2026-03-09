@@ -7,13 +7,11 @@ import {
   CardMedia,
   CardContent,
   Skeleton,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import ExploreIcon from "@mui/icons-material/Explore";
+
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ParkIcon from "@mui/icons-material/Park";
 import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
@@ -88,7 +86,6 @@ function RatingStars({ rating }) {
 }
 
 function PlaceCard({ place }) {
-  const theme = useTheme();
 
   return (
     <Card
@@ -220,8 +217,6 @@ function LoadingSkeleton() {
 export default function ThingsToDoWidget({ city: cityProp, compact = false }) {
   const userDetails = useSelector(selectUserDetails);
   const city = cityProp || userDetails?.home_city || "";
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [activeCategory, setActiveCategory] = useState("all");
   const [data, setData] = useState(null);

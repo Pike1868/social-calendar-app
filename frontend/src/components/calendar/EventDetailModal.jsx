@@ -19,7 +19,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import NotesIcon from "@mui/icons-material/Notes";
 import EditIcon from "@mui/icons-material/Edit";
 import StarIcon from "@mui/icons-material/Star";
-import ExploreIcon from "@mui/icons-material/Explore";
+
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ParkIcon from "@mui/icons-material/Park";
 import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
